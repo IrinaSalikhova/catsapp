@@ -2,12 +2,12 @@ runtime: nodejs22
 
 handlers:
   - url: /api/.*
-    script: backend/server.js
+    script: backend/catsserver.js
 
   - url: /(.*\.(js|css|html|png|jpg|jpeg|gif|svg|ico))$
     static_files: frontend/\1
     upload: frontend/.*
 
   - url: /.*
-    script: backend/server.js
+    script: backend/catsserver.js
 
