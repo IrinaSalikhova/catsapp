@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="dashboard_style.css">
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <img src="image/carlington_icon.webp" alt="Logo">
+        <div class="title">Asset Management</div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="sidebar">
+        <ul class="nav">
+          <li><a href="#notification">Notification</a></li>
+          <li><a href="#database">Database</a></li>
+          <li><a href="#asset-review">Asset Review</a></li>
+        </ul>
+      </div>
+      <div class="content">
+        <div class="section1" id="notification">
+          <div class="section-header">Notification</div>
+          <div class="new-asset-box">New asset Suggestion1</div>
+          <div class="new-asset-box">New asset edit</div>
+          <div class="new-asset-box">New asset suggestion2</div>
+        </div>
+        <div class="section2" id="database">
+          <div class="section-header">Database</div>
+          <table class="database-table">
+            <tr>
+              <th>ID</th>
+              <th>Address</th>
+              <th>Category</th>
+              <th>Attribute 1</th>
+              <th>Attribute 2</th>
+              <th>Attribute 3</th>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>1303 Leaside Av, Ottawa, ON</td>
+              <td>Religious</td>
+              <td>Attribute 1</td>
+              <td>Attribute 2</td>
+              <td>Attribute 3</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>960 Silver St, Ottawa, ON</td>
+              <td>Park</td>
+              <td>Attribute 1</td>
+              <td>Attribute 2</td>
+              <td>Attribute 3</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>1400 Coldrey Ave, Ottawa, ON</td>
+              <td>Religious</td>
+              <td>Attribute 1</td>
+              <td>Attribute 2</td>
+              <td>Attribute 3</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="content1">
+        <div class="section" id="asset-review">
+          <div class="section-header">Asset Review</div>
+          <div class="new-asset-box">
+            <strong>Asset 1</strong><br>
+            Asset Name:<br>
+            Hours of Operation:<br>
+            Phone Number:<br>
+            Email:<br>
+            Website:<br>
+            Description:
+          </div>
+          <div class="mapcontainer">
+            <div class="map" id="map"></div>
+          </div>
+          <div class="actions">
+            <button class="button approve">Approve</button>
+            <button class="button decline">Decline</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize and add the map
+    function initMap() {
+      // The location of Carlington Community Health Centre
+      const carlington = { lat: 45.383539135902325, lng: -75.73337435906367 };
+      // The map, centered at Carlington Community Health Centre
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 18,
+        center: carlington,
+      });
+      // The marker, positioned at Carlington Community Health Centre
+      const marker = new google.maps.Marker({
+        position: carlington,
+        map: map,
+      });
+    }
+
+    // Add event listener to the search bar
+    const searchInput = document.querySelector('.search-input');
+    searchInput.addEventListener('input', (e) => {
+      const searchValue = e.target.value.toLowerCase();
+      const listings = document.querySelectorAll('.listing');
+      listings.forEach((listing) => {
+        const listingTitle = listing.querySelector('.listing-title').textContent.toLowerCase();
+        if (listingTitle.includes(searchValue)) {
+          listing.style.display = 'block';
+        } else {
+          listing.style.display = 'none';
+        }
+      });
+    });
+  </script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9lPCFtZZcDup4UwnFNPsFOcrxfuQsgGA&callback=initMap">
+  </script>
+</body>
+</html>
