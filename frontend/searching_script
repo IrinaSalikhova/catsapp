@@ -1,0 +1,30 @@
+// Initialize and add the map
+function initMap() {
+    // The location of Carlington Community Health Centre
+    const carlington = { lat: 45.383539135902325, lng: -75.73337435906367 };
+    // The map, centered at Carlington Community Health Centre
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 18,
+      center: carlington,
+    });
+    // The marker, positioned at Carlington Community Health Centre
+    const marker = new google.maps.Marker({
+      position: carlington,
+      map: map,
+    });
+  }
+  
+  // Add event listener to the search bar
+  const searchInput = document.querySelector('.search-input');
+  searchInput.addEventListener('input', (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    const listings = document.querySelectorAll('.listing');
+    listings.forEach((listing) => {
+      const listingTitle = listing.querySelector('.listing-title').textContent.toLowerCase();
+      if (listingTitle.includes(searchValue)) {
+        listing.style.display = 'block';
+      } else {
+        listing.style.display = 'none';
+      }
+    });
+  });
