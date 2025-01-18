@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="searching_style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Resources</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="carlingtonlogo">
+        <img src="image/carlington_icon.webp" alt="Logo" style="width: 100px; height: auto;">
+      </div>
+
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Search for resources...">
+        <button class="search-button">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      <div class="logoutlogo">
+        <img src="image/logout_icon.png" alt="Logo" style="width: 50px; height: auto;">
+      </div>
+    </div>
+    <div class="main">
+      <div class="sidebar">
+        
+        <div class="title">Community Resources</div>
+        <div class="filter-buttons">
+          <button class="filter-button">All</button>
+          <button class="filter-button"> Filter 1</button>
+          <button class="filter-button">Filter 2</button>
+          <button class="filter-button"> Filter 3</button>
+        </div>
+        <div class="listing">
+          <div class="listing-title">St. Elizabeth Church</div>
+          <div class="listing-info">
+            <span class="listing-icon">⭐</span>
+            <span class="listing-rating">4.7 Stars - 25 ratings</span>
+          </div>
+          <div class="listing-details">1303 Leaside Av, Ottawa, ON K1Z 7R2</div>
+          <div class="listing-details">(613) 725-2242</div>
+        </div>
+        <div class="listing">
+          <div class="listing-title">Alexander Park</div>
+          <div class="listing-info">
+            <span class="listing-icon">⭐</span>
+            <span class="listing-rating">4.3 Stars - 75 ratings</span>
+          </div>
+          <div class="listing-details">960 Silver St, Ottawa, ON K1Z 6H5</div>
+        </div>
+        <div class="listing">
+          <div class="listing-title">Kehillat Beth Israel</div>
+          <div class="listing-info">
+            <span class="listing-icon">⭐</span>
+            <span class="listing-rating">4.5 Stars - 22 ratings</span>
+          </div>
+          <div class="listing-details">1400 Coldrey Ave, Ottawa, ON K1Z 7P9</div>
+          <div class="listing-details">(613) 728-3501</div>
+        </div>
+        <div class="listing">
+          <div class="listing-title">Carlington Community Health Centre</div>
+          <div class="listing-details">1303 Leaside Av, Ottawa</div>
+          <div class="listing-details">(613) 725-2242</div>
+        </div>
+      </div>
+      <div class="mapcontainer">
+        <div class="map" id="map"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="searching_script"></script>
+  <script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9lPCFtZZcDup4UwnFNPsFOcrxfuQsgGA&callback=initMap">
+  </script>
+</body>
+</html>
