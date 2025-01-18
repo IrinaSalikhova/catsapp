@@ -12,6 +12,14 @@ app.get('/api/hello', (req, res) => {
     res.json({ message: "Hello, cats! Lets make map!!" });
 });
 
+// Serve the React admin page
+app.use('/admin', express.static(path.join(__dirname, '../frontend/adminPage/dist')));
+
+// Fallback to React admin index.html for admin routes
+app.get('/admin/*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/adminPage/dist/index.html'));
+});
+
 // Fallback for any route to load the frontend
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
