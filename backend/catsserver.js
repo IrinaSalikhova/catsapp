@@ -3,6 +3,9 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 8080;
+const userRoutes = require('./routes/userRoutes');
+
+app.use(express.json());
 
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -11,6 +14,9 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.get('/api/hello', (req, res) => {
     res.json({ message: "Hello, cats! Lets make map!!" });
 });
+
+// API routes
+app.use('/api/users', userRoutes);
 
 // Serve the React admin page
 app.use('/admin', express.static(path.join(__dirname, '../frontend/adminPage/dist')));
@@ -28,3 +34,4 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
