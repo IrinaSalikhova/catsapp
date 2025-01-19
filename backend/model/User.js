@@ -33,6 +33,19 @@ class User {
         });
     }
 
+    static async deleteById(userId) {
+        const query = 'DELETE FROM Users WHERE Id = ?';
+    
+        return new Promise((resolve, reject) => {
+            db.query(query, [userId], (err, results) => {
+                if (err) return reject(err);
+                if (results.affectedRows === 0) {
+                    return reject(new Error('No user found with the provided ID'));
+                }
+                resolve({ message: 'User deleted successfully', userId });
+            });
+        });
+    }
 
 
     static async findByEmail(email) {
@@ -47,7 +60,14 @@ class User {
     }
 
     static async returnAllUsers() {
-        
+        const query = 'SELECT * FROM Users';
+
+        return new Promise((resolve, reject) => {
+            db.query(query, (err, results) => {
+                if (err) return reject(err);
+                resolve(results);
+            });
+        });
     }
 
     static async comparePassword(inputPassword, storedPasswordHash) {
@@ -80,16 +100,17 @@ class User {
         });
     }
 
-    static async findSessionByToken(token) {
-        const query = 'SELECT * FROM Sessions WHERE token = ?';
+    static async authenticateToken(token) {
+        const query = 'SELECT * FROM Sessions WHERE token = ? AND expiresAt > ?';
 
         return new Promise((resolve, reject) => {
             db.query(query, 
-                [token], (err, results) => {
+                [token, new Date()], (err, results) => {
                 if (err) return reject(err);
                 resolve(results[0]);
             });
         });
+
     }
 }
 
