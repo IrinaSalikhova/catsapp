@@ -77,7 +77,7 @@ const AddUserForm = ({ onClose, onSave }) => {
                                 type="radio"
                                 name="role"
                                 value="navigator"
-                                checked={formData.role === 'Navigator'}
+                                checked={formData.role === 'navigator'}
                                 onChange={handleChange}
                                 style={{ marginRight: '5px' }}
                                 required
@@ -89,7 +89,7 @@ const AddUserForm = ({ onClose, onSave }) => {
                                 type="radio"
                                 name="role"
                                 value="admin"
-                                checked={formData.role === 'Admin'}
+                                checked={formData.role === 'admin'}
                                 onChange={handleChange}
                                 style={{ marginRight: '5px' }}
                                 required
