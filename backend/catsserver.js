@@ -1,4 +1,3 @@
-// backend/catsserver.js
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -7,31 +6,26 @@ const userRoutes = require('./routes/userRoutes');
 
 app.use(express.json());
 
-// Serve frontend static files
+// Serve main frontend static files (index.html)
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// Example API endpoint
-app.get('/api/hello', (req, res) => {
-    res.json({ message: "Hello, cats! Lets make map!!" });
-});
+// Serve admin React static files
+app.use('/admin', express.static(path.join(__dirname, '../frontend/adminPage/dist')));
 
 // API routes
 app.use('/api/users', userRoutes);
 
-// Serve the React admin page
-app.use('/admin', express.static(path.join(__dirname, '../frontend/adminPage/dist')));
-
-// Fallback to React admin index.html for admin routes
-app.get('/admin/*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/adminPage/dist/index.html'));
+// Example API endpoint
+app.get('/api/hello', (req, res) => {
+    res.json({ message: 'Hello, cats! Let’s make a map!' });
 });
 
-// Fallback for any route to load the frontend
+// Fallback to main frontend index.html
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
+// Start server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
-

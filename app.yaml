@@ -1,13 +1,22 @@
 runtime: nodejs22
+env: standard
 
 handlers:
-  - url: /api/.*
-    script: backend/catsserver.js
-
+  # Serve static files for the main app (index.html and assets)
   - url: /(.*\.(js|css|html|png|jpg|jpeg|gif|svg|ico))$
     static_files: frontend/\1
     upload: frontend/.*
 
-  - url: /.*
-    script: backend/catsserver.js
+  # Serve admin React app static files
+  - url: /admin/(.*)
+    static_files: frontend/adminPage/dist/\1
+    upload: frontend/adminPage/dist/.*
 
+  # Fallback to admin React app index.html
+  - url: /admin/.*
+    static_files: frontend/adminPage/dist/index.html
+    upload: frontend/adminPage/dist/index.html
+
+  # All other requests handled by the backend
+  - url: /.*
+    script: auto
