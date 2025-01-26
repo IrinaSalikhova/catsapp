@@ -41,7 +41,7 @@ const App = () => {
 
         {/* Admin page route */}
         <Route
-          path="/adminPage"
+          path="/adminpage"
           element={
             isLoggedIn ? <AdminPage /> : <div>Please login first.</div>
           }

@@ -26,7 +26,7 @@ const Login = ({ onClose, setIsLoggedIn }) => {
                 // On successful login, redirect to the admin Page
                 localStorage.setItem('token', data.token); // Save token in localStorage
                 setIsLoggedIn(true); // Update login status
-                navigate('/adminPage'); // Redirect to the admin page
+                navigate('/adminpage'); // Redirect to the admin page
                 onClose(); // Close the modal
             } else {
                 setError(data.message); // Show error message
