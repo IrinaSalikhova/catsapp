@@ -8,7 +8,7 @@ const AdminPage = () => {
 
 
     const token = localStorage.getItem('token');
-    if (!token) { //add validity check
+    if (!token) { //add validity check and redirection to main page 
         console.error('User not authenticated');
         //window.location.href = '/login';
         return null;
@@ -76,7 +76,7 @@ const AdminPage = () => {
             const response = await fetch('/api/users/register', {
                 method: 'POST',
                 headers: {
-                    'Authorization': token,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(newUser),
@@ -116,14 +116,13 @@ const AdminPage = () => {
     const handleDeleteUser = async (userId) => {
         const confirmDelete = window.confirm(`Are you sure you want to delete User ID: ${userId}?`);
         if (!confirmDelete) {
-            return; // Exit if the user cancels the action
+            return; 
         }
-    
         try {
             const response = await fetch(`/api/users/delete/${userId}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': token,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -133,7 +132,6 @@ const AdminPage = () => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
     
-            // Remove the deleted user from the table
             setUserTable((prev) => prev.filter((user) => user.ID !== userId));
             alert('User deleted successfully!');
         } catch (error) {

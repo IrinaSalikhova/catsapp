@@ -4,7 +4,6 @@ const User = require('../model/User');
 const jwt = require("jsonwebtoken");
 
 const router = express.Router();
-const crypto = require('crypto');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -20,34 +19,18 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-router.post('/register', async (req, res) => {
-    
-    const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-
+router.post('/register', authenticateJWT, async (req, res) => { 
     try {
-
-        const session = await User.authenticateToken(token);
-        if (!session) {
-            return res.status(401).json({ message: 'Invalid or expired token' });
-        }
-
- 
-        const currentUser = await User.findById(session.UserID);
-        if (currentUser.Role !== 'admin') {
+        if (req.userFromToken.role !== 'admin') {
             return res.status(403).json({ message: 'User does not have rights for this action' });
         }
+        const { email, name, lastName, jobTitle, role, password} = req.body;
+        const createdBy = req.userFromToken.id;
 
-    const { email, name, lastName, jobTitle, role, password} = req.body;
-    const createdBy = currentUser.UserID;
+        if (!email || !name || !lastName || !role || !password) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
 
-    if (!email || !name || !lastName || !role || !password) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    }
-
-   try {
         const response = await User.create({ email, name, lastName, jobTitle, role, password, createdBy });
         res.status(201).json({ 
             message: 'User created successfully!',  
@@ -70,60 +53,35 @@ router.post('/register', async (req, res) => {
         }
         res.status(500).json({ message: 'Error creating user', error: err.message });
     }
-} catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: 'Error validating token' });
-}
 });
 
-router.delete('/delete/:id', async (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-
+router.delete('/delete/:id', authenticateJWT, async (req, res) => { 
     try {
-        // Validate the token and fetch the user's ID
-        const session = await User.authenticateToken(token);
-        if (!session) {
-            return res.status(401).json({ message: 'Invalid or expired token' });
-        }
-
-        // Fetch current user details using the userId from the session
-        const currentUser = await User.findById(session.UserID);
-        if (currentUser.Role !== 'admin') {
+        if (req.userFromToken.role !== 'admin') {
             return res.status(403).json({ message: 'User does not have rights for this action' });
         }
-
-        const userIdToDelete = req.params.id; // Get the ID of the user to delete from the request parameters
-
+        
+        const userIdToDelete = req.params.id;
         if (!userIdToDelete) {
             return res.status(400).json({ message: 'User ID is required' });
         }
-
-        try {
-            const deleteResult = await User.deleteById(userIdToDelete);
-            res.status(200).json({
-                message: 'User deleted successfully',
-                userId: deleteResult.userId,
-            });
-        } catch (err) {
-            console.error(err);
-            if (err.message === 'No user found with the provided ID') {
-                return res.status(404).json({ message: 'User not found' });
-            }
-            res.status(500).json({ message: 'Error deleting user', error: err.message });
-        }
+        
+        const deleteResult = await User.deleteById(userIdToDelete);
+        res.status(200).json({
+            message: 'User deleted successfully',
+            userId: deleteResult.userId,
+        });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: 'Error validating token' });
+        if (err.message === 'No user found with the provided ID') {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(500).json({ message: 'Error deleting user', error: err.message });
     }
 });
 
-// Login user and return token and role
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-
     if (!email || !password) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -136,12 +94,10 @@ router.post('/login', async (req, res) => {
         if (!user.IsEnable) {
             return res.status(403).json({ message: 'User account is disabled' });
         }
-
         const isMatch = await bcrypt.compare(password, user.PasswordHash);
         if (!isMatch) {
              return res.status(400).json({ message: 'Invalid credentials' });
          }
-
         
         const token = jwt.sign({ 
             id: user.UserID,
@@ -163,24 +119,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Logout user and remove token
-router.post('/logout', async (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-
-    if (!token) {
-        return res.status(400).json({ message: 'Token is required' });
-    }
-
-    try {
-        // Delete the session from the database
-        await User.deleteSession(token);
-        res.status(200).json({ message: 'Logged out successfully' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Error logging out', error: err.message });
-    }
-});
-
 router.get('/current', authenticateJWT, async (req, res) => {
     res.status(200).json({
         name: req.userFromToken.name,
@@ -189,9 +127,7 @@ router.get('/current', authenticateJWT, async (req, res) => {
         });
 });
 
-
 router.get('/usertable', authenticateJWT, async (req, res) => {
-   
     try {
         if (req.userFromToken.role !== 'admin') {
             return res.status(403).json({ message: 'User does not have rights to access this table' });
