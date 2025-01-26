@@ -70,9 +70,6 @@ class User {
         });
     }
 
-    static async comparePassword(inputPassword, storedPasswordHash) {
-        return bcrypt.compare(inputPassword, storedPasswordHash);
-    }
 
     static async createSession(userId, token) {
         const query = 'INSERT INTO Sessions (userId, token, expiresAt) VALUES (?, ?, ?)';

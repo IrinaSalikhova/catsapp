@@ -1,4 +1,5 @@
 // catsserver.js
+require("dotenv").config();
 const express = require('express');
 const cors = require('cors');
 
@@ -20,7 +21,6 @@ app.use('/api/users', userRoutes);
 app.get('/api/hello', (req, res) => {
     res.json({ message: "Hello, cats! Lets make map!!" });
 });
-
 
 // Fallback for React routes
 app.get('*', (req, res) => {

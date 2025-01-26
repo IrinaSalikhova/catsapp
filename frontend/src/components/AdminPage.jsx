@@ -8,18 +8,19 @@ const AdminPage = () => {
 
 
     const token = localStorage.getItem('token');
-    if (!token) {
-        throw new Error('User not authenticated');
+    if (!token) { //add validity check
+        console.error('User not authenticated');
+        //window.location.href = '/login';
+        return null;
     }
 
     useEffect(() => {
       const fetchUser = async () => {
           try {
-  
               const response = await fetch('/api/users/current', {
                   method: 'GET',
                   headers: {
-                      'Authorization': token,
+                      'Authorization': `Bearer ${token}`,
                       'Content-Type': 'application/json',
                   },
               });
@@ -34,7 +35,7 @@ const AdminPage = () => {
                 const tableResponse = await fetch('/api/users/usertable', {
                     method: 'GET',
                     headers: {
-                        'Authorization': token,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                 });

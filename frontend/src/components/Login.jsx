@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ onClose, setIsLoggedIn }) => { 
+const Login = ({ onClose, setIsLoggedIn, setUserRole }) => { 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -9,8 +9,6 @@ const Login = ({ onClose, setIsLoggedIn }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Logging in with', email, password);
-
         try {
             const response = await fetch('/api/users/login', {
                 method: 'POST',
@@ -23,10 +21,15 @@ const Login = ({ onClose, setIsLoggedIn }) => {
             const data = await response.json();
 
             if (response.ok) {
-                // On successful login, redirect to the admin Page
-                localStorage.setItem('token', data.token); // Save token in localStorage
-                setIsLoggedIn(true); // Update login status
-                navigate('/adminpage'); // Redirect to the admin page
+                localStorage.setItem('token', data.token); 
+                localStorage.setItem('role', data.role);
+                setIsLoggedIn(true); 
+                setUserRole(data.role); 
+                if (data.role === 'admin') {
+                    navigate('/adminpage'); 
+                } else {
+                    setError('Navigator page is not ready yet');
+                }
                 onClose(); // Close the modal
             } else {
                 setError(data.message); // Show error message
@@ -50,6 +53,7 @@ const Login = ({ onClose, setIsLoggedIn }) => {
                             id="email"
                             name="email"
                             value={email}
+                            autocomplete="email"
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
@@ -60,6 +64,7 @@ const Login = ({ onClose, setIsLoggedIn }) => {
                             id="password"
                             name="password"
                             value={password}
+                            autocomplete="current-password"
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>

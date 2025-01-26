@@ -99,3 +99,40 @@
   background-color: #0056b3;
 }
 
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #282c34;
+  color: white;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-buttons button {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #61dafb;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.header-buttons button:hover {
+  background-color: #21a1f1;
+}
+
+.app-content {
+  padding: 2rem;
+  min-height: calc(100vh - 160px); /* Adjust for header and footer height */
+}
+
+.app-footer {
+  background-color: #282c34;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  bottom: 0;
+}
