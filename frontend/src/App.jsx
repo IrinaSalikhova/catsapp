@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react'; 
 import axios from 'axios';
 import './App.css';
+import MainPage from './components/MainPage';
 import Login from './components/Login';
+import AdminPage from './components/AdminPage';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Ensure React Router is imported
 
 const App = () => {
   const [message, setMessage] = useState('');
   const [count, setCount] = useState(0);
-  const [isLoginVisible, setLoginVisible] = useState(false);  // Defaulting to true to show login form
+  const [isLoginModalVisible, setLoginModalVisible] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
 
   useEffect(() => {
     axios.get('/api/hello') // Relative path works on the same domain
@@ -15,34 +19,42 @@ const App = () => {
         .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
-  const toggleLogin = () => {
-    setLoginVisible(!isLoginVisible);
+  const toggleLoginModal = () => {
+    setLoginModalVisible(!isLoginModalVisible);  // Toggle modal visibility
   };
 
   return (
     <Router>
-      <div>
-        <div>
-          <h1>Frontend Connected to Backend</h1>
-          <p>{message}</p>
-        </div>
-        <div className="card">
-          <button onClick={() => setCount(count + 1)}>
-            count is {count}
-          </button>
-        </div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <MainPage
+              message={message}
+              count={count}
+              setCount={setCount}
+              toggleLoginModal={toggleLoginModal}
+            />
+          }
+        >
+        </Route>
 
-        {/* Login Button */}
-        <button onClick={toggleLogin}>Login</button>
+        {/* Admin page route */}
+        <Route
+          path="/adminPage"
+          element={
+            isLoggedIn ? <AdminPage /> : <div>Please login first.</div>
+          }
+        />
+      </Routes>
 
-        {/* Conditional Login Form */}
-        {isLoginVisible && <Login />}
-
-        {/* Add routes to redirect after login */}
-        <Routes>
-          <Route path="/page" element={<div>Admin Page</div>} />
-        </Routes>
-      </div>
+      {/* Login modal */}
+      {isLoginModalVisible && (
+        <Login
+          onClose={toggleLoginModal}
+          setIsLoggedIn={setIsLoggedIn}
+        />
+      )}
     </Router>
   );
 };
