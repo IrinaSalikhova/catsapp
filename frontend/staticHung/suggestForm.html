@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="suggestForm.css">
+    <title>Asset Suggestion Form</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="image/carlington_icon.webp" alt="Carlington Logo" class="logo">
+            <h1>Asset Suggestion Form</h1>
+        </div>
+        <form id="suggestionForm">
+            <div class="form-grid">
+                <div>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" placeholder="Enter your name" required>
+
+                    <label for="category">Category:</label>
+                    <select id="category" title="Select a category">
+                        <option value="health-services">Health Services</option>
+                        <option value="primary-health-care">Primary Health Care</option>
+                    </select>
+
+                    <label for="description">Description:</label>
+                    <textarea id="description" placeholder="Describe your suggestion" required></textarea>
+
+                    <label for="volunteer">Volunteer Opportunities:</label>
+                    <label id="volunteer" name="volunteer"></label>
+                        <input type="checkbox" id="volunteerYes" name="volunteerYes" value="yes"> Yes
+                        <input type="checkbox" id="volunteerNo" name="volunteerNo" value="no"> No
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" placeholder="Enter address" required>
+                </div>
+                <div>
+                    <label for="city">City:</label>
+                    <input type="text" id="city" value="Ottawa" placeholder="Enter city" required>
+
+                    <label for="postal">Postal Code:</label>
+                    <input type="text" id="postal" placeholder="Enter postal code" required>
+
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" placeholder="Enter phone number" required>
+
+                    <label for="additionalPhone">Additional Phone:</label>
+                    <input type="tel" id="additionalPhone" placeholder="Enter additional phone number">
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" placeholder="Enter email address" required>
+
+                    <label for="website">Website:</label>
+                    <input type="url" id="website" placeholder="Enter website URL">
+                </div>
+            </div>
+
+            <label for="recurrence">Recurrence:</label>
+            <select id="recurrence">
+                <option value="once">Once</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+            </select>
+
+            <label for="format">Format:</label>
+            <select id="format">
+                <option value="online">Online</option>
+                <option value="in-person">In-Person</option>
+            </select>
+
+            <label>Accessibility:</label>
+            <div class="accessibility-options">
+                <input type="checkbox" id="wheelchairAccessible" name="wheelchairAccessible"> Wheelchair Accessible
+                <input type="checkbox" id="languagesOffered" name="languagesOffered"> Languages Offered
+            </div>
+
+            <label for="registrationInfo">Registration Information:</label>
+            <input type="text" id="registrationInfo" placeholder="Enter registration information">
+
+            <label for="additionalNotes">Additional Notes:</label>
+            <textarea id="additionalNotes" placeholder="Enter any additional notes"></textarea>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <script src="suggestForm.js"></script>
+</body>
+</html>

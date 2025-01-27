@@ -6,9 +6,9 @@ body {
     padding-left: 10%;
     padding-right: 10%;
     padding-bottom: 10%; /* Add some padding around the body */
-  }
-  
-  .container {
+}
+
+.container {
     display: flex;
     flex-direction: column;
     background-color: #ffffff; /* White background for the container */
@@ -17,130 +17,218 @@ body {
     overflow: hidden; /* Prevent overflow */
     width: 80%;
     margin: 0 auto;
-  }
-  
-  .header {
+}
+
+.header {
     display: flex;
     align-items: center; /* Center items vertically */
     padding: 20px;
     border-bottom: 1px solid #ccc; /* Add a separator line */
     height: 80px; /* Adjust height as needed */
-  }
-  
-  .carlingtonlogo {
+}
+
+.carlingtonlogo {
     flex-shrink: 0; /* Prevent logo from shrinking */
-  }
-  
-  .logoutlogo {
-    flex-shrink: 0; /* Prevent logo from shrinking */
-    margin-left: auto;
-    padding-left: 5%;
-  }
-  
-  .search-bar {
-    margin-left: 20px; /* Add spacing between logo and search bar */
+}
+
+.category-selection {
+    margin-left: 20px; /* Add spacing between the dropdown and the search bar */
+}
+
+.category-dropdown {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    height: 50px;
+}
+
+.search-bar {
     width: 500px;
     height: 50px;
     display: flex;
-  }
-  
-  .search-button {
+}
+
+.search-button {
     background-color: #009BEF;
     border: none;
-    padding: 10px;
+    padding: 15px;
     cursor: pointer;
-    margin-left: 10px;
     border-radius: 10px / 10px;
-  }
-  
-  .search-button i {
+}
+
+.search-button i {
     font-size: 18px;
     color: #fff;
-  }
-  
-  .search-bar {
-    left: auto;
-  }
-  
-  .search-input {
+}
+
+.search-input {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
-  }
-  
-  .main {
+}
+
+.main {
     display: flex; /* Use flexbox to align sidebar and mapcontainer */
     width: 100%; /* Ensure the main div takes full width */
-  }
-  
-  .sidebar {
+}
+
+.sidebar {
     width: 30%; /* Adjust width as needed */
     padding: 20px;
-  }
-  
-  .mapcontainer {
+}
+
+.mapcontainer {
     width: 70%; /* Adjust width as needed */
     padding: 20px;
     padding-right: 40px;
     padding-top: 2%;
-  }
-  
-  .map {
+}
+
+.map {
     width: 100%;
     height: 98%;
     border: 1px solid #ccc;
     border-radius: 5px;
-  }
-  
-  .title {
+}
+
+.title {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
-  }
-  
-  .filter-buttons {
+}
+
+.filter-buttons {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
-  }
-  
-  .filter-button {
+}
+
+.filter-button {
     padding: 10px 20px;
     border: 1px solid #ccc;
     border-radius: 10px / 10px; /* Set horizontal and vertical radii */
     background-color: #fff;
     cursor: pointer;
-  }
-  
-  .listing {
+}
+
+.listing {
     border: 1px solid #ccc;
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 5px;
-  }
-  
-  .listing-title {
+}
+
+.listing-title {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 5px;
-  }
-  
-  .listing-info {
+}
+
+.listing-info {
     display: flex;
     align-items: center;
     margin-bottom: 5px;
-  }
-  
-  .listing-icon {
+}
+
+.listing-icon {
     margin-right: 10px;
-  }
-  
-  .listing-details {
+}
+
+.listing-details {
     margin-left: 10px;
-  }
-  
-  .listing-rating {
+}
+
+.listing-rating {
     color: #ffc107;
-  }
+}
+
+/* Footer Styles */
+footer {
+    background-color: #009BEF; /* Updated footer color to match the website */
+    padding: 20px;
+    text-align: center; /* Center the text */
+    border-top: 1px solid #ccc; /* Add a top border */
+    bottom: 0;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+}
+
+.footer-content {
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-content p {
+    margin: 5px 0; /* Add margin for spacing */
+    
+}
+
+/* Card Styles */
+.listing.card {
+    cursor: pointer; /* Change cursor to pointer */
+    transition: transform 0.2s; /* Smooth transition for hover effect */
+}
+
+.listing.card:hover {
+    transform: scale(1.02); /* Slightly enlarge the card on hover */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+}
+
+/* Button Styles */
+.auth-buttons {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    margin-left: 30%;
+}
+
+.login-button, .form-button {
+    background-color: #009BEF; /* Button background color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Padding for button */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.login-button:hover, .form-button:hover {
+    background-color: #007BB5; /* Darker shade on hover */
+}
+
+/* Overlay Styles */
+.overlay-iframe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.iframe-content {
+    width: 70%;
+    height: 80%;
+    border: none;
+    border-radius: 10px; /* Rounded corners for the iframe */
+}
+
+.close-btn {
+    position: absolute;
+    top: 16%;
+    right: 17%;
+    font-size: 18px;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+}
