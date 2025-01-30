@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../model/User');
 const jwt = require("jsonwebtoken");
+const sendEmail = require("../emailService");
 
 const router = express.Router();
 
@@ -85,6 +86,18 @@ router.post('/login', async (req, res) => {
     if (!email || !password) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
+    sendEmail(
+        email, 
+        "Welcome to Community Asset Map App!", 
+        "welcome",
+        {
+            name: "this name",
+            setupLink: "https://catsformap.uc.r.appspot.com",
+        }
+    )
+    .then(() => console.log("✅ Test email sent!"))
+    .catch((err) => console.error("❌ Error:", err));
+
 
     try {
         const user = await User.findByEmail(email);
@@ -94,10 +107,10 @@ router.post('/login', async (req, res) => {
         if (!user.IsEnable) {
             return res.status(403).json({ message: 'User account is disabled' });
         }
-        // const isMatch = await bcrypt.compare(password, user.PasswordHash);
-        // if (!isMatch) {
-        //      return res.status(400).json({ message: 'Invalid credentials' });
-        //  }
+        const isMatch = await bcrypt.compare(password, user.PasswordHash);
+        if (!isMatch) {
+          return res.status(400).json({ message: 'Invalid credentials' });
+        }
         
         const token = jwt.sign({ 
             id: user.UserID,

@@ -129,10 +129,3 @@
   min-height: calc(100vh - 160px); /* Adjust for header and footer height */
 }
 
-.app-footer {
-  background-color: #282c34;
-  color: white;
-  text-align: center;
-  padding: 1rem;
-  bottom: 0;
-}

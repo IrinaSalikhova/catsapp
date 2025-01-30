@@ -3,6 +3,11 @@ runtime: nodejs22
 env: standard
 instance_class: F1
  
+env_variables:
+  JWT_SECRET: "ourCATSforMAPteam@Irina@Hung@Sam@Mahima@Luc!"
+  EMAIL: "catsformapapp@gmail.com"
+  EMAIL_PASSWORD: "thdm tkqy syqh cwgk"
+
 handlers:
 
   # Serve React app's static files
