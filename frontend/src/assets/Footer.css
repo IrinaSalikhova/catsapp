@@ -1,11 +1,11 @@
 footer {
-    background-color: #009BEF; /* Updated footer color to match the website */
+    background-color: #009BEF; 
     padding: 20px;
-    text-align: center; /* Center the text */
-    border-top: 1px solid #ccc; /* Add a top border */
+    text-align: center;
+    border-top: 1px solid #ccc; 
     bottom: 0;
     width: 100%;
-    position: fixed;
+    position: relative;
     left: 0;
     right: 0;
 }
