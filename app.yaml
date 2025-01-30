@@ -1,8 +1,15 @@
+# app.yaml
 runtime: nodejs22
 env: standard
 instance_class: F1
-
+ 
 handlers:
+
+  # Serve React app's static files
+  - url: /(.*\.(js|css|png|jpg|svg|ico|json|txt|woff2?))
+    static_files: frontend/dist/\1
+    upload: frontend/dist/.*
+
   # Route API requests to Node.js backend
   - url: /api/.*
     script: auto
@@ -12,8 +19,6 @@ handlers:
     static_files: frontend/dist/index.html
     upload: frontend/dist/index.html
 
-  # Serve React app's static files
-  - url: /
-    static_dir: frontend/dist
+
 
   
