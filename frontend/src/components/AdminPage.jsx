@@ -61,7 +61,7 @@ const AdminPage = () => {
 
     // Function to get creator's details by ID
     const getCreatorDetails = (creatorId) => {
-        if (!creatorId) return 'N/A'; // Handle null or undefined values
+        if (!creatorId) return 'Unknown'; // Handle null or undefined values
         const creator = userTable.find((user) => user.ID === creatorId);
         return creator ? `${creator.Role} - ${creator.Name} ${creator.LastName}` : 'Unknown';
     };

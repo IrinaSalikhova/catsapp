@@ -11,7 +11,7 @@ env_variables:
 handlers:
 
   # Serve React app's static files
-  - url: /(.*\.(js|css|png|jpg|svg|ico|json|txt|woff2?))
+  - url: /(.*\.(js|css|png|jpg|svg|ico|webp|json|txt|woff2?))
     static_files: frontend/dist/\1
     upload: frontend/dist/.*
 

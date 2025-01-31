@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ onClose, setIsLoggedIn, setUserRole }) => { 
+const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();  // For routing to other pages after login
+    const [isForgotPassword, setIsForgotPassword] = useState(false); // State to toggle between login and forgot password
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,12 +22,12 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
             const data = await response.json();
 
             if (response.ok) {
-                localStorage.setItem('token', data.token); 
+                localStorage.setItem('token', data.token);
                 localStorage.setItem('role', data.role);
-                setIsLoggedIn(true); 
-                setUserRole(data.role); 
+                setIsLoggedIn(true);
+                setUserRole(data.role);
                 if (data.role === 'admin') {
-                    navigate('/adminpage'); 
+                    navigate('/adminpage');
                 } else {
                     setError('Navigator page is not ready yet');
                 }
@@ -40,12 +41,41 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
         }
     };
 
+    const handleForgotPassword = async () => {
+        if (!email) {
+            setError('Please enter your email address.');
+            return;
+        }
+
+        try {
+            console.log('Sending password reset email...');
+            const response = await fetch('/api/sendpasswordreset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await response.json();
+            console.log('Sent password reset email...', data);
+            if (response.ok) {
+                setError('Password reset email sent. Please check your inbox.');
+            } else {
+                setError(data.message || 'Failed to send password reset email.');
+            }
+        } catch (error) {
+            setError('An error occurred while sending the password reset email.');
+            console.error(error);
+        }
+    };
+
     return (
         <div className="modal-overlay">
             <div className="login-form-modal">
                 <button className="close-btn" onClick={onClose}>X</button>
-                <h2>Login</h2>
-                <form onSubmit={handleSubmit}>
+                <h2>{isForgotPassword ? 'Reset Password' : 'Login'}</h2>
+                <form onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit}>
                     <div>
                         <label htmlFor="email">Email</label>
                         <input
@@ -53,24 +83,44 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
                             id="email"
                             name="email"
                             value={email}
-                            autocomplete="email"
+                            autoComplete="email"
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
-                    <div>
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={password}
-                            autocomplete="current-password"
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <button type="submit">Submit</button>
+                    {!isForgotPassword && (
+                        <div>
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={password}
+                                autoComplete="current-password"
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+                    )}
+                    <button type="submit">
+                        {isForgotPassword ? 'Send Reset Link' : 'Submit'}
+                    </button>
                 </form>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {!isForgotPassword && (
+                    <p
+                        style={{ color: 'blue', cursor: 'pointer', textAlign: 'center' }}
+                        onClick={() => setIsForgotPassword(true)}
+                    >
+                        Forgot Password?
+                    </p>
+                )}
+                {isForgotPassword && (
+                    <p
+                        style={{ color: 'blue', cursor: 'pointer', textAlign: 'center' }}
+                        onClick={() => setIsForgotPassword(false)}
+                    >
+                        Back to Login
+                    </p>
+                )}
+                {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
             </div>
         </div>
     );

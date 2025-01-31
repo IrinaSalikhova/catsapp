@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const Header = ({ isLoggedIn, userRole, onLogout, toggleLoginModal }) => {
+const Header = ({ isLoggedIn, userRole, onLogout, toggleLoginModal, toggleNewAssetModal }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -22,6 +22,7 @@ const Header = ({ isLoggedIn, userRole, onLogout, toggleLoginModal }) => {
           </button>
         )}
         {isLoggedIn && <button onClick={onLogout}>Logout</button>}
+        <button onClick={toggleNewAssetModal}>Add New Asset</button>
       </div>
     </header>
   );

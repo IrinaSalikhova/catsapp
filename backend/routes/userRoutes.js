@@ -2,23 +2,58 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../model/User');
 const jwt = require("jsonwebtoken");
-const sendEmail = require("../emailService");
+const {sendEmail, sendPasswordResetEmail} = require("../emailService");
+const {authenticateJWT, generatePasswordResetToken } = require("../middleware");
 
 const router = express.Router();
-
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Middleware to check JWT
-const authenticateJWT = (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ error: "Token required" });
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ error: "Invalid token" });
-        req.userFromToken = user;
-        next();
-    });
-};
+router.post('/changepassword/:token', async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { newPassword } = req.body;
+        if (!newPassword) {
+            return res.status(400).json({ message: 'New password is required' });
+        }
+
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const userId = decoded.userId;
+
+        await User.changePassword(userId, newPassword, userId);
+
+        res.status(200).json({ message: 'Password changed successfully' });
+    } catch (err) {
+        console.error(err);
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expired' });
+        }
+        res.status(500).json({ message: 'Error changing password', error: err.message });
+    }
+
+});
+
+router.post('/sendpasswordreset', async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+        
+        const user = await User.findByEmail(email);
+        if (!user) {
+            res.status(200).json({ message: 'Password reset email sent' });
+        }
+
+        const token = generatePasswordResetToken(user.ID);
+        await sendPasswordResetEmail(email, token);
+
+        res.status(200).json({ message: 'Password reset email sent' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error sending password reset email', error: err.message });
+    }
+});
 
 router.post('/register', authenticateJWT, async (req, res) => { 
     try {
@@ -27,16 +62,30 @@ router.post('/register', authenticateJWT, async (req, res) => {
         }
         const { email, name, lastName, jobTitle, role, password} = req.body;
         const createdBy = req.userFromToken.id;
+        console.log(createdBy);
 
         if (!email || !name || !lastName || !role || !password) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
         const response = await User.create({ email, name, lastName, jobTitle, role, password, createdBy });
+
+        sendEmail(
+            email, 
+            "Welcome to Community Asset Map App!", 
+            "welcome",
+            {
+                name: "this name",
+                setupLink: "https://catsformap.uc.r.appspot.com", //here i want this link to be user-specific 
+            }
+        )
+        .then(() => console.log("✅ Test email sent!"))
+        .catch((err) => console.error("❌ Error:", err));
+
         res.status(201).json({ 
             message: 'User created successfully!',  
             user: {
-                ID: response.insertId,
+                ID: response.userId,
                 Email: email,
                 Name: name,
                 LastName: lastName,
@@ -86,6 +135,7 @@ router.post('/login', async (req, res) => {
     if (!email || !password) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
+    //will be removed, here for test
     sendEmail(
         email, 
         "Welcome to Community Asset Map App!", 
@@ -111,9 +161,8 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
           return res.status(400).json({ message: 'Invalid credentials' });
         }
-        
         const token = jwt.sign({ 
-            id: user.UserID,
+            id: user.ID,
             name: user.Name,
             lastName: user.LastName,
             role: user.Role

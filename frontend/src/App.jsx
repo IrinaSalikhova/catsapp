@@ -6,7 +6,9 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import MainPage from './components/MainPage';
 import Login from './components/Login';
+import AddAssetForm from './components/AddAssetForm';
 import AdminPage from './components/AdminPage';
+import ResetPasswordPage from './components/ResetPasswordPage';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
 
 
@@ -14,6 +16,7 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [count, setCount] = useState(0);
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
+  const [isNewAssetModalVisible, setNewAssetModalVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState('');
 
@@ -37,6 +40,10 @@ const App = () => {
     setLoginModalVisible(!isLoginModalVisible);  // Toggle modal visibility
   };
 
+  const toggleNewAssetModal = () => {
+    setNewAssetModalVisible(!isNewAssetModalVisible);  // Toggle modal visibility
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token'); 
     localStorage.removeItem('role'); 
@@ -51,6 +58,7 @@ const App = () => {
         userRole={userRole} 
         onLogout={handleLogout} 
         toggleLoginModal={toggleLoginModal}
+        toggleNewAssetModal={toggleNewAssetModal} 
       />
       <main className="app-content">
       <Routes>
@@ -73,15 +81,21 @@ const App = () => {
             isLoggedIn ? <AdminPage /> : <div>Please login first.</div>
           }
         />
+        <Route 
+          path="/reset-password/:token" 
+          element={<ResetPasswordPage />} />
       </Routes>
 
-      {/* Login modal */}
+      {/* modals */}
       {isLoginModalVisible && (
         <Login
           onClose={toggleLoginModal}
           setIsLoggedIn={setIsLoggedIn}
           setUserRole={setUserRole}
         />
+      )}
+      {isNewAssetModalVisible && (
+        <AddAssetForm onClose={toggleNewAssetModal} />
       )}
     </main>
     <Footer />
