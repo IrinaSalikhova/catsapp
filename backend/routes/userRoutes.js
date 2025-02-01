@@ -35,17 +35,19 @@ router.post('/changepassword/:token', async (req, res) => {
 
 router.post('/sendpasswordreset', async (req, res) => {
     try {
+        console.log("step1");
         const { email } = req.body;
         if (!email) {
             return res.status(400).json({ message: 'Email is required' });
         }
-        
+        console.log("step2");
         const user = await User.findByEmail(email);
         if (!user) {
             res.status(200).json({ message: 'Password reset email sent' });
         }
-
+        console.log("step3");
         const token = generatePasswordResetToken(user.ID);
+        console.log("step4");
         await sendPasswordResetEmail(email, token);
 
         res.status(200).json({ message: 'Password reset email sent' });

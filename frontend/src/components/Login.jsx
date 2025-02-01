@@ -42,6 +42,7 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
     };
 
     const handleForgotPassword = async () => {
+        
         if (!email) {
             setError('Please enter your email address.');
             return;
@@ -49,7 +50,7 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
 
         try {
             console.log('Sending password reset email...');
-            const response = await fetch('/api/sendpasswordreset', {
+            const response = await fetch('/api/users/sendpasswordreset', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,7 +59,6 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
             });
 
             const data = await response.json();
-            console.log('Sent password reset email...', data);
             if (response.ok) {
                 setError('Password reset email sent. Please check your inbox.');
             } else {
