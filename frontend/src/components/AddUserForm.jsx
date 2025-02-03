@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const AddUserForm = ({ onClose, onSave }) => {
+const AddUserForm = ({ onClose, onSave, userData }) => {
     const [formData, setFormData] = useState({
         email: '',
         name: '',
         lastName: '',
         jobTitle: '',
-        role: '',
-        password: '',
+        role: ''
     });
+
+    useEffect(() => {
+        if (userData) {
+            setFormData({
+                email: userData.Email || '',
+                name: userData.Name || '',
+                lastName: userData.LastName || '',
+                jobTitle: userData.JobTitle || '',
+                role: userData.Role || '',
+            });
+        }
+    }, [userData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -23,94 +34,76 @@ const AddUserForm = ({ onClose, onSave }) => {
 
     return (
         <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px', marginTop: '20px' }}>
-            <h2>Add New User</h2>
+            <h2>{userData ? 'Edit User' : 'Add New User'}</h2>
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Email:</label>
+                <label>Email:</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    value={formData.email} 
+                    onChange={handleChange} 
+                    style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
+                    required 
+                />
+                
+                <label>Name:</label>
+                <input 
+                    type="text" 
+                    name="name" 
+                    value={formData.name} 
+                    onChange={handleChange} 
+                    style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
+                    required 
+                />
+
+                <label>Last Name:</label>
+                <input 
+                    type="text" 
+                    name="lastName" 
+                    value={formData.lastName} 
+                    onChange={handleChange}
+                    style={{ marginLeft: '10px', padding: '5px', width: '200px' }} 
+                    required 
+                />
+
+                <label>Job Title:</label>
+                <input 
+                    type="text" 
+                    name="jobTitle" 
+                    value={formData.jobTitle} 
+                    onChange={handleChange} 
+                    style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
+                    required
+                />
+
+                <label>Role:</label>
+                <label>
+                    <input 
+                        type="radio" 
+                        name="role" 
+                        value="navigator"
+                        checked={formData.role === 'navigator'}
+                        onChange={handleChange} 
+                        style={{ marginRight: '5px' }}
+                        required 
+                    />
+                    Navigator
+                </label>
+                <label>
                     <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
+                        type="radio"
+                        name="role"
+                        value="admin"
+                        checked={formData.role === 'admin'}
                         onChange={handleChange}
-                        style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
+                        style={{ marginRight: '5px' }}
                         required
                     />
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Name:</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
-                        required
-                    />
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Last Name:</label>
-                    <input
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
-                        required
-                    />
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Job Title:</label>
-                    <input
-                        type="text"
-                        name="jobTitle"
-                        value={formData.jobTitle}
-                        onChange={handleChange}
-                        style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
-                        required
-                    />
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Role:</label>
-                    <div style={{ marginLeft: '10px' }}>
-                        <label>
-                            <input
-                                type="radio"
-                                name="role"
-                                value="navigator"
-                                checked={formData.role === 'navigator'}
-                                onChange={handleChange}
-                                style={{ marginRight: '5px' }}
-                                required
-                            />
-                            Navigator
-                        </label>
-                        <label style={{ marginLeft: '15px' }}>
-                            <input
-                                type="radio"
-                                name="role"
-                                value="admin"
-                                checked={formData.role === 'admin'}
-                                onChange={handleChange}
-                                style={{ marginRight: '5px' }}
-                                required
-                            />
-                            Admin
-                        </label>
-                    </div>
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Initial password:</label>
-                    <input
-                        type="text"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
-                        required
-                    />
-                </div>
-                <button
-                    type="submit"
+                    Admin
+                </label>
+
+                <button 
+                    type="submit" 
                     style={{
                         padding: '10px 20px',
                         backgroundColor: '#28A745',
@@ -120,11 +113,11 @@ const AddUserForm = ({ onClose, onSave }) => {
                         cursor: 'pointer',
                     }}
                 >
-                    Save
+                    {userData ? 'Save Changes' : 'Save'}
                 </button>
-                <button
-                    type="button"
-                    onClick={onClose}
+                <button 
+                    type="button" 
+                    onClick={onClose} 
                     style={{
                         marginLeft: '10px',
                         padding: '10px 20px',
@@ -135,8 +128,8 @@ const AddUserForm = ({ onClose, onSave }) => {
                         cursor: 'pointer',
                     }}
                 >
-                    Cancel
-                </button>
+                Cancel
+                </button>    
             </form>
         </div>
     );

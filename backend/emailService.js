@@ -40,15 +40,15 @@ const sendEmail = async (to, subject, templateName, data) => {
     }
 };
 
-const sendPasswordResetEmail = async (email, token) => {
+const sendPasswordResetEmail = async (email, name, token, type = "passwordReset") => {
     const resetLink = `https://catsformap.uc.r.appspot.com/reset-password/${token}`;
+    const subject = type === "welcome" ? "Welcome!" : "Password Reset Request";
+    
     await sendEmail(
         email,
-        "Password Reset Request",
-        "passwordReset",
-        {
-            resetLink: resetLink,
-        }
+        subject,
+        type,
+        { name, resetLink }
     );
 };
 

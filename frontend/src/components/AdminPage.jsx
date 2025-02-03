@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import AddUserForm from './AddUserForm';
 
 const AdminPage = () => {
     const [user, setUser] = useState(null); 
     const [userTable, setUserTable] = useState([]);
     const [showAddUserForm, setShowAddUserForm] = useState(false); 
+    const [editingUser, setEditingUser] = useState(null); 
+    const formRef = useRef(null);
 
 
     const token = localStorage.getItem('token');
@@ -68,49 +70,129 @@ const AdminPage = () => {
 
      // Action handlers
      const handleAddUser = () => {
+        setEditingUser(null);
         setShowAddUserForm(true);
+        setTimeout(() => {
+            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     };
     
-    const handleSaveUser = async (newUser) => {
+    const handleSaveUser = async (userData) => {
         try {
-            const response = await fetch('/api/users/register', {
+            const url = editingUser ? `/api/users/update/${editingUser.ID}` : '/api/users/register';
+            const method = editingUser ? 'PATCH' : 'POST';
+    
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+    
+            if (!response.ok) {
+                alert(editingUser ? 'User update failed' : 'User creation failed');
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            // **Re-fetch user table to get the latest data**
+            const tableResponse = await fetch('/api/users/usertable', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            if (!tableResponse.ok) {
+                throw new Error(`HTTP error! Status: ${tableResponse.status}`);
+            }
+    
+            const tableData = await tableResponse.json();
+            setUserTable(tableData.users); // **Ensure UI gets fresh data from backend**
+    
+            alert(editingUser ? 'User updated successfully!' : 'User added successfully!');
+            setShowAddUserForm(false);
+            setEditingUser(null);
+        } catch (error) {
+            console.error('Error saving user:', error);
+        }
+    };
+
+    const handleDeactivateActivate = async (userId, isActive) => {
+        const confirmAction = window.confirm(
+            `Are you sure you want to ${isActive ? 'deactivate' : 'activate'} User ID: ${userId}?`
+        );
+    
+        if (!confirmAction) return;
+    
+        try {
+            const response = await fetch(`/api/users/togglestatus/${userId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ isEnable: !isActive }), // Toggle status
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                alert(data.message);
+                // Update UI: Refresh user table after status change
+                setUserTable((prev) =>
+                    prev.map((user) =>
+                        user.ID === userId ? { ...user, IsEnable: !isActive } : user
+                    )
+                );
+            } else {
+                alert(data.message || 'Failed to update user status.');
+            }
+        } catch (error) {
+            console.error('Error updating user status:', error);
+            alert('An error occurred while updating user status.');
+        }
+    };
+
+    const handleEditUser = (userId) => {
+        const userToEdit = userTable.find(user => user.ID === userId);
+        if (userToEdit) {
+            setEditingUser(userToEdit);
+            setShowAddUserForm(true);
+            setTimeout(() => {
+                formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    };
+
+    const handleChangePassword = async (name, lastName, email) => {
+        const confirmReset = window.confirm(`Are you sure you want to reset the password for ${name} ${lastName}?`);
+        if (!confirmReset) {
+            return;
+        }
+    
+        try {
+            const response = await fetch('/api/users/sendpasswordreset', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newUser),
+                body: JSON.stringify({ email })
             });
     
-            if (!response.ok) {
-                alert('User creation failed');
-                throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+            if (response.ok) {
+                alert(`Password reset email sent to ${email}.`);
+            } else {
+                alert(data.message || 'Failed to send password reset email.');
             }
-    
-            const responseBody = await response.json(); 
-            const createdUser = responseBody.user;
-            console.log(createdUser);
-            setUserTable((prev) => [...prev, createdUser]);
-            setShowAddUserForm(false);
-            alert('User added successfully!');
         } catch (error) {
-            console.error('Error adding user:', error);
+            console.error('Error sending password reset email:', error);
+            alert('An error occurred while sending the password reset email.');
         }
-    };
-
-    const handleDeactivateActivate = (userId, isActive) => {
-        alert(`${isActive ? 'Deactivate' : 'Activate'} User ID: ${userId}`);
-        // Implement deactivate/activate functionality here
-    };
-
-    const handleEditUser = (userId) => {
-        alert(`Edit User ID: ${userId}`);
-        // Implement edit user functionality here
-    };
-
-    const handleChangePassword = (userId) => {
-        alert(`Change Password for User ID: ${userId}`);
-        // Implement change password functionality here
     };
 
     const handleDeleteUser = async (userId) => {
@@ -174,14 +256,16 @@ const AdminPage = () => {
             </button>
 
             {showAddUserForm && (
-                <AddUserForm
-                    onClose={() => setShowAddUserForm(false)} // Close the form
-                    onSave={handleSaveUser} // Handle user saving
-                />
+                <div ref={formRef}>
+                    <AddUserForm
+                        onClose={() => setShowAddUserForm(false)}
+                        onSave={handleSaveUser}
+                        userData={editingUser}
+                    />
+                </div>
             )}
-            </div>
-
-           
+        </div>
+        
             <h2>All Users Table</h2>
             <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
                 <thead>
@@ -240,7 +324,7 @@ const AdminPage = () => {
                                     Edit
                                 </button>
                                 <button
-                                    onClick={() => handleChangePassword(user.ID)}
+                                    onClick={() => handleChangePassword(user.Name, user.LastName, user.Email)}
                                     style={{
                                         padding: '5px 10px',
                                         backgroundColor: '#DC3545',

@@ -8,6 +8,51 @@ const {authenticateJWT, generatePasswordResetToken } = require("../middleware");
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
+router.patch('/update/:id', authenticateJWT, async (req, res) => {
+    try {
+        const userIdToUpdate = req.params.id;
+        const updates = req.body;
+        const initiatorId = req.userFromToken.id;
+
+        if (req.userFromToken.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied: Admins only' });
+        }
+
+        if (!userIdToUpdate || !updates || Object.keys(updates).length === 0) {
+            return res.status(400).json({ message: 'Invalid request: No fields to update' });
+        }
+
+        const response = await User.update(userIdToUpdate, updates, initiatorId);
+
+        res.status(200).json(response);
+    } catch (err) {
+        console.error('Error updating user:', err);
+        res.status(500).json({ message: 'Error updating user', error: err.message });
+    }
+});
+
+
+router.patch('/togglestatus/:id', authenticateJWT, async (req, res) => {
+    try {
+        if (req.userFromToken.role !== 'admin') {
+            return res.status(403).json({ message: 'User does not have rights for this action' });
+        }
+
+        const userId = req.params.id;
+        const { isEnable } = req.body; 
+
+        if (typeof isEnable !== 'boolean') {
+            return res.status(400).json({ message: 'Invalid status value' });
+        }
+
+        const result = await User.toggleUserStatus(userId, isEnable);
+
+        res.status(200).json({ message: result.message });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error updating user status', error: err.message });
+    }
+});
 
 router.post('/changepassword/:token', async (req, res) => {
     try {
@@ -35,20 +80,16 @@ router.post('/changepassword/:token', async (req, res) => {
 
 router.post('/sendpasswordreset', async (req, res) => {
     try {
-        console.log("step1");
         const { email } = req.body;
         if (!email) {
             return res.status(400).json({ message: 'Email is required' });
         }
-        console.log("step2");
         const user = await User.findByEmail(email);
         if (!user) {
             res.status(200).json({ message: 'Password reset email sent' });
         }
-        console.log("step3");
-        const token = generatePasswordResetToken(user.ID);
-        console.log("step4");
-        await sendPasswordResetEmail(email, token);
+        const token = await generatePasswordResetToken(user.ID);
+        await sendPasswordResetEmail(email, user.Name, token);
 
         res.status(200).json({ message: 'Password reset email sent' });
     } catch (err) {
@@ -62,27 +103,19 @@ router.post('/register', authenticateJWT, async (req, res) => {
         if (req.userFromToken.role !== 'admin') {
             return res.status(403).json({ message: 'User does not have rights for this action' });
         }
-        const { email, name, lastName, jobTitle, role, password} = req.body;
+        const { email, name, lastName, jobTitle, role} = req.body;
         const createdBy = req.userFromToken.id;
-        console.log(createdBy);
 
-        if (!email || !name || !lastName || !role || !password) {
+        if (!email || !name || !lastName || !role ) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
-        const response = await User.create({ email, name, lastName, jobTitle, role, password, createdBy });
+        const response = await User.create({ email, name, lastName, jobTitle, role, createdBy });
 
-        sendEmail(
-            email, 
-            "Welcome to Community Asset Map App!", 
-            "welcome",
-            {
-                name: "this name",
-                setupLink: "https://catsformap.uc.r.appspot.com", //here i want this link to be user-specific 
-            }
-        )
-        .then(() => console.log("✅ Test email sent!"))
-        .catch((err) => console.error("❌ Error:", err));
+        const token = await generatePasswordResetToken(response.userId);
+        sendPasswordResetEmail(email, name, token, 'welcome');
+
+    
 
         res.status(201).json({ 
             message: 'User created successfully!',  
@@ -93,7 +126,7 @@ router.post('/register', authenticateJWT, async (req, res) => {
                 LastName: lastName,
                 JobTitle: jobTitle,
                 Role: role,
-                IsEnable: true,
+                IsEnable: false,
                 CreateDate: new Date(),
                 CreatedBy: createdBy,
             }
@@ -137,19 +170,6 @@ router.post('/login', async (req, res) => {
     if (!email || !password) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
-    //will be removed, here for test
-    sendEmail(
-        email, 
-        "Welcome to Community Asset Map App!", 
-        "welcome",
-        {
-            name: "this name",
-            setupLink: "https://catsformap.uc.r.appspot.com",
-        }
-    )
-    .then(() => console.log("✅ Test email sent!"))
-    .catch((err) => console.error("❌ Error:", err));
-
 
     try {
         const user = await User.findByEmail(email);

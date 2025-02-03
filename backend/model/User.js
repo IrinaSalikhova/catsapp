@@ -22,7 +22,7 @@ const userSchema = Joi.object({
 });
 
 class User {
-    static async create({ email, name, lastName, jobTitle, role, password, createdBy }) {
+    static async create({ email, name, lastName, jobTitle, role, createdBy }) {
         try {
             const { error, value } = userSchema.validate({
                 email, 
@@ -30,7 +30,6 @@ class User {
                 lastName, 
                 jobTitle, 
                 role, 
-                password, 
                 createdBy
             });
             if (error) {
@@ -42,10 +41,9 @@ class User {
                 throw new Error("A user with this email already exists");
             }
 
-            const passwordHash = await bcrypt.hash(value.password, 10);
             const query = `
-                INSERT INTO Users (Email, Name, LastName, JobTitle, Role, PasswordHash, IsEnable, CreatedBy, LastupdateBy)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Users (Email, Name, LastName, JobTitle, Role, IsEnable, CreatedBy, LastupdateBy)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const result = await queryAsync(
@@ -56,7 +54,6 @@ class User {
                     value.lastName, 
                     value.jobTitle || null,
                     value.role, 
-                    passwordHash, 
                     value.isEnable, 
                     value.createdBy || null, 
                     value.createdBy || null, 
