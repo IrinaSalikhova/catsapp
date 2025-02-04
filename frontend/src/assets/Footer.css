@@ -1,17 +1,17 @@
 footer {
-    background-color: #009BEF; 
+    background-color: #ffffff; /* Updated footer color to match the website */
     padding: 20px;
-    text-align: center;
-    border-top: 1px solid #ccc; 
+    text-align: center; /* Center the text */
+    border-top: 1px solid #ccc; /* Add a top border */
     bottom: 0;
     width: 100%;
-    position: relative;
+    position: fixed;
     left: 0;
     right: 0;
 }
 
 .footer-content {
-    color: #fff;
+    color: #09579d;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -19,7 +19,7 @@ footer {
 }
 
 .footer-content a{
-    color: #fff;
+    color: #09579d;
 }
 
 .footer-content img{

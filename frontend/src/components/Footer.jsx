@@ -1,10 +1,9 @@
-// Footer.jsx
 import React from 'react';
-import '../assets/Footer.css';
-const facebookIcon = '/facebook_logo.png';
-const twitterIcon = '/x_logo.png';
-const instagramIcon = '/instagram_logo.png';
-const websiteIcon = '/web_logo.png';
+import './Footer.css';
+import facebookIcon from '../assets/facebook_logo.png';
+import twitterIcon from '../assets/x_logo.png';
+import instagramIcon from '../assets/instagram_logo.png';
+import websiteIcon from '../assets/web_logo.png';
 
 const Footer = () => {
   return (
