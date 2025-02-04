@@ -170,7 +170,6 @@ class User {
         }
     }
 
-
     static async update(userId, updates, initiatorId) { // raw yet, not tested
         try {
             const allowedFields = ['email', 'name', 'lastName', 'jobTitle', 'role'];
