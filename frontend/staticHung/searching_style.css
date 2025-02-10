@@ -237,7 +237,7 @@ footer {
 /* Button Styles */
 .auth-buttons {
     display: flex;
-    gap: 10px; /* Space between buttons */
+    gap: 5px; /* Space between buttons */
     margin-left: 30%;
 }
 
@@ -252,7 +252,7 @@ footer {
 }
 
 .login-button:hover, .form-button:hover {
-    background-color: #007BB5; /* Darker shade on hover */
+    background-color: #09579d; /* Darker shade on hover */
 }
 
 /* Overlay Styles */

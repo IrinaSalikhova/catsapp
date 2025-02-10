@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import AddUserForm from './AddUserForm';
+import './AdminPage.css'; // Import the new CSS file
 
 const AdminPage = () => {
     const [user, setUser] = useState(null); 
@@ -7,7 +8,6 @@ const AdminPage = () => {
     const [showAddUserForm, setShowAddUserForm] = useState(false); 
     const [editingUser, setEditingUser] = useState(null); 
     const formRef = useRef(null);
-
 
     const token = localStorage.getItem('token');
     if (!token) { //add validity check and redirection to main page 
@@ -34,20 +34,20 @@ const AdminPage = () => {
               const userData = await response.json();
               setUser(userData);
 
-                const tableResponse = await fetch('/api/users/usertable', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+              const tableResponse = await fetch('/api/users/usertable', {
+                  method: 'GET',
+                  headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                  },
+              });
 
-                if (!tableResponse.ok) {
-                    throw new Error(`HTTP error! Status: ${tableResponse.status}`);
-                }
+              if (!tableResponse.ok) {
+                  throw new Error(`HTTP error! Status: ${tableResponse.status}`);
+              }
 
-                const tableData = await tableResponse.json();
-                setUserTable(tableData.users); 
+              const tableData = await tableResponse.json();
+              setUserTable(tableData.users); 
 
           } catch (err) {
               console.error('Error fetching user data:', err);
@@ -62,7 +62,7 @@ const AdminPage = () => {
     }
 
      // Action handlers
-     const handleAddUser = () => {
+    const handleAddUser = () => {
         setEditingUser(null);
         setShowAddUserForm(true);
         setTimeout(() => {
@@ -214,137 +214,67 @@ const AdminPage = () => {
         }
     };
 
-
-
     return (
-        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+        <div className="admin-page">
             <h1>Welcome to the Admin Page</h1>
-            <div style={{ alignContent: 'left', textAlign: 'left' }}>
+            <div className="user-info">
                 <h2>Current User Information</h2>
-                <p>
-                    <strong>First Name:</strong> {user.firstName}
-                </p>
-                <p>
-                    <strong>Last Name:</strong> {user.lastName}
-                </p>
-                <p>
-                    <strong>Role:</strong> {user.role}
-                </p>
+                <p><strong>Name:</strong> {user.name}</p>
+                <p><strong>Last Name:</strong> {user.lastName}</p>
+                <p><strong>Role:</strong> {user.role}</p>
 
-                <button
-                onClick={handleAddUser}
-                style={{
-                    alignContent: 'left',
-                    margin: '20px 0',
-                    padding: '10px 20px',
-                    backgroundColor: '#007BFF',
-                    color: '#FFF',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                }}
-            >
-                Add New User
-            </button>
+                <button onClick={handleAddUser} className="button button-add">Add New User</button>
 
-            {showAddUserForm && (
-                <div ref={formRef}>
-                    <AddUserForm
-                        onClose={() => setShowAddUserForm(false)}
-                        onSave={handleSaveUser}
-                        userData={editingUser}
-                    />
-                </div>
-            )}
-        </div>
-        
+                {showAddUserForm && (
+                    <div ref={formRef}>
+                        <AddUserForm
+                            onClose={() => setShowAddUserForm(false)}
+                            onSave={handleSaveUser}
+                            userData={editingUser}
+                        />
+                    </div>
+                )}
+            </div>
+            
             <h2>All Users Table</h2>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+            <table className="user-table">
                 <thead>
                     <tr>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>ID</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Email</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Name</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Last Name</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Job Title</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Role</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Status</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Create Date</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Created By</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Last Update Date</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Last Update By</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Actions</th>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Last Name</th>
+                        <th>Job Title</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Create Date</th>
+                        <th>Created By</th>
+                        <th>Last Update Date</th>
+                        <th>Last Update By</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {userTable.map((user) => (
                         <tr key={user.id}>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.id}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.email}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.firstName}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.lastName}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.jobTitle}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.role}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.isEnable ? 'Active' : 'Inactive'}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(user.createDate).toLocaleDateString()}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.createdBy}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(user.lastUpdateDate).toLocaleDateString()}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.lastUpdateBy}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                                <button
-                                    onClick={() => handleDeactivateActivate(user.id, user.isEnable)}
-                                    style={{
-                                        marginRight: '5px',
-                                        padding: '5px 10px',
-                                        backgroundColor: user.isEnable ? '#FFC107' : '#28A745',
-                                        color: '#FFF',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    {user.isEnable ? 'Deactivate' : 'Activate'}
+                            <td>{user.id}</td>
+                            <td>{user.email}</td>
+                            <td>{user.firstName}</td>
+                            <td>{user.lastName}</td>
+                            <td>{user.jobTitle}</td>
+                            <td>{user.role}</td>
+                            <td>{user.isEnable ? 'Active' : 'Inactive'}</td>
+                            <td>{new Date(user.createDate).toLocaleDateString()}</td>
+                            <td>{user.createdBy}</td>
+                            <td>{new Date(user.lastUpdateDate).toLocaleDateString()}</td>
+                            <td>{user.lastUpdateBy}</td>
+                            <td>
+                                <button onClick={() => handleDeactivateActivate(user.id, user.isEnable)} className={`button ${user.isEnable ? 'button-deactivate' : 'button-activate'}`}>
+                                    {user.IsEnable ? 'Deactivate' : 'Activate'}
                                 </button>
-                                <button
-                                    onClick={() => handleEditUser(user.id)}
-                                    style={{
-                                        marginRight: '5px',
-                                        padding: '5px 10px',
-                                        backgroundColor: '#17A2B8',
-                                        color: '#FFF',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleChangePassword(user.firstName, user.lastName, user.email)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        backgroundColor: '#DC3545',
-                                        color: '#FFF',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    Change Password
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteUser(user.id)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        backgroundColor: '#DC3545',
-                                        color: '#FFF',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    Delete
-                                </button>
+                                <button onClick={() => handleEditUser(user.id)} className="button button-edit">Edit</button>
+                                <button onClick={() => handleChangePassword(user.firstName, user.lastName, user.email)} className="button button-edit">Change Password</button>
+                                <button onClick={() => handleDeleteUser(user.id)} className="button button-delete">Delete</button>
                             </td>
                         </tr>
                     ))}

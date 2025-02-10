@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './AddUserForm.css'; // Import the new CSS file
 
 const AddUserForm = ({ onClose, onSave, userData }) => {
     const [formData, setFormData] = useState({
@@ -33,7 +34,7 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
     };
 
     return (
-        <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px', marginTop: '20px' }}>
+        <div className="add-user-form">
             <h2>{userData ? 'Edit User' : 'Add New User'}</h2>
             <form onSubmit={handleSubmit}>
                 <label>Email:</label>
@@ -42,7 +43,6 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                     name="email" 
                     value={formData.email} 
                     onChange={handleChange} 
-                    style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
                     required 
                 />
                 
@@ -52,7 +52,6 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                     name="firstName" 
                     value={formData.firstName} 
                     onChange={handleChange} 
-                    style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
                     required 
                 />
 
@@ -62,7 +61,6 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                     name="lastName" 
                     value={formData.lastName} 
                     onChange={handleChange}
-                    style={{ marginLeft: '10px', padding: '5px', width: '200px' }} 
                     required 
                 />
 
@@ -72,7 +70,6 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                     name="jobTitle" 
                     value={formData.jobTitle} 
                     onChange={handleChange} 
-                    style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
                     required
                 />
 
@@ -84,7 +81,6 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                         value="navigator"
                         checked={formData.role === 'navigator'}
                         onChange={handleChange} 
-                        style={{ marginRight: '5px' }}
                         required 
                     />
                     Navigator
@@ -96,7 +92,6 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                         value="admin"
                         checked={formData.role === 'admin'}
                         onChange={handleChange}
-                        style={{ marginRight: '5px' }}
                         required
                     />
                     Admin
@@ -104,29 +99,14 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
 
                 <button 
                     type="submit" 
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#28A745',
-                        color: '#FFF',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
+                    className="button button-save"
                 >
                     {userData ? 'Save Changes' : 'Save'}
                 </button>
                 <button 
                     type="button" 
                     onClick={onClose} 
-                    style={{
-                        marginLeft: '10px',
-                        padding: '10px 20px',
-                        backgroundColor: '#DC3545',
-                        color: '#FFF',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
+                    className="button button-cancel"
                 >
                 Cancel
                 </button>    

@@ -17,35 +17,37 @@ const Footer = () => {
         <a href="https://www.linkedin.com/in/hưng-lai-5b9148222" target="_blank" rel="noopener">Baoshan Li</a>
       </p>
       <p>
+        <div class="social-media">
         <strong>Contact us:</strong>
-        <a href="https://www.facebook.com/Carlington-Community-Health-Centre-1744342865792993/?fref=ts" target="_blank" rel="noopener">
-          <img 
-          src={facebookIcon} 
-          alt="Facebook" 
-          style={{width: '24px', height: '24px'}}
-          />
-        </a>
-        <a href="https://x.com/CarlingtonCHC?mx=2" target="_blank" rel="noopener">
-        <img 
-          src={twitterIcon}  
-          alt="Twitter" 
-          style={{width: '24px', height: '24px'}}
-          />
-          </a>
-        <a href="https://www.instagram.com/carlingtonchc/" target="_blank" rel="noopener">
-        <img 
-          src={instagramIcon} 
-          alt="Instagram" 
-          style={{width: '24px', height: '24px'}}
-          />
-          </a> 
-        <a href="https://carlingtonchc.com" target="_blank" rel="noopener">
-        <img 
-          src={websiteIcon} 
-          alt="Website" 
-          style={{width: '24px', height: '24px'}}
-          />
-          </a>
+                <a href="https://www.facebook.com/Carlington-Community-Health-Centre-1744342865792993/?fref=ts" target="_blank" rel="noopener">
+                          <img 
+                          src={facebookIcon} 
+                          alt="Facebook" 
+                          style={{width: '24px', height: '24px'}}
+                          />
+                        </a>
+                        <a href="https://x.com/CarlingtonCHC?mx=2" target="_blank" rel="noopener">
+                        <img 
+                          src={twitterIcon}  
+                          alt="Twitter" 
+                          style={{width: '24px', height: '24px'}}
+                          />
+                          </a>
+                        <a href="https://www.instagram.com/carlingtonchc/" target="_blank" rel="noopener">
+                        <img 
+                          src={instagramIcon} 
+                          alt="Instagram" 
+                          style={{width: '24px', height: '24px'}}
+                          />
+                          </a> 
+                        <a href="https://carlingtonchc.com" target="_blank" rel="noopener">
+                        <img 
+                          src={websiteIcon} 
+                          alt="Website" 
+                          style={{width: '24px', height: '24px'}}
+                          />
+                          </a>
+            </div>
       </p>
     </div>
   </footer>
