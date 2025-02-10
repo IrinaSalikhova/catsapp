@@ -219,7 +219,7 @@ const AdminPage = () => {
             <h1>Welcome to the Admin Page</h1>
             <div className="user-info">
                 <h2>Current User Information</h2>
-                <p><strong>Name:</strong> {user.name}</p>
+                <p><strong>Name:</strong> {user.firstName}</p>
                 <p><strong>Last Name:</strong> {user.lastName}</p>
                 <p><strong>Role:</strong> {user.role}</p>
 
@@ -269,8 +269,10 @@ const AdminPage = () => {
                             <td>{new Date(user.lastUpdateDate).toLocaleDateString()}</td>
                             <td>{user.lastUpdateBy}</td>
                             <td>
-                                <button onClick={() => handleDeactivateActivate(user.id, user.isEnable)} className={`button ${user.isEnable ? 'button-deactivate' : 'button-activate'}`}>
-                                    {user.IsEnable ? 'Deactivate' : 'Activate'}
+                                <button 
+                                    onClick={() => handleDeactivateActivate(user.id, user.isEnable)} 
+                                    className={`button ${user.isEnable ? 'button-deactivate' : 'button-activate'}`}>
+                                    {user.isEnable ? 'Deactivate' : 'Activate'}
                                 </button>
                                 <button onClick={() => handleEditUser(user.id)} className="button button-edit">Edit</button>
                                 <button onClick={() => handleChangePassword(user.firstName, user.lastName, user.email)} className="button button-edit">Change Password</button>

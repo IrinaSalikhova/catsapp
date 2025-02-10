@@ -2,14 +2,10 @@ const mysql = require('mysql2');
 
 // Create a connection to the database
 const connection = mysql.createConnection({
-    host: '34.29.63.110',
+    socketPath: `/cloudsql/${process.env.CLOUD_SQL_CONNECTION_NAME}`,
     user: 'CATSforMAP',
     password: 'CATSforMAP1234!', 
-    database: 'catmap',
-    port: 3306,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    database: 'catmap'
 });
 
 connection.connect((err) => {

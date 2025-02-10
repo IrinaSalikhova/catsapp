@@ -7,6 +7,7 @@ env_variables:
   JWT_SECRET: "ourCATSforMAPteam@Irina@Hung@Sam@Mahima@Luc!"
   EMAIL: "catsformapapp@gmail.com"
   EMAIL_PASSWORD: "thdm tkqy syqh cwgk"
+  CLOUD_SQL_CONNECTION_NAME: "catsformap:us-central1:catmap-db"
 
 handlers:
 
