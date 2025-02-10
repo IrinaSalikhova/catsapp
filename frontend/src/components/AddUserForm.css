@@ -1,0 +1,41 @@
+/* AddUserForm.css */
+
+.add-user-form {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.add-user-form h2 {
+    color: #333;
+}
+
+.add-user-form label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+.add-user-form input {
+    margin-left: 10px;
+    padding: 5px;
+    width: 200px;
+}
+
+.add-user-form .button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-user-form .button-save {
+    background-color: #28A745;
+    color: #FFF;
+}
+
+.add-user-form .button-cancel {
+    margin-left: 10px;
+    background-color: #DC3545;
+    color: #FFF;
+}

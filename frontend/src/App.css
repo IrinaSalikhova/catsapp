@@ -126,6 +126,5 @@
 
 .app-content {
   padding: 2rem;
-  min-height: calc(100vh - 160px); /* Adjust for header and footer height */
 }
 
