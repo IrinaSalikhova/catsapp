@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const AddUserForm = ({ onClose, onSave, userData }) => {
     const [formData, setFormData] = useState({
         email: '',
-        name: '',
+        firstName: '',
         lastName: '',
         jobTitle: '',
         role: ''
@@ -12,11 +12,11 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
     useEffect(() => {
         if (userData) {
             setFormData({
-                email: userData.Email || '',
-                name: userData.Name || '',
-                lastName: userData.LastName || '',
-                jobTitle: userData.JobTitle || '',
-                role: userData.Role || '',
+                email: userData.email || '',
+                firstName: userData.firstName || '',
+                lastName: userData.lastName || '',
+                jobTitle: userData.jobTitle || '',
+                role: userData.role || '',
             });
         }
     }, [userData]);
@@ -49,8 +49,8 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                 <label>Name:</label>
                 <input 
                     type="text" 
-                    name="name" 
-                    value={formData.name} 
+                    name="firstName" 
+                    value={formData.firstName} 
                     onChange={handleChange} 
                     style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
                     required 

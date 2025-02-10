@@ -12,7 +12,7 @@ const authenticateJWT = async (req, res, next) => {
         const decoded = jwt.verify(token, JWT_SECRET);
         const user = await User.findById(decoded.id); 
 
-        if (!user || !user.IsEnable) {
+        if (!user || !user.isEnable) {
             return res.status(403).json({ error: "User account is disabled or deleted" });
         }
         req.userFromToken = decoded;

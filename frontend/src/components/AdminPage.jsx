@@ -61,13 +61,6 @@ const AdminPage = () => {
         return <p>Loading...</p>; // Display a loading message while fetching user data
     }
 
-    // Function to get creator's details by ID
-    const getCreatorDetails = (creatorId) => {
-        if (!creatorId) return 'Unknown'; // Handle null or undefined values
-        const creator = userTable.find((user) => user.ID === creatorId);
-        return creator ? `${creator.Role} - ${creator.Name} ${creator.LastName}` : 'Unknown';
-    };
-
      // Action handlers
      const handleAddUser = () => {
         setEditingUser(null);
@@ -79,7 +72,7 @@ const AdminPage = () => {
     
     const handleSaveUser = async (userData) => {
         try {
-            const url = editingUser ? `/api/users/update/${editingUser.ID}` : '/api/users/register';
+            const url = editingUser ? `/api/users/update/${editingUser.id}` : '/api/users/register';
             const method = editingUser ? 'PATCH' : 'POST';
     
             const response = await fetch(url, {
@@ -134,17 +127,16 @@ const AdminPage = () => {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ isEnable: !isActive }), // Toggle status
+                body: JSON.stringify({  isEnable: !isActive }), // Toggle status
             });
     
             const data = await response.json();
     
             if (response.ok) {
                 alert(data.message);
-                // Update UI: Refresh user table after status change
                 setUserTable((prev) =>
                     prev.map((user) =>
-                        user.ID === userId ? { ...user, IsEnable: !isActive } : user
+                        user.id === userId ? { ...user,  isEnable: !isActive } : user
                     )
                 );
             } else {
@@ -157,7 +149,7 @@ const AdminPage = () => {
     };
 
     const handleEditUser = (userId) => {
-        const userToEdit = userTable.find(user => user.ID === userId);
+        const userToEdit = userTable.find(user => user.id === userId);
         if (userToEdit) {
             setEditingUser(userToEdit);
             setShowAddUserForm(true);
@@ -167,8 +159,8 @@ const AdminPage = () => {
         }
     };
 
-    const handleChangePassword = async (name, lastName, email) => {
-        const confirmReset = window.confirm(`Are you sure you want to reset the password for ${name} ${lastName}?`);
+    const handleChangePassword = async (firstName, lastName, email) => {
+        const confirmReset = window.confirm(`Are you sure you want to reset the password for ${firstName} ${lastName}?`);
         if (!confirmReset) {
             return;
         }
@@ -214,7 +206,7 @@ const AdminPage = () => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
     
-            setUserTable((prev) => prev.filter((user) => user.ID !== userId));
+            setUserTable((prev) => prev.filter((user) => user.id !== userId));
             alert('User deleted successfully!');
         } catch (error) {
             console.error('Error deleting user:', error);
@@ -230,7 +222,7 @@ const AdminPage = () => {
             <div style={{ alignContent: 'left', textAlign: 'left' }}>
                 <h2>Current User Information</h2>
                 <p>
-                    <strong>Name:</strong> {user.name}
+                    <strong>First Name:</strong> {user.firstName}
                 </p>
                 <p>
                     <strong>Last Name:</strong> {user.lastName}
@@ -279,38 +271,42 @@ const AdminPage = () => {
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Status</th>
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Create Date</th>
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Created By</th>
+                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Last Update Date</th>
+                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Last Update By</th>
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {userTable.map((user) => (
-                        <tr key={user.ID}>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.ID}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.Email}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.Name}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.LastName}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.JobTitle}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.Role}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.IsEnable ? 'Active' : 'Inactive'}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(user.CreateDate).toLocaleDateString()}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{getCreatorDetails(user.CreatedBy)}</td>
+                        <tr key={user.id}>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.id}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.email}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.firstName}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.lastName}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.jobTitle}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.role}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.isEnable ? 'Active' : 'Inactive'}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(user.createDate).toLocaleDateString()}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.createdBy}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(user.lastUpdateDate).toLocaleDateString()}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.lastUpdateBy}</td>
                             <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                                 <button
-                                    onClick={() => handleDeactivateActivate(user.ID, user.IsEnable)}
+                                    onClick={() => handleDeactivateActivate(user.id, user.isEnable)}
                                     style={{
                                         marginRight: '5px',
                                         padding: '5px 10px',
-                                        backgroundColor: user.IsEnable ? '#FFC107' : '#28A745',
+                                        backgroundColor: user.isEnable ? '#FFC107' : '#28A745',
                                         color: '#FFF',
                                         border: 'none',
                                         borderRadius: '4px',
                                         cursor: 'pointer',
                                     }}
                                 >
-                                    {user.IsEnable ? 'Deactivate' : 'Activate'}
+                                    {user.isEnable ? 'Deactivate' : 'Activate'}
                                 </button>
                                 <button
-                                    onClick={() => handleEditUser(user.ID)}
+                                    onClick={() => handleEditUser(user.id)}
                                     style={{
                                         marginRight: '5px',
                                         padding: '5px 10px',
@@ -324,7 +320,7 @@ const AdminPage = () => {
                                     Edit
                                 </button>
                                 <button
-                                    onClick={() => handleChangePassword(user.Name, user.LastName, user.Email)}
+                                    onClick={() => handleChangePassword(user.firstName, user.lastName, user.email)}
                                     style={{
                                         padding: '5px 10px',
                                         backgroundColor: '#DC3545',
@@ -337,7 +333,7 @@ const AdminPage = () => {
                                     Change Password
                                 </button>
                                 <button
-                                    onClick={() => handleDeleteUser(user.ID)}
+                                    onClick={() => handleDeleteUser(user.id)}
                                     style={{
                                         padding: '5px 10px',
                                         backgroundColor: '#DC3545',

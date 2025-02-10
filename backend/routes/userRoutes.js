@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 router.patch('/update/:id', authenticateJWT, async (req, res) => {
     try {
-        const userIdToUpdate = req.params.id;
+        const userId = req.params.id;
         const updates = req.body;
         const initiatorId = req.userFromToken.id;
 
@@ -18,11 +18,12 @@ router.patch('/update/:id', authenticateJWT, async (req, res) => {
             return res.status(403).json({ message: 'Access denied: Admins only' });
         }
 
-        if (!userIdToUpdate || !updates || Object.keys(updates).length === 0) {
+        if (!userId || !updates || Object.keys(updates).length === 0) {
             return res.status(400).json({ message: 'Invalid request: No fields to update' });
         }
 
-        const response = await User.update(userIdToUpdate, updates, initiatorId);
+        const userToUpdate = await User.findById(userId);
+        const response = await userToUpdate.update(updates, initiatorId);
 
         res.status(200).json(response);
     } catch (err) {
@@ -40,12 +41,13 @@ router.patch('/togglestatus/:id', authenticateJWT, async (req, res) => {
 
         const userId = req.params.id;
         const { isEnable } = req.body; 
+        const initiatorId = req.userFromToken.id;
 
         if (typeof isEnable !== 'boolean') {
             return res.status(400).json({ message: 'Invalid status value' });
         }
-
-        const result = await User.toggleUserStatus(userId, isEnable);
+        const userToUpdate = await User.findById(userId);
+        const result = await userToUpdate.toggleUserStatus(isEnable, initiatorId);
 
         res.status(200).json({ message: result.message });
     } catch (err) {
@@ -65,7 +67,9 @@ router.post('/changepassword/:token', async (req, res) => {
         const decoded = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId;
 
-        await User.changePassword(userId, newPassword, userId);
+        const userToUpdate = await User.findById(userId);
+
+        await userToUpdate.changePassword(newPassword, userId);
 
         res.status(200).json({ message: 'Password changed successfully' });
     } catch (err) {
@@ -88,8 +92,8 @@ router.post('/sendpasswordreset', async (req, res) => {
         if (!user) {
             res.status(200).json({ message: 'Password reset email sent' });
         }
-        const token = await generatePasswordResetToken(user.ID);
-        await sendPasswordResetEmail(email, user.Name, token);
+        const token = await generatePasswordResetToken(user.id);
+        await sendPasswordResetEmail(email, user.firstName, token);
 
         res.status(200).json({ message: 'Password reset email sent' });
     } catch (err) {
@@ -103,33 +107,21 @@ router.post('/register', authenticateJWT, async (req, res) => {
         if (req.userFromToken.role !== 'admin') {
             return res.status(403).json({ message: 'User does not have rights for this action' });
         }
-        const { email, name, lastName, jobTitle, role} = req.body;
+        const { email, firstName, lastName, jobTitle, role} = req.body;
         const createdBy = req.userFromToken.id;
 
-        if (!email || !name || !lastName || !role ) {
+        if (!email || !firstName || !lastName || !role ) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
-        const response = await User.create({ email, name, lastName, jobTitle, role, createdBy });
+        const createdUser = await User.create({ email, firstName, lastName, jobTitle, role, createdBy });
 
-        const token = await generatePasswordResetToken(response.userId);
-        sendPasswordResetEmail(email, name, token, 'welcome');
-
-    
+        const token = await generatePasswordResetToken(createdUser.id);
+        sendPasswordResetEmail(email, firstName, token, 'welcome');
 
         res.status(201).json({ 
             message: 'User created successfully!',  
-            user: {
-                ID: response.userId,
-                Email: email,
-                Name: name,
-                LastName: lastName,
-                JobTitle: jobTitle,
-                Role: role,
-                IsEnable: false,
-                CreateDate: new Date(),
-                CreatedBy: createdBy,
-            }
+            user: createdUser
          });
     } catch (err) {
         console.error(err);
@@ -146,15 +138,15 @@ router.delete('/delete/:id', authenticateJWT, async (req, res) => {
             return res.status(403).json({ message: 'User does not have rights for this action' });
         }
         
-        const userIdToDelete = req.params.id;
-        if (!userIdToDelete) {
+        const userId = req.params.id;
+        if (!userId) {
             return res.status(400).json({ message: 'User ID is required' });
         }
+        const userToDelete = await User.findById(userId);
         
-        const deleteResult = await User.deleteById(userIdToDelete);
+        const deleteResponse = await userToDelete.delete();
         res.status(200).json({
-            message: 'User deleted successfully',
-            userId: deleteResult.userId,
+            deleteResponse
         });
     } catch (err) {
         console.error(err);
@@ -176,18 +168,18 @@ router.post('/login', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        if (!user.IsEnable) {
+        if (!user.isEnable) {
             return res.status(403).json({ message: 'User account is disabled' });
         }
-        const isMatch = await bcrypt.compare(password, user.PasswordHash);
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
           return res.status(400).json({ message: 'Invalid credentials' });
         }
         const token = jwt.sign({ 
-            id: user.ID,
-            name: user.Name,
-            lastName: user.LastName,
-            role: user.Role
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role
         }, JWT_SECRET, {
             expiresIn: "10d",
         });
@@ -195,7 +187,7 @@ router.post('/login', async (req, res) => {
         res.status(200).json({ 
             message: 'Login successful', 
             token: token,
-            role: user.Role
+            role: user.role
         });
     } catch (err) {
         console.error(err);
@@ -205,7 +197,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/current', authenticateJWT, async (req, res) => {
     res.status(200).json({
-        name: req.userFromToken.name,
+        firstName: req.userFromToken.firstName,
         lastName: req.userFromToken.lastName,
         role: req.userFromToken.role,
         });
