@@ -1,10 +1,11 @@
 .app-header {
     color: #09579d;
     font-family: sans-serif;
-    position: fixed;
+    position: static;
     display: flex;
     top: 0;
     left: 0;
+    height: 100px;
     width: 100%;
     justify-content: center;
     gap: 400px;

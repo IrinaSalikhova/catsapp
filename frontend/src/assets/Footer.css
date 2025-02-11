@@ -2,10 +2,10 @@ footer {
     background-color: #ffffff; /* Updated footer color to match the website */
     padding: 20px;
     text-align: center; /* Center the text */
-    border-top: 1px solid #ccc; /* Add a top border */
     bottom: 0;
     width: 100%;
-    position: fixed;
+    height: 50px;
+    position: static;
     left: 0;
     right: 0;
 }
