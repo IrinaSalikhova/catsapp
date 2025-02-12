@@ -82,7 +82,7 @@ h1, h2 {
     background-color: white;
 }
 
-label {
+.form-grid label {
     text-align: left;
     margin-left: 40px;
     margin-top: 10px;
@@ -135,7 +135,7 @@ button[type="submit"] {
     padding: 15px;
     border-radius: 5px;
     cursor: pointer;
-    width: 50%;
+    width: 421.6px;
     margin-top: 20px;
     margin-bottom: 20px;
     text-align: center;
