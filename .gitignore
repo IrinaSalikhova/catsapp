@@ -1,6 +1,5 @@
 node_modules/
 .env
 *.log
-.env
 backend/db.js
 app.yaml
