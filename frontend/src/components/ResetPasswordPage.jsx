@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import '../assets/ResetPassword.css';
 
 const ResetPasswordPage = () => {
     const { token } = useParams(); // Extract the token from the URL

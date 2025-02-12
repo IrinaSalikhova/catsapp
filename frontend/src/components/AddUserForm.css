@@ -32,10 +32,22 @@
 .add-user-form .button-save {
     background-color: #28A745;
     color: #FFF;
+    width: 100px;
 }
 
 .add-user-form .button-cancel {
     margin-left: 10px;
     background-color: #DC3545;
     color: #FFF;
+    width: 100px;
+}
+
+
+.radio-group{
+    width: auto;
+    text-align: left;
+}
+
+.radio-group input[type="radio"]{
+    width: 130px;
 }

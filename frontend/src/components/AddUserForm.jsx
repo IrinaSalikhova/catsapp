@@ -74,8 +74,9 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                 />
 
                 <label>Role:</label>
+                <div className='radio-group'>
                 <label>
-                    <input 
+                    <input className='role-radio' 
                         type="radio" 
                         name="role" 
                         value="navigator"
@@ -86,7 +87,7 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                     Navigator
                 </label>
                 <label>
-                    <input
+                    <input className='role-radio'
                         type="radio"
                         name="role"
                         value="admin"
@@ -96,6 +97,7 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                     />
                     Admin
                 </label>
+                </div>
 
                 <button 
                     type="submit" 

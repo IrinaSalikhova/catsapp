@@ -16,6 +16,22 @@ body {
     color: #555;
 }
 
+
+.user-info{
+    margin-bottom: 20px;
+    display: inline-block;
+    background: #b1b1b170;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.user-info p{
+    margin-bottom: 20px;
+    text-align: left;
+    width: fit-content;
+}
+
 .user-table {
     width: 100%;
     border-collapse: collapse;
@@ -28,14 +44,23 @@ body {
 }
 
 .user-table th {
-    white-space: nowrap; /* Prevents line breaks */   
+    white-space: nowrap;
     color: #ffffff;
     background-color: #09579d;
 }
 
+.button-container {
+    text-align: right;
+    white-space: nowrap;
+    align-items: center;;
+    justify-content: center;
+}
+
+
 .button {
     margin: 2px;
-    padding: 10px 20px;
+    width: auto;
+    padding: 5px 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
