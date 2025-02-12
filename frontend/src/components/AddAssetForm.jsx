@@ -104,7 +104,7 @@ const NewAssetForm = ({ onClose }) => {
 
             
             </div>
-            <div className='button-container'>
+            <div className='button-container-form'>
             <button type="submit">Submit</button>
             </div>
             </div>
