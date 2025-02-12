@@ -1,8 +1,8 @@
 const User = require('./model/User');
 const jwt = require("jsonwebtoken");
+const rateLimit = require('express-rate-limit');
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Middleware to check JWT
 
 const authenticateJWT = async (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
@@ -27,5 +27,29 @@ const generatePasswordResetToken = (userId) => {
 };
 
 
+let globalRequestCount = 0;
+const MAX_TOTAL_REQUESTS = 1000; 
+const MAX_USER_REQUESTS = 100;
+const WINDOW_MS = 20 * 60 * 1000;
 
-module.exports = { authenticateJWT, generatePasswordResetToken };
+setInterval(() => {
+    globalRequestCount = 0; // Reset count
+}, WINDOW_MS);
+
+const globalRateLimiter = (req, res, next) => {
+    if (globalRequestCount >= MAX_TOTAL_REQUESTS) {
+        return res.status(429).json({ message: "Too many requests, please try again later." });
+    }
+    globalRequestCount++;
+    next();
+};
+  
+  const userRateLimiter = rateLimit({
+    windowMs: WINDOW_MS,
+    max: MAX_USER_REQUESTS, // Limit each user to 30 requests per window
+    keyGenerator: (req) => `${req.headers['x-user-id'] || req.ip}:${req.path}`,
+    message: 'Too many requests, please try again later.',
+  }); 
+
+module.exports = { authenticateJWT, generatePasswordResetToken, globalRateLimiter, userRateLimiter };
+

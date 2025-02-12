@@ -3,12 +3,12 @@ const bcrypt = require('bcryptjs');
 const User = require('../model/User');
 const jwt = require("jsonwebtoken");
 const {sendEmail, sendPasswordResetEmail} = require("../emailService");
-const {authenticateJWT, generatePasswordResetToken } = require("../middleware");
+const {authenticateJWT, generatePasswordResetToken, userRateLimiter } = require("../middleware");
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-router.patch('/update/:id', authenticateJWT, async (req, res) => {
+router.patch('/update/:id', authenticateJWT, userRateLimiter, async (req, res) => {
     try {
         const userId = req.params.id;
         const updates = req.body;
@@ -32,8 +32,7 @@ router.patch('/update/:id', authenticateJWT, async (req, res) => {
     }
 });
 
-
-router.patch('/togglestatus/:id', authenticateJWT, async (req, res) => {
+router.patch('/togglestatus/:id', authenticateJWT, userRateLimiter, async (req, res) => {
     try {
         if (req.userFromToken.role !== 'admin') {
             return res.status(403).json({ message: 'User does not have rights for this action' });
@@ -56,7 +55,7 @@ router.patch('/togglestatus/:id', authenticateJWT, async (req, res) => {
     }
 });
 
-router.post('/changepassword/:token', async (req, res) => {
+router.post('/changepassword/:token', userRateLimiter, async (req, res) => {
     try {
         const { token } = req.params;
         const { newPassword } = req.body;
@@ -82,7 +81,7 @@ router.post('/changepassword/:token', async (req, res) => {
 
 });
 
-router.post('/sendpasswordreset', async (req, res) => {
+router.post('/sendpasswordreset', userRateLimiter, async (req, res) => {
     try {
         const { email } = req.body;
         if (!email) {
@@ -102,7 +101,7 @@ router.post('/sendpasswordreset', async (req, res) => {
     }
 });
 
-router.post('/register', authenticateJWT, async (req, res) => { 
+router.post('/register', authenticateJWT, userRateLimiter, async (req, res) => { 
     try {
         if (req.userFromToken.role !== 'admin') {
             return res.status(403).json({ message: 'User does not have rights for this action' });
@@ -132,7 +131,7 @@ router.post('/register', authenticateJWT, async (req, res) => {
     }
 });
 
-router.delete('/delete/:id', authenticateJWT, async (req, res) => { 
+router.delete('/delete/:id', authenticateJWT, userRateLimiter, async (req, res) => { 
     try {
         if (req.userFromToken.role !== 'admin') {
             return res.status(403).json({ message: 'User does not have rights for this action' });
@@ -157,7 +156,7 @@ router.delete('/delete/:id', authenticateJWT, async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', userRateLimiter, async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).json({ message: 'Missing required fields' });
@@ -195,7 +194,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/current', authenticateJWT, async (req, res) => {
+router.get('/current', authenticateJWT, userRateLimiter, async (req, res) => {
     res.status(200).json({
         firstName: req.userFromToken.firstName,
         lastName: req.userFromToken.lastName,
@@ -203,7 +202,7 @@ router.get('/current', authenticateJWT, async (req, res) => {
         });
 });
 
-router.get('/usertable', authenticateJWT, async (req, res) => {
+router.get('/usertable', authenticateJWT, userRateLimiter, async (req, res) => {
     try {
         if (req.userFromToken.role !== 'admin') {
             return res.status(403).json({ message: 'User does not have rights to access this table' });
