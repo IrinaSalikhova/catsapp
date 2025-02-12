@@ -222,6 +222,7 @@ class User {
                 delete user.lastUpdateByFirstName;
                 delete user.lastUpdateByLastName;
                 delete user.lastUpdateByJobTitle;
+                delete user.password;
 
                 return new User(user);
 
