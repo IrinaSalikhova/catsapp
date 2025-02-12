@@ -217,6 +217,7 @@ const AdminPage = () => {
     return (
         <div className="admin-page">
             <h1>Welcome to the Admin Page</h1>
+            <div className="user-info-container">
             <div className="user-info">
                 <h2>Current User Information</h2>
                 <p><strong>Name:</strong> {user.firstName}</p>
@@ -235,6 +236,7 @@ const AdminPage = () => {
                     </div>
                 )}
             </div>
+            </div>
             
             <h2>All Users Table</h2>
             <table className="user-table">
@@ -243,14 +245,12 @@ const AdminPage = () => {
                         <th>ID</th>
                         <th>Email</th>
                         <th>Name</th>
-                        <th>Last Name</th>
                         <th>Job Title</th>
                         <th>Role</th>
                         <th>Status</th>
                         <th>Create Date</th>
                         <th>Created By</th>
-                        <th>Last Update Date</th>
-                        <th>Last Update By</th>
+                        <th>Last Update</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -259,16 +259,14 @@ const AdminPage = () => {
                         <tr key={user.id}>
                             <td>{user.id}</td>
                             <td>{user.email}</td>
-                            <td>{user.firstName}</td>
-                            <td>{user.lastName}</td>
+                            <td>{`${user.firstName} ${user.lastName}`}</td>
                             <td>{user.jobTitle}</td>
                             <td>{user.role}</td>
                             <td>{user.isEnable ? 'Active' : 'Inactive'}</td>
                             <td>{new Date(user.createDate).toLocaleDateString()}</td>
                             <td>{user.createdBy}</td>
-                            <td>{new Date(user.lastUpdateDate).toLocaleDateString()}</td>
-                            <td>{user.lastUpdateBy}</td>
-                            <td>
+                            <td>{`${user.lastUpdateBy} ${new Date(user.lastUpdateDate).toLocaleDateString()}`}</td>
+                            <td className = "button-container">
                                 <button 
                                     onClick={() => handleDeactivateActivate(user.id, user.isEnable)} 
                                     className={`button ${user.isEnable ? 'button-deactivate' : 'button-activate'}`}>
