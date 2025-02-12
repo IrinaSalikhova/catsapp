@@ -1,0 +1,94 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa; /* Match the searching page background */
+    margin: 0;
+    padding-top: 4%;
+    padding-left: 20%;
+    padding-right: 20%;
+    padding-bottom: 10%; /* Add some padding around the body */
+}
+
+
+.container {
+    font-size: 20px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    align-items: center;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.logo {
+    width: 100px; /* Adjust logo size */
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+
+
+.category-dropdown {
+    padding: 5px; /* Reduce padding for a smaller drop-down */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px; /* Smaller font size */
+    height: auto; /* Allow height to adjust */
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="url"],
+textarea {
+    width: 700px; /* Apply width only to these input types */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.volunteer-options {
+    display: flex; /* Use flexbox to align options */
+    gap: 10px; /* Space between Yes and No */
+}
+
+.accessibility-options {
+    display: flex; /* Use flexbox for accessibility options */
+    gap: 10px; /* Space between options */
+}
+
+button {
+    background-color: #009BEF;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 20%;
+    margin-top: 30px;
+    align-items: center;
+    display: flex;
+    justify-content: center;;
+}
+
+button:hover {
+    background-color: #007BB5;
+}

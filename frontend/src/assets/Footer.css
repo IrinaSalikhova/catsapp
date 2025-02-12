@@ -1,0 +1,35 @@
+footer {
+    background-color: #ffffff; /* Updated footer color to match the website */
+    padding: 20px;
+    text-align: center; /* Center the text */
+    border-top: 1px solid #ccc; /* Add a top border */
+    bottom: 0;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+}
+
+.footer-content {
+    color: #09579d;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-content p {
+    margin: 5px 0; /* Add margin for spacing */
+    
+}
+
+.social-media {
+    align-items: center;
+    display: flex;
+    gap: 10px; /* Space between icons */
+}
+
+.social-media img {
+    width: 24px; /* Icon size */
+    height: 24px;
+}
