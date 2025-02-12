@@ -119,11 +119,11 @@ class User {
   
             userData.createdBy = userData.createdByFirstName 
               ? `${userData.createdByFirstName} ${userData.createdByLastName} - ${userData.createdByJobTitle || ''}`.trim()
-              : "This user was removed from database";
+              : "User removed from database";
   
             userData.lastUpdateBy = userData.lastUpdateByFirstName 
               ? `${userData.lastUpdateByFirstName} ${userData.lastUpdateByLastName} - ${userData.lastUpdateByJobTitle || ''}`.trim()
-              : "This user was removed from database";
+              : "User removed from database";
   
             delete userData.createdByFirstName;
             delete userData.createdByLastName;
@@ -168,11 +168,11 @@ class User {
         
             userData.createdBy = userData.createdByFirstName 
               ? `${userData.createdByFirstName} ${userData.createdByLastName} - ${userData.createdByJobTitle || ''}`.trim()
-              : "This user was removed from database";
+              : "User removed from database";
 
             userData.lastUpdateBy = userData.lastUpdateByFirstName 
               ? `${userData.lastUpdateByFirstName} ${userData.lastUpdateByLastName} - ${userData.lastUpdateByJobTitle || ''}`.trim()
-              : "This user was removed from database";
+              : "User removed from database";
 
             delete userData.createdByFirstName;
             delete userData.createdByLastName;
@@ -210,11 +210,11 @@ class User {
                 user.isEnable = user.isEnable instanceof Buffer ? Boolean(user.isEnable.readUInt8(0)) : user.isEnable;
                 user.createdBy = user.createdByFirstName 
                   ? `${user.createdByFirstName} ${user.createdByLastName} - ${user.createdByJobTitle || ''}`.trim()
-                  : "This user was removed from database";
+                  : "User removed from database";
 
                 user.lastUpdateBy = user.lastUpdateByFirstName 
                   ? `${user.lastUpdateByFirstName} ${user.lastUpdateByLastName} - ${user.lastUpdateByJobTitle || ''}`.trim()
-                  : "This user was removed from database";
+                  : "User removed from database";
 
                 delete user.createdByFirstName;
                 delete user.createdByLastName;

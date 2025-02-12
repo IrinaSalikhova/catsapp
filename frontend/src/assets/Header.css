@@ -1,13 +1,13 @@
 .app-header {
+    min-width: 1200px;
     color: #09579d;
     font-family: sans-serif;
-    position: fixed;
+    position: static;
     display: flex;
-    top: 0;
-    left: 0;
+    height: 80px;
     width: 100%;
     justify-content: center;
-    gap: 400px;
+    gap: 700px;
     padding: 5px;
     align-items: center;
     background-color: #ffffff; /* Light background color */
@@ -25,6 +25,7 @@
 }
 
 .main-page-button, .admin-page-button, .navigator-page-button, .add-asset-button, .logout-button, .login-button {
+    width: fit-content;
     background-color:  #09579d;
     color: white; /* Text color */
     border: none; /* Remove border */
