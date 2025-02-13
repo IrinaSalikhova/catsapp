@@ -7,10 +7,11 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 8080;
 const userRoutes = require('./routes/userRoutes');
+const { globalRateLimiter } = require('./middleware');
 
 app.use(cors()); // comment it out if you want to use localhost:5173
 app.use(express.json()); 
-
+app.use(globalRateLimiter);
 
 // const corsOptions = {
 //     origin: 'http://localhost:5173', 

@@ -27,6 +27,10 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
         setFormData({ ...formData, [name]: value });
     };
 
+    const handleRoleChange = (role) => {
+        setFormData({ ...formData, role });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         onSave(formData);
@@ -34,6 +38,7 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
     };
 
     return (
+    <div className="modal-overlay">
         <div className="add-user-form">
             <h2>{userData ? 'Edit User' : 'Add New User'}</h2>
             <form onSubmit={handleSubmit}>
@@ -74,30 +79,22 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                 />
 
                 <label>Role:</label>
-                <div className='radio-group'>
-                <label>
-                    <input className='role-radio' 
-                        type="radio" 
-                        name="role" 
-                        value="navigator"
-                        checked={formData.role === 'navigator'}
-                        onChange={handleChange} 
-                        required 
-                    />
-                    Navigator
-                </label>
-                <label>
-                    <input className='role-radio'
-                        type="radio"
-                        name="role"
-                        value="admin"
-                        checked={formData.role === 'admin'}
-                        onChange={handleChange}
-                        required
-                    />
-                    Admin
-                </label>
-                </div>
+                    <div className="role-toggle">
+                        <button
+                            type="button"
+                            className={formData.role === 'navigator' ? 'active' : ''}
+                            onClick={() => handleRoleChange('navigator')}
+                        >
+                            Navigator
+                        </button>
+                        <button
+                            type="button"
+                            className={formData.role === 'admin' ? 'active' : ''}
+                            onClick={() => handleRoleChange('admin')}
+                        >
+                            Admin
+                        </button>
+                    </div>
 
                 <button 
                     type="submit" 
@@ -114,6 +111,7 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                 </button>    
             </form>
         </div>
+    </div>
     );
 };
 
