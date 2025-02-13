@@ -44,11 +44,11 @@ const NewAssetForm = ({ onClose }) => {
               <label htmlFor="name">Resource Name:</label>
               <input type="text" id="name" placeholder="Enter the service name" required />
               
-              <label htmlFor="category">Category:</label>
-              <select id="category" title="Select a category">
-                <option value="health-services">Health Services</option>
-                <option value="primary-health-care">Primary Health Care</option>
-              </select>
+              
+              <div>
+                    <CategoryDropdown onCategorySelect={handleCategorySelect} />
+              </div>
+
               
               <label htmlFor="description">Description:</label>
               <textarea id="description" placeholder="Describe your suggestion" required></textarea>
