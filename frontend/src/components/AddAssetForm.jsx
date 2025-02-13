@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import CategoryDropdown from './CategoryDropdown';
 import '../assets/NewAssetForm.css';
 import cchclogo from "/big_logo.png";
 
 const carlingtonIcon = '/carlington_icon.webp';
 
+
+
 const NewAssetForm = ({ onClose }) => {
+
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
+  const handleCategorySelect = (categories) => {
+    setSelectedCategories(categories);
+    console.log('Selected categories:', categories);
+  };
+    
   return (
     <div className="modal-overlay">
       <div className="modal-container">
@@ -26,13 +37,24 @@ const NewAssetForm = ({ onClose }) => {
                     <label for="name">Resource Name*</label>
                     <input type="text" id="name" placeholder="Enter name" required/>
                 </div>
+                
+                
+
                 <div>
-                    <label for="category">Category*</label>
-                    <select id="category" title="Select a category">
-                        <option value="health-services">Health Services</option>
-                        <option value="primary-health-care">Primary Health Care</option>
-                    </select>
+                    <CategoryDropdown onCategorySelect={handleCategorySelect} />
                 </div>
+
+          {/* Display selected category as debug info */}
+          <div>
+  <p>Selected Categories:</p>
+  <ul>
+    {selectedCategories.map((category) => (
+      <li key={category.id}>{category.name}</li>
+    ))}
+  </ul>
+</div>
+
+
                 <div>
                     <label for="description">Description</label>
                     <textarea id="description" placeholder="Describe your suggestion" required></textarea>
