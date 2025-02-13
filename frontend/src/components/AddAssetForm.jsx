@@ -9,14 +9,28 @@ const NewAssetForm = ({ onClose }) => {
       <div className="modal-container">
         <div className="header">
           <img src={carlingtonIcon} alt="Carlington Logo" className="logo" />
-          <h1>Asset Suggestion Form</h1>
+          <h1>New Community Resource Form </h1>
           <button className="close-button" onClick={onClose}>X</button>
         </div>
+        <div>
+          <text> Hi, thank you for your willingness to help your community with this valuable information. 
+            Before proceeding to the form, please answer the following questions:</text>
+        </div>
+        <div> 
+          <text> Are there multiple resources under a single entity or is it a standalone resource? </text>
+          <button className="multiple" onClick={ToggleEvent}>Input main and sub entities</button>
+          <button className="standalone" onClick={ToggleEvent}>Standalone</button>
+          </div>
+          <div>
+            <text> Does the asset have a physical location?</text>
+            <button className="yes" onClick={ToggleEvent}>Yes</button>
+            <button className="no" onClick={ToggleEvent}>No</button>
+          </div>
         <form id="suggestionForm">
           <div className="form-grid">
             <div>
-              <label htmlFor="name">Name:</label>
-              <input type="text" id="name" placeholder="Enter your name" required />
+              <label htmlFor="name">Resource Name:</label>
+              <input type="text" id="name" placeholder="Enter the service name" required />
               
               <label htmlFor="category">Category:</label>
               <select id="category" title="Select a category">
@@ -27,10 +41,11 @@ const NewAssetForm = ({ onClose }) => {
               <label htmlFor="description">Description:</label>
               <textarea id="description" placeholder="Describe your suggestion" required></textarea>
               
-              <label>Volunteer Opportunities:</label>
+              <label>Are there any volunteering opportunities available within this resource?</label>
               <div className="volunteer-options">
-                <input type="checkbox" id="volunteerYes" name="volunteer" value="yes" /> Yes
-                <input type="checkbox" id="volunteerNo" name="volunteer" value="no" /> No
+              <button className="yes" onClick={ToggleEvent}>Yes</button> 
+              <button className="no" onClick={ToggleEvent}>No</button> 
+              <input type="text" id="volunteer" placeholder="Enter the opportunities"/>
               </div>
               
               <label htmlFor="address">Address:</label>
