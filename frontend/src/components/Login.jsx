@@ -80,7 +80,7 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
                     <div>
                         <label className='login-label' htmlFor="email">Email</label>
                         <input className='login-input-email'
-                            type="text"
+                            type="login"
                             id="email"
                             name="email"
                             value={email}
@@ -101,7 +101,7 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
                             />
                         </div>
                     )}
-                    <button className='login-button' type="submit">
+                    <button className='login-button' type="login">
                         {isForgotPassword ? 'Send Reset Link' : 'Submit'}
                     </button>
                 </form>
