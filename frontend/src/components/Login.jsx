@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../assets/login.css';
 
 const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
     const [email, setEmail] = useState('');
@@ -71,14 +72,14 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
     };
 
     return (
-        <div className="modal-overlay">
+        <div className="modal-overlay-login">
             <div className="login-form-modal">
                 <button className="close-btn" onClick={onClose}>X</button>
                 <h2>{isForgotPassword ? 'Reset Password' : 'Login'}</h2>
                 <form onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit}>
                     <div>
-                        <label htmlFor="email">Email</label>
-                        <input
+                        <label className='login-label' htmlFor="email">Email</label>
+                        <input className='login-input-email'
                             type="text"
                             id="email"
                             name="email"
@@ -89,8 +90,8 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
                     </div>
                     {!isForgotPassword && (
                         <div>
-                            <label htmlFor="password">Password</label>
-                            <input
+                            <label className='login-label' htmlFor="password">Password</label>
+                            <input className='login-input-pass'
                                 type="password"
                                 id="password"
                                 name="password"
@@ -100,7 +101,7 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
                             />
                         </div>
                     )}
-                    <button type="submit">
+                    <button className='login-button' type="submit">
                         {isForgotPassword ? 'Send Reset Link' : 'Submit'}
                     </button>
                 </form>
