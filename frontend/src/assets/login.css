@@ -19,8 +19,8 @@
     text-align: center; /* Align text to the left */
 }
 
-.login-input-pass[type='password'],
-.login-input-email[type='email'] {
+input[type='password'],
+input[type='login'] {
     width: 250px;
     padding: 10px;
     margin: 10px 0;
@@ -29,17 +29,15 @@
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.login-input-pass[type='password']:focus,
-.login-input-email[type='email']:focus {
-    border-color: #007bff; /* Change to a blue color on focus */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow */
-}
 
 .login-form-modal button{
-    width : 250px;
+    width : 40px;
+    height: 40px;
 }
 
-.close-btn{
-    width: 10px;
-    height: 10px;
+button[type='login']{
+    width: 250px;
+    height: 40px;
+    padding: 10px;
+    margin-top: 20px;
 }
