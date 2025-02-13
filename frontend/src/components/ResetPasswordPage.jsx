@@ -47,7 +47,7 @@ const ResetPasswordPage = () => {
             <form className='form-reset' onSubmit={handleSubmit}>
                 <div>
                     <label className='label-newpass' htmlFor="new-password">New Password</label>
-                    <input
+                    <input className='input-newpass'
                         type="password"
                         id="new-password"
                         value={newPassword}
@@ -58,7 +58,7 @@ const ResetPasswordPage = () => {
                 </div>
                 <div>
                     <label className='label-form' htmlFor="confirm-password">Confirm Password</label>
-                    <input
+                    <input className='input-confirmpass'
                         type="password"
                         id="confirm-password"
                         value={confirmPassword}
