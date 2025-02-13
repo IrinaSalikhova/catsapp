@@ -12,7 +12,7 @@ const AdminPage = () => {
     const token = localStorage.getItem('token');
     if (!token) { //add validity check and redirection to main page 
         console.error('User not authenticated');
-        //window.location.href = '/login';
+        window.location.href = '/login';
         return null;
     }
 
@@ -187,36 +187,11 @@ const AdminPage = () => {
         }
     };
 
-    const handleDeleteUser = async (userId) => {
-        const confirmDelete = window.confirm(`Are you sure you want to delete User ID: ${userId}?`);
-        if (!confirmDelete) {
-            return; 
-        }
-        try {
-            const response = await fetch(`/api/users/delete/${userId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-    
-            if (!response.ok) {
-                alert('Failed to delete user');
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-    
-            setUserTable((prev) => prev.filter((user) => user.id !== userId));
-            alert('User deleted successfully!');
-        } catch (error) {
-            console.error('Error deleting user:', error);
-            alert('An error occurred while deleting the user.');
-        }
-    };
 
     return (
         <div className="admin-page">
-            <h1>Welcome to the Admin Page</h1>
+            <h2>Welcome to the Admin Page</h2>
+            <div className="user-info-container">
             <div className="user-info">
                 <h2>Current User Information</h2>
                 <p><strong>Name:</strong> {user.firstName}</p>
@@ -224,8 +199,10 @@ const AdminPage = () => {
                 <p><strong>Role:</strong> {user.role}</p>
 
                 <button onClick={handleAddUser} className="button button-add">Add New User</button>
-
-                {showAddUserForm && (
+               
+            </div>
+            </div>
+            {showAddUserForm && (
                     <div ref={formRef}>
                         <AddUserForm
                             onClose={() => setShowAddUserForm(false)}
@@ -234,49 +211,38 @@ const AdminPage = () => {
                         />
                     </div>
                 )}
-            </div>
             
-            <h2>All Users Table</h2>
             <table className="user-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Email</th>
                         <th>Name</th>
-                        <th>Last Name</th>
                         <th>Job Title</th>
                         <th>Role</th>
-                        <th>Status</th>
-                        <th>Create Date</th>
-                        <th>Created By</th>
-                        <th>Last Update Date</th>
-                        <th>Last Update By</th>
+                        <th>Creation</th>
+                        <th>Last Update</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {userTable.map((user) => (
-                        <tr key={user.id}>
+                        <tr key={user.id} className={user.isEnable ? 'row-active' : 'row-inactive'}>
                             <td>{user.id}</td>
                             <td>{user.email}</td>
-                            <td>{user.firstName}</td>
-                            <td>{user.lastName}</td>
+                            <td>{`${user.firstName} ${user.lastName}`}</td>
                             <td>{user.jobTitle}</td>
                             <td>{user.role}</td>
-                            <td>{user.isEnable ? 'Active' : 'Inactive'}</td>
-                            <td>{new Date(user.createDate).toLocaleDateString()}</td>
-                            <td>{user.createdBy}</td>
-                            <td>{new Date(user.lastUpdateDate).toLocaleDateString()}</td>
-                            <td>{user.lastUpdateBy}</td>
-                            <td>
+                            <td>{`${new Date(user.createDate).toLocaleDateString()} by ${user.createdBy}`}</td>
+                            <td>{`${new Date(user.lastUpdateDate).toLocaleDateString()} by ${user.lastUpdateBy}`}</td>
+                            <td className = "button-container">
                                 <button 
                                     onClick={() => handleDeactivateActivate(user.id, user.isEnable)} 
                                     className={`button ${user.isEnable ? 'button-deactivate' : 'button-activate'}`}>
                                     {user.isEnable ? 'Deactivate' : 'Activate'}
                                 </button>
                                 <button onClick={() => handleEditUser(user.id)} className="button button-edit">Edit</button>
-                                <button onClick={() => handleChangePassword(user.firstName, user.lastName, user.email)} className="button button-edit">Change Password</button>
-                                <button onClick={() => handleDeleteUser(user.id)} className="button button-delete">Delete</button>
+                                <button onClick={() => handleChangePassword(user.firstName, user.lastName, user.email)} className="button button-pass">Request password change</button>
                             </td>
                         </tr>
                     ))}

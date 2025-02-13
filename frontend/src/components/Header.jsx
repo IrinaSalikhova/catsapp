@@ -17,37 +17,6 @@ const Header = ({ isLoggedIn, userRole, onLogout, toggleLoginModal, toggleNewAss
       <div class="logo">
         <img src={cchclogo} alt="CCHC Logo" style={{width: '400px', height:'auto'}}/>
     </div>
-      <div class="social-media">
-      <h3>Follow us:</h3>
-        <a href="https://www.facebook.com/Carlington-Community-Health-Centre-1744342865792993/?fref=ts" target="_blank" rel="noopener">
-                  <img 
-                  src={facebookIcon} 
-                  alt="Facebook" 
-                  style={{width: '24px', height: '24px'}}
-                  />
-                </a>
-                <a href="https://x.com/CarlingtonCHC?mx=2" target="_blank" rel="noopener">
-                <img 
-                  src={twitterIcon}  
-                  alt="Twitter" 
-                  style={{width: '24px', height: '24px'}}
-                  />
-                  </a>
-                <a href="https://www.instagram.com/carlingtonchc/" target="_blank" rel="noopener">
-                <img 
-                  src={instagramIcon} 
-                  alt="Instagram" 
-                  style={{width: '24px', height: '24px'}}
-                  />
-                  </a> 
-                <a href="https://carlingtonchc.com" target="_blank" rel="noopener">
-                <img 
-                  src={websiteIcon} 
-                  alt="Website" 
-                  style={{width: '24px', height: '24px'}}
-                  />
-                  </a>
-    </div>
       <div className="auth-buttons">
         {location.pathname !== '/' && (
           <button class='main-page-button' onClick={() => navigate('/')}>Go to Main Page</button>

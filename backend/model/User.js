@@ -22,6 +22,7 @@ const userSchema = Joi.object({
 });
 
 class User {
+
     constructor(data) {
         const { error, value } = userSchema.validate(data);
         if (error) throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
@@ -38,6 +39,33 @@ class User {
         this.lastUpdateBy = value.lastUpdateBy;
         this.lastUpdateDate = value.lastUpdateDate;
     }
+
+    static cleanupUserData(userData) {
+        delete userData.roleId;
+        delete userData.createdByFirstName;
+        delete userData.createdByLastName;
+        delete userData.createdByJobTitle;
+        delete userData.lastUpdateByFirstName;
+        delete userData.lastUpdateByLastName;
+        delete userData.lastUpdateByJobTitle;
+        
+    }
+
+    static formatUserDetails(userData) {
+        userData.isEnable = userData.isEnable instanceof Buffer ? Boolean(userData.isEnable.readUInt8(0)) : userData.isEnable;
+        userData.createdBy = userData.createdByFirstName 
+            ? `${userData.createdByFirstName} ${userData.createdByLastName} - ${userData.createdByJobTitle || ''}`.trim()
+            : "Deleted user";
+        userData.lastUpdateBy = userData.lastUpdateByFirstName 
+            ? `${userData.lastUpdateByFirstName} ${userData.lastUpdateByLastName} - ${userData.lastUpdateByJobTitle || ''}`.trim()
+            : "Deleted user";
+
+            this.cleanupUserData(userData); 
+
+        return userData;
+    }
+
+
 
     static async create({ email, firstName, lastName, jobTitle, role, createdBy }) {
         try {
@@ -112,26 +140,8 @@ class User {
             
             if (!results.length) return null;
             
-            const userData = results[0];
-            delete userData.roleId;
-            userData.isEnable = userData.isEnable instanceof Buffer ? Boolean(userData.isEnable.readUInt8(0)) : userData.isEnable;
-
-  
-            userData.createdBy = userData.createdByFirstName 
-              ? `${userData.createdByFirstName} ${userData.createdByLastName} - ${userData.createdByJobTitle || ''}`.trim()
-              : "This user was removed from database";
-  
-            userData.lastUpdateBy = userData.lastUpdateByFirstName 
-              ? `${userData.lastUpdateByFirstName} ${userData.lastUpdateByLastName} - ${userData.lastUpdateByJobTitle || ''}`.trim()
-              : "This user was removed from database";
-  
-            delete userData.createdByFirstName;
-            delete userData.createdByLastName;
-            delete userData.createdByJobTitle;
-            delete userData.lastUpdateByFirstName;
-            delete userData.lastUpdateByLastName;
-            delete userData.lastUpdateByJobTitle;
-   
+            const userData = this.formatUserDetails(results[0]);
+            
             return new User(userData);
 
         } catch (err) {
@@ -162,24 +172,7 @@ class User {
             const results = await queryAsync(query, [email]);
             if (!results.length) return null;
             
-            const userData = results[0];
-            delete userData.roleId;
-            userData.isEnable = userData.isEnable instanceof Buffer ? Boolean(userData.isEnable.readUInt8(0)) : userData.isEnable;
-        
-            userData.createdBy = userData.createdByFirstName 
-              ? `${userData.createdByFirstName} ${userData.createdByLastName} - ${userData.createdByJobTitle || ''}`.trim()
-              : "This user was removed from database";
-
-            userData.lastUpdateBy = userData.lastUpdateByFirstName 
-              ? `${userData.lastUpdateByFirstName} ${userData.lastUpdateByLastName} - ${userData.lastUpdateByJobTitle || ''}`.trim()
-              : "This user was removed from database";
-
-            delete userData.createdByFirstName;
-            delete userData.createdByLastName;
-            delete userData.createdByJobTitle;
-            delete userData.lastUpdateByFirstName;
-            delete userData.lastUpdateByLastName;
-            delete userData.lastUpdateByJobTitle;
+            const userData = this.formatUserDetails(results[0]);
 
             return new User(userData);
 
@@ -206,27 +199,11 @@ class User {
             `;
             const results = await queryAsync(query);
             return results.length ? results.map(user => {
-                delete user.roleId;
-                user.isEnable = user.isEnable instanceof Buffer ? Boolean(user.isEnable.readUInt8(0)) : user.isEnable;
-                user.createdBy = user.createdByFirstName 
-                  ? `${user.createdByFirstName} ${user.createdByLastName} - ${user.createdByJobTitle || ''}`.trim()
-                  : "This user was removed from database";
-
-                user.lastUpdateBy = user.lastUpdateByFirstName 
-                  ? `${user.lastUpdateByFirstName} ${user.lastUpdateByLastName} - ${user.lastUpdateByJobTitle || ''}`.trim()
-                  : "This user was removed from database";
-
-                delete user.createdByFirstName;
-                delete user.createdByLastName;
-                delete user.createdByJobTitle;
-                delete user.lastUpdateByFirstName;
-                delete user.lastUpdateByLastName;
-                delete user.lastUpdateByJobTitle;
-
+                delete user.password;
+                this.formatUserDetails(user);
                 return new User(user);
-
             }) : [];
-
+            
         } catch (err) {
             throw new Error(`Error fetching all users: ${err.message}`);
         }

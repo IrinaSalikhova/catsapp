@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import CategoryDropdown from './CategoryDropdown';
 import '../assets/NewAssetForm.css';
+import cchclogo from "/big_logo.png";
 
 const carlingtonIcon = '/carlington_icon.webp';
 
+
+
 const NewAssetForm = ({ onClose }) => {
+
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
+  const handleCategorySelect = (categories) => {
+    setSelectedCategories(categories);
+    console.log('Selected categories:', categories);
+  };
+    
   return (
     <div className="modal-overlay">
       <div className="modal-container">

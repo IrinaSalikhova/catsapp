@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import '../assets/ResetPassword.css';
 
 const ResetPasswordPage = () => {
     const { token } = useParams(); // Extract the token from the URL
@@ -43,10 +44,10 @@ const ResetPasswordPage = () => {
     return (
         <div>
             <h1>Reset Your Password</h1>
-            <form onSubmit={handleSubmit}>
+            <form className='form-reset' onSubmit={handleSubmit}>
                 <div>
-                    <label htmlFor="new-password">New Password:</label>
-                    <input
+                    <label className='label-newpass' htmlFor="new-password">New Password</label>
+                    <input className='input-newpass'
                         type="password"
                         id="new-password"
                         value={newPassword}
@@ -56,8 +57,8 @@ const ResetPasswordPage = () => {
                     />
                 </div>
                 <div>
-                    <label htmlFor="confirm-password">Confirm Password:</label>
-                    <input
+                    <label className='label-form' htmlFor="confirm-password">Confirm Password</label>
+                    <input className='input-confirmpass'
                         type="password"
                         id="confirm-password"
                         value={confirmPassword}
