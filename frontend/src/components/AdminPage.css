@@ -16,6 +16,15 @@ body {
     color: #555;
 }
 
+/* Green background for active users */
+.row-active {
+    background-color: rgba(144, 238, 144, 0.2); /* Light transparent green */
+}
+
+/* Red background for inactive users */
+.row-inactive {
+    background-color: rgba(255, 99, 71, 0.2); /* Light transparent red */
+}
 
 .user-info{
     margin-bottom: 20px;
@@ -67,17 +76,17 @@ body {
 }
 
 .button-add {
-    background-color: #007BFF;
-    color: #FFF;
-}
-
-.button-edit {
     background-color: #17A2B8;
     color: #FFF;
 }
 
-.button-delete {
-    background-color: #DC3545;
+.button-edit {
+    background-color: #FFC107;
+    color: #FFF;
+}
+
+.button-pass {
+    background-color: #17A2B8; 
     color: #FFF;
 }
 
@@ -87,6 +96,6 @@ body {
 }
 
 .button-deactivate {
-    background-color: #FFC107;
+    background-color:  #DC3545;
     color: #FFF;
 }
