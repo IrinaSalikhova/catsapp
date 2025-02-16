@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './CategoryDropdown.css';
+import '../assets/CategoryDropdown.css';
 
 const CategoryDropdown = ({ onCategorySelect, selectableParents = false }) => {
   const [categories, setCategories] = useState([]);

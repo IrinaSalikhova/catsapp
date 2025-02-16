@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import AddUserForm from './AddUserForm';
-import './AdminPage.css'; // Import the new CSS file
+import '../assets/AdminPage.css'; // Import the new CSS file
 
 const AdminPage = () => {
     const [user, setUser] = useState(null); 
