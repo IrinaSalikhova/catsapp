@@ -1,0 +1,111 @@
+@startuml
+skinparam FolderBackgroundColor LightGray
+
+folder "backend" {
+    folder "emailTemplates" {
+        file "passwordReset.html"
+        file "welcome.html"
+    }
+    folder "model" {
+        file "Asset.js"
+        file "Category.js"
+        file "User.js"
+    }
+    folder "routes" {
+        file "assetRoutes.js"
+        file "categoryRoutes.js"
+        file "userRoutes.js"
+    }
+    folder "tests" {
+        file "asset.test.js"
+        file "category.test.js"
+        file "setup.js"
+        file "user.test.js"
+    }
+    file "catsserver.js"
+    file "db.js"
+    file "emailService.js"
+    file "middleware.js"
+}
+
+folder "frontend" {
+    folder "dist" {
+        folder "assets" {
+            file "index-BNKPDtbt.js"
+            file "index-yOc-2pMC.css"
+        }
+        file "big_logo.png"
+        file "call.png"
+        file "carlington_icon.png"
+        file "carlington_icon.webp"
+        file "catsformap.png"
+        file "facebook_logo.png"
+        file "google_icon.png"
+        file "index.html"
+        file "instagram_logo.png"
+        file "web_logo.png"
+        file "x_logo.png"
+    }
+    folder "public" {
+        file "big_logo.png"
+        file "call.png"
+        file "carlington_icon.png"
+        file "carlington_icon.webp"
+        file "catsformap.png"
+        file "facebook_logo.png"
+        file "google_icon.png"
+        file "instagram_logo.png"
+        file "web_logo.png"
+        file "x_logo.png"
+    }
+    folder "src" {
+        folder "assets" {
+            file "AddUserForm.css"
+            file "AdminPage.css"
+            file "CategoryDropdown.css"
+            file "Footer.css"
+            file "Header.css"
+            file "Login.css"
+            file "NewAssetForm.css"
+            file "ResetPassword.css"
+        }
+        folder "components" {
+            file "AddAssetForm.jsx"
+            file "AddUserForm.jsx"
+            file "AdminPage.jsx"
+            file "CategoryDropdown.jsx"
+            file "Footer.jsx"
+            file "Header.jsx"
+            file "Login.jsx"
+            file "MainPage.jsx"
+            file "AssetOverview.jsx"
+            file "NavigatorPage.jsx"
+            file "Alert.jsx"
+            file "DashboardPage.jsx"
+            file "ResetPasswordPage.jsx"
+        }
+        file "App.css"
+        file "App.jsx"
+        file "index.css"
+        file "main.jsx"
+    }
+    file ".gitignore"
+    file "eslint.config.js"
+    file "index.html"
+    file "package-lock.json"
+    file "package.json"
+    file "README.md"
+    file "vite.config.js"
+}
+
+file ".env"
+file ".gcloudignore"
+file ".gitignore"
+file "app.yaml"
+file "jest.config.js"
+file "package-lock.json"
+file "package.json"
+file "README.md"
+file "design.md"
+
+@enduml

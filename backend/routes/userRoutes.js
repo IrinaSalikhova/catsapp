@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../model/User');
 const jwt = require("jsonwebtoken");
 const {sendEmail, sendPasswordResetEmail} = require("../emailService");
-const {authenticateJWT, generatePasswordResetToken, userRateLimiter } = require("../middleware");
+const {authenticateJWT, generatePasswordResetToken, generateToken, userRateLimiter } = require("../middleware");
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -55,20 +55,16 @@ router.patch('/togglestatus/:id', authenticateJWT, userRateLimiter, async (req, 
     }
 });
 
-router.post('/changepassword/:token', userRateLimiter, async (req, res) => {
+router.post('/changepassword', authenticateJWT, userRateLimiter, async (req, res) => {
     try {
-        const { token } = req.params;
         const { newPassword } = req.body;
         if (!newPassword) {
             return res.status(400).json({ message: 'New password is required' });
         }
+        console.log(req.userFromToken);
+        const userToUpdate = req.userFromToken;
 
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId;
-
-        const userToUpdate = await User.findById(userId);
-
-        await userToUpdate.changePassword(newPassword, userId);
+        await userToUpdate.changePassword(newPassword, userToUpdate.id);
 
         res.status(200).json({ message: 'Password changed successfully' });
     } catch (err) {
@@ -174,14 +170,7 @@ router.post('/login', userRateLimiter, async (req, res) => {
         if (!isMatch) {
           return res.status(400).json({ message: 'Invalid credentials' });
         }
-        const token = jwt.sign({ 
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            role: user.role
-        }, JWT_SECRET, {
-            expiresIn: "10d",
-        });
+        const token = generateToken(user);
         
         res.status(200).json({ 
             message: 'Login successful', 
