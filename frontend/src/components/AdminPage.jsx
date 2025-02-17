@@ -12,7 +12,7 @@ const AdminPage = () => {
     const token = localStorage.getItem('token');
     if (!token) { //add validity check and redirection to main page 
         console.error('User not authenticated');
-        //window.location.href = '/login';
+        window.location.href = '/login';
         return null;
     }
 

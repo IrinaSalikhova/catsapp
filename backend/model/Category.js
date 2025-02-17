@@ -1,8 +1,6 @@
 const db = require('../db');
 const util = require('util');
 const { DataTypes, Model } = require('sequelize');
-const db = require('../db');
-const util = require('util');
 
 const queryAsync = util.promisify(db.query).bind(db);
 

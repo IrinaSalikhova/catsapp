@@ -44,12 +44,12 @@ const globalRateLimiter = (req, res, next) => {
     next();
 };
   
-  const userRateLimiter = rateLimit({
+const userRateLimiter = rateLimit({
     windowMs: WINDOW_MS,
     max: MAX_USER_REQUESTS, // Limit each user to 30 requests per window
     keyGenerator: (req) => `${req.headers['x-user-id'] || req.ip}:${req.path}`,
     message: 'Too many requests, please try again later.',
-  }); 
+}); 
 
 module.exports = { authenticateJWT, generatePasswordResetToken, globalRateLimiter, userRateLimiter };
 
