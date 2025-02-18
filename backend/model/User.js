@@ -1,13 +1,10 @@
 const bcrypt = require('bcryptjs');
 const db = require('../db');
-const util = require('util');
 const validator = require('validator');
 const Joi = require('joi');
 
-const queryAsync = util.promisify(db.query).bind(db);
-
 const userSchema = Joi.object({
-    id: Joi.number().integer().optional(), //because of create
+    id: Joi.number().integer().optional(), 
     email: Joi.string().email().required(),
     role: Joi.string().valid("admin", "navigator").required(),
     firstName: Joi.string().min(2).max(50).allow(null).optional(),
@@ -22,10 +19,10 @@ const userSchema = Joi.object({
 });
 
 class User {
-
     constructor(data) {
         const { error, value } = userSchema.validate(data);
         if (error) throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
+        
         this.id = value.id;
         this.email = value.email;
         this.role = value.role;
@@ -48,7 +45,6 @@ class User {
         delete userData.lastUpdateByFirstName;
         delete userData.lastUpdateByLastName;
         delete userData.lastUpdateByJobTitle;
-        
     }
 
     static formatUserDetails(userData) {
@@ -60,58 +56,30 @@ class User {
             ? `${userData.lastUpdateByFirstName} ${userData.lastUpdateByLastName} - ${userData.lastUpdateByJobTitle || ''}`.trim()
             : "Deleted user";
 
-            this.cleanupUserData(userData); 
-
+        this.cleanupUserData(userData); 
         return userData;
     }
 
-
-
     static async create({ email, firstName, lastName, jobTitle, role, createdBy }) {
         try {
-            const { error, value } = userSchema.validate({
-                email, 
-                firstName, 
-                lastName, 
-                jobTitle, 
-                role
-            });
-            if (error) {
-                throw new Error(`Validation error: ${error.details.map(detail => detail.message).join(', ')}`);
-            }
+            const { error, value } = userSchema.validate({ email, firstName, lastName, jobTitle, role });
+            if (error) throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
 
             const existingUser = await User.findByEmail(value.email);
-            if (existingUser) {
-                throw new Error("A user with this email already exists");
-            }
+            if (existingUser) throw new Error("A user with this email already exists");
 
-            const roleQuery = 'SELECT id FROM roles WHERE name = ?';
-            const roleResult = await queryAsync(roleQuery, [value.role]);
-            if (!roleResult.length) {
-                throw new Error('Invalid role specified');
-            }
+            const [roleResult] = await db.query('SELECT id FROM roles WHERE name = ?', [value.role]);
+            if (!roleResult.length) throw new Error('Invalid role specified');
             const roleId = roleResult[0].id;
 
             const query = `
                 INSERT INTO users (email, firstName, lastName, jobTitle, roleId, isEnable, createdBy, lastupdateBy)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
-
-            const result = await queryAsync(
-                query, 
-                [
-                    value.email, 
-                    value.firstName, 
-                    value.lastName, 
-                    value.jobTitle || null,
-                    roleId, 
-                    value.isEnable, 
-                    createdBy || null, 
-                    createdBy || null, 
-                ]
-            );
+            const [result] = await db.query(query, [
+                value.email, value.firstName, value.lastName, value.jobTitle || null, roleId, value.isEnable, createdBy || null, createdBy || null
+            ]);
             return await User.findById(result.insertId);
-
         } catch (err) {
             throw new Error(`Error creating user: ${err.message}`);
         }
@@ -120,76 +88,57 @@ class User {
     static async findById(userId) {
         try {
             userId = Number(userId);
-            if (!userId || typeof userId !== 'number') {
-                throw new Error("Invalid user ID");
-            }
+            if (!userId || isNaN(userId)) throw new Error("Invalid user ID");
 
             const query = `
-                    SELECT 
-                        u.*, 
-                        r.name AS role,
-                        c.firstName AS createdByFirstName, c.lastName AS createdByLastName, c.jobTitle AS createdByJobTitle,
-                        l.firstName AS lastUpdateByFirstName, l.lastName AS lastUpdateByLastName, l.jobTitle AS lastUpdateByJobTitle
-                    FROM users u
-                    JOIN roles r ON u.roleId = r.id
-                    LEFT JOIN users c ON u.createdBy = c.id
-                    LEFT JOIN users l ON u.lastUpdateBy = l.id
-                    WHERE u.id = ?;
+                SELECT 
+                    u.*, r.name AS role,
+                    c.firstName AS createdByFirstName, c.lastName AS createdByLastName, c.jobTitle AS createdByJobTitle,
+                    l.firstName AS lastUpdateByFirstName, l.lastName AS lastUpdateByLastName, l.jobTitle AS lastUpdateByJobTitle
+                FROM users u
+                JOIN roles r ON u.roleId = r.id
+                LEFT JOIN users c ON u.createdBy = c.id
+                LEFT JOIN users l ON u.lastUpdateBy = l.id
+                WHERE u.id = ?;
             `;
-            const results = await queryAsync(query, [userId]);
-            
+            const [results] = await db.query(query, [userId]);
             if (!results.length) return null;
             
-            const userData = this.formatUserDetails(results[0]);
-            
-            return new User(userData);
-
+            return new User(this.formatUserDetails(results[0]));
         } catch (err) {
             throw new Error(`Error finding user by ID: ${err.message}`);
         }
-
     }
 
-    
     static async findByEmail(email) {
         try {
-            if (!email || !validator.isEmail(email)) {
-                return null;
-            }
+            if (!email || !validator.isEmail(email)) return null;
+
             const query = `
-                    SELECT 
-                        u.*, 
-                        r.name AS role,
-                        c.firstName AS createdByFirstName, c.lastName AS createdByLastName, c.jobTitle AS createdByJobTitle,
-                        l.firstName AS lastUpdateByFirstName, l.lastName AS lastUpdateByLastName, l.jobTitle AS lastUpdateByJobTitle
-                    FROM users u
-                    JOIN roles r ON u.roleId = r.id
-                    LEFT JOIN users c ON u.createdBy = c.id
-                    LEFT JOIN users l ON u.lastUpdateBy = l.id
-                    WHERE u.email = ?;
+                SELECT 
+                    u.*, r.name AS role,
+                    c.firstName AS createdByFirstName, c.lastName AS createdByLastName, c.jobTitle AS createdByJobTitle,
+                    l.firstName AS lastUpdateByFirstName, l.lastName AS lastUpdateByLastName, l.jobTitle AS lastUpdateByJobTitle
+                FROM users u
+                JOIN roles r ON u.roleId = r.id
+                LEFT JOIN users c ON u.createdBy = c.id
+                LEFT JOIN users l ON u.lastUpdateBy = l.id
+                WHERE u.email = ?;
             `;
-            
-            const results = await queryAsync(query, [email]);
+            const [results] = await db.query(query, [email]);
             if (!results.length) return null;
-            
-            const userData = this.formatUserDetails(results[0]);
 
-            return new User(userData);
-
+            return new User(this.formatUserDetails(results[0]));
         } catch (err) {
             throw new Error(`Error finding user by email: ${err.message}`);
         }
-
-        
-        
     }
 
     static async returnAllUsers() {
         try {
             const query = `
                 SELECT 
-                    u.*, 
-                    r.name AS role,
+                    u.*, r.name AS role,
                     c.firstName AS createdByFirstName, c.lastName AS createdByLastName, c.jobTitle AS createdByJobTitle,
                     l.firstName AS lastUpdateByFirstName, l.lastName AS lastUpdateByLastName, l.jobTitle AS lastUpdateByJobTitle
                 FROM users u
@@ -197,13 +146,8 @@ class User {
                 LEFT JOIN users c ON u.createdBy = c.id
                 LEFT JOIN users l ON u.lastUpdateBy = l.id;
             `;
-            const results = await queryAsync(query);
-            return results.length ? results.map(user => {
-                delete user.password;
-                this.formatUserDetails(user);
-                return new User(user);
-            }) : [];
-            
+            const [results] = await db.query(query);
+            return results.map(user => new User(this.formatUserDetails(user)));
         } catch (err) {
             throw new Error(`Error fetching all users: ${err.message}`);
         }
@@ -211,16 +155,12 @@ class User {
 
     async changePassword(newPassword, initiatorId) {
         try {
-            if (!newPassword || newPassword.length < 3 || newPassword.length > 20) {
-                throw new Error("Password must be between 3 and 20 characters");
-            }
+            if (!newPassword || newPassword.length < 3 || newPassword.length > 20) throw new Error("Password must be between 3 and 20 characters");
+
             const passwordHash = await bcrypt.hash(newPassword, 10);
             const query = 'UPDATE users SET password = ?, lastUpdateBy = ? WHERE id = ?';
-            
-            const result = await queryAsync(query, [passwordHash, initiatorId, this.id]);
-            if (result.affectedRows === 0) {
-                throw new Error('Failed to update password');
-            }
+            await db.query(query, [passwordHash, initiatorId, this.id]);
+
             return { message: 'Password changed successfully' };
         } catch (err) {
             throw new Error(`Error changing password: ${err.message}`);
@@ -229,81 +169,79 @@ class User {
 
     async toggleUserStatus(isEnable, initiatorId) {
         try {
-            const isEnableBit = isEnable ? 1 : 0; // Convert boolean to bit value (1 or 0)
+            const isEnableBit = isEnable ? 1 : 0; 
         
             const query = 'UPDATE users SET isEnable = ?, lastUpdateBy = ? WHERE id = ?';
-            const result = await queryAsync(query, [isEnableBit, initiatorId, this.id]);
-
+            const [result] = await db.query(query, [isEnableBit, initiatorId, this.id]);
+    
             if (result.affectedRows === 0) {
                 throw new Error('Failed to update user status');
             }
+    
             this.isEnable = isEnable;
             return { message: isEnable ? 'User activated successfully' : 'User deactivated successfully' };
         } catch (err) {
             throw new Error(`Error updating user status: ${err.message}`);
         }
     }
-
+    
     async update(updates, initiatorId) {
         try {
             const allowedFields = ['email', 'firstName', 'lastName', 'jobTitle', 'roleId'];
             const updatesToApply = {};
-
-            const roleQuery = 'SELECT id FROM roles WHERE name = ?';
-            const roleResult = await queryAsync(roleQuery, [updates.role]);
+    
+            const [roleResult] = await db.query('SELECT id FROM roles WHERE name = ?', [updates.role]);
             if (!roleResult.length) {
                 throw new Error('Invalid role specified');
             }
             const roleId = roleResult[0].id;
             updates.roleId = roleId;
             delete updates.role;
-
+    
             for (const key of Object.keys(updates)) {
                 if (!allowedFields.includes(key)) {
                     throw new Error(`Cannot update field: ${key}`);
                 }
                 updatesToApply[key] = updates[key];
             }
-
+    
             if (Object.keys(updatesToApply).length === 0) {
                 throw new Error('No valid fields to update');
             }
-
+    
             updatesToApply.lastUpdateBy = initiatorId;
-
+    
             const updateFields = Object.keys(updatesToApply).map(key => `${key} = ?`).join(', ');
             const query = `UPDATE users SET ${updateFields} WHERE id = ?`;
-
-            const result = await queryAsync(query, [...Object.values(updatesToApply), this.id]);
-
+    
+            const [result] = await db.query(query, [...Object.values(updatesToApply), this.id]);
+    
             if (result.affectedRows === 0) {
                 throw new Error('Failed to update user');
             }
-        
+    
             Object.assign(this, updatesToApply);
-
+    
             return { message: 'User updated successfully' };
         } catch (err) {
             throw new Error(`Error updating user: ${err.message}`);
         }
     }
-
-
+    
     async delete() {
         try {
             const query = 'DELETE FROM users WHERE id = ?';
-            const results = await queryAsync(query, [this.id]);
-
+            const [results] = await db.query(query, [this.id]);
+    
             if (results.affectedRows === 0) {
                 throw new Error('No user found with the provided ID');
             }
-
-            return { message: 'User deleted successfully'};
+    
+            return { message: 'User deleted successfully' };
         } catch (err) {
             throw new Error(`Error deleting user: ${err.message}`);
         }
     }
-
 }
 
 module.exports = User;

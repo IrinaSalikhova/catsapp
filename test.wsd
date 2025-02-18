@@ -90,11 +90,11 @@ AssetRoutes ..> Asset
 CategoryRoutes ..> Category
 
 ' Utility and Middleware connections
-EmailService ..> User
-EmailService ..> Asset
-Middleware ..> User
-Middleware ..> Asset
-Middleware ..> Category
+EmailService ..> UserRoutes
+EmailService ..> AssetRoutes
+Middleware ..> UserRoutes
+Middleware ..> AssetRoutes
+Middleware ..> CategoryRoutes
 Database ..> User
 Database ..> Asset
 Database ..> Category
