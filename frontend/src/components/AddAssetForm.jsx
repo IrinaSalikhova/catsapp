@@ -1,42 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import CategoryDropdown from './CategoryDropdown';
-import '../assets/NewAssetForm.css';
+import '../assets/AddAssetForm.css';
 import cchclogo from "/big_logo.png";
 
 const carlingtonIcon = '/carlington_icon.webp';
 
-
-
 const NewAssetForm = ({ onClose }) => {
-
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const handleCategorySelect = (categories) => {
     setSelectedCategories(categories);
     console.log('Selected categories:', categories);
   };
-    
+
   return (
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="header">
-          <h1>New Community Resource Form </h1>
+          <h1>New <span title="i.e., a resource, service, program of other community-based activity open to the public">
+          Community Resource</span> Form </h1>
           <button className="close-button" onClick={onClose}>X</button>
         </div>
-        <div>
-          <text> Hi, thank you for your willingness to help your community with this valuable information. 
-            Before proceeding to the form, please answer the following questions:</text>
-        </div>
-        <div> 
-          <text> Are there multiple resources under a single entity or is it a standalone resource? </text>
-          <button className="multiple" onClick={ToggleEvent}>Input main and sub entities</button>
-          <button className="standalone" onClick={ToggleEvent}>Standalone</button>
-          </div>
-          <div>
-            <text> Does the asset have a physical location?</text>
-            <button className="yes" onClick={ToggleEvent}>Yes</button>
-            <button className="no" onClick={ToggleEvent}>No</button>
-          </div>
         <form id="suggestionForm">
         <div class="form-grid">
         <div>
@@ -49,17 +33,26 @@ const NewAssetForm = ({ onClose }) => {
                     <label id="assetdivision" name="assetdivision"></label>
                       <button type="assetdivisionMultiple" onClick={ToggleEvent}>Multiple</button>
                       <button type ="assetdivisionStandalone" onClick={ToggleEvent}>Standalone</button>
-                    <label for="assetplace">Does the asset have a <span title = "Can be a building, or a meeting spot for an activity or program"><u>physical location?</u></span></label>
+                    <label for="assetplace">Does the entity have a <span title = "Can be a building, or a meeting spot for an activity or program"><u>physical location?</u></span></label>
                     <label id="assetplace" name="assetplace"></label>
                       <button type="assetplaceYes" onClick={ToggleEvent}>Yes</button>
                       <button type="assetplaceNo" onClick={ToggleEvent}>No</button>
                     <label for="name">Resource Name*</label>
                     <input type="text" id="name" placeholder="Enter resource name" required/>
                 </div>
-              <div>
-                    <CategoryDropdown onCategorySelect={handleCategorySelect} />
-              </div>
+                <div> 
+                  <CategoryDropdown onCategorySelect={handleCategorySelect} />
+                </div>
 
+          {/* Display selected category as debug info */}
+          <div>
+            <p>Selected Categories:</p>
+                <ul>
+                    {selectedCategories.map((category) => (
+                      <li key={category.id}>{category.name}</li>
+                    ))}
+                </ul>
+          </div>
                 <div>
                     <label for="description">Description</label>
                     <textarea id="description" placeholder="Describe your suggestion" required></textarea>
@@ -137,6 +130,8 @@ const NewAssetForm = ({ onClose }) => {
             </div>
             <div className='button-container-form'>
             <button type="submit">Submit</button>
+            </div>
+            </div>
         </form>
       </div>
     </div>
