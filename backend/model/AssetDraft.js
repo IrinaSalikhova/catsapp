@@ -5,13 +5,13 @@ const Joi = require('joi');
 const assetSchema = Joi.object({
 });
 
-class Asset {
+class AssetDraft {
     constructor(data) {
         const { error, value } = assetSchema.validate(data); // You would create a schema like userSchema for validation
         if (error) throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
 
         this.id = value.id;
-        this.draftId = value.draftId;
+        this.assetId = value.draftId;
         this.mainAssetId = value.mainAssetId;
         this.name = value.name;
         this.province = value.province;
@@ -20,7 +20,7 @@ class Asset {
         this.postCode = value.postCode;
         this.longitude = value.longitude;
         this.latitude = value.latitude;
-        this.isVolunOpp = value.isVolunOpp;
+        this.isVolunOpp = value.isVolunOpp instanceof Buffer ? Boolean(value.isVolunOpp.readUInt8(0)) : value.isEnable;
         this.volunOppText = value.volunOppText;
         this.phoneNumber = value.phoneNumber;
         this.email = value.email;
@@ -128,4 +128,4 @@ class Asset {
 
 }
 
-module.exports = Asset;
+module.exports = AssetDraft;
