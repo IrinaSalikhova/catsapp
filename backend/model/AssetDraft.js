@@ -1,131 +1,133 @@
-const db = require('../db');
-const validator = require('validator');
+// AssetDraft.js
 const Joi = require('joi');
+const db = require('../db');
+const Address = require('./Address');
+const ContactInfo = require('./ContactInfo');
 
-const assetSchema = Joi.object({
+const assetDraftSchema = Joi.object({
+    id: Joi.number().integer().optional(), 
+    assetId: Joi.number().integer().optional(),
+    categoryIds: Joi.array().items(Joi.number().integer()).required(),
+    name: Joi.string().required(),
+    description: Joi.string().allow(null).optional(),
+    isVolunOpp: Joi.boolean().allow(null).default(false),
+    volunOppText: Joi.string().allow(null).optional(),
+    registrationNote: Joi.string().allow(null).optional(),
+    scheduleNote: Joi.string().allow(null).optional(),
+    status: Joi.string().valid("pending", "approved", "rejected").default("pending"),
+    createdEmail: Joi.string().allow(null).email().optional(),
+    createDate: Joi.date().allow(null).optional(),
+
+    cityName: Joi.string().allow(null).optional(),
+    cityCode: Joi.string().allow(null).optional(),
+    address: Joi.string().allow(null).optional(),
+    postCode: Joi.string().allow(null).optional(),
+    longitude: Joi.number().allow(null).optional(),
+    latitude: Joi.number().allow(null).optional(),
+
+    email: Joi.alternatives().try(
+        Joi.array().items(Joi.string().email()).allow(null),
+        Joi.string().allow(null)
+    ).optional(),
+    phoneNumber: Joi.alternatives().try(
+        Joi.array().items(Joi.string()).allow(null),
+        Joi.string().allow(null)
+    ).optional(),
+    website: Joi.alternatives().try(
+        Joi.array().items(Joi.string()).allow(null),
+        Joi.string().allow(null)
+    ).optional(),
 });
 
 class AssetDraft {
-    constructor(data) {
-        const { error, value } = assetSchema.validate(data); // You would create a schema like userSchema for validation
+    constructor({data}) {
+        const { error, value } = assetDraftSchema.validate(data);
         if (error) throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
 
         this.id = value.id;
-        this.assetId = value.draftId;
-        this.mainAssetId = value.mainAssetId;
+        this.assetId = value.assetId;
+        this.categoryIds = value.categoryIds;
         this.name = value.name;
-        this.province = value.province;
-        this.city = value.city;
-        this.address = value.address;
-        this.postCode = value.postCode;
-        this.longitude = value.longitude;
-        this.latitude = value.latitude;
-        this.isVolunOpp = value.isVolunOpp instanceof Buffer ? Boolean(value.isVolunOpp.readUInt8(0)) : value.isEnable;
+        this.description = value.description;
+        this.isVolunOpp = value.isVolunOpp instanceof Buffer ? Boolean(value.isVolunOpp.readUInt8(0)) : value.isVolunOpp;
         this.volunOppText = value.volunOppText;
-        this.phoneNumber = value.phoneNumber;
-        this.email = value.email;
-        this.website = value.website;
-        this.isAccessibility = value.isAccessibility;
-        this.isWheelchirAcc = value.isWheelchirAcc;
-        this.languagesOff = value.languagesOff;
-        this.scheduleType = value.scheduleType;
-        this.volunteerNote = value.volunteerNote;
         this.registrationNote = value.registrationNote;
         this.scheduleNote = value.scheduleNote;
-        this.socialWorkerNote = value.socialWorkerNote;
-        this.description = value.description;
-        this.isEnable = value.isEnable instanceof Buffer ? Boolean(value.isEnable.readUInt8(0)) : value.isEnable;
-        this.createdEmail = 
-        this.createdBy = value.createdBy;
+        this.status = value.status;
+        this.createdEmail = value.createdEmail;
         this.createDate = value.createDate;
-        this.lastUpdateBy = value.lastUpdateBy;
-        this.lastUpdateDate = value.lastUpdateDate;
+        this.address = new Address({ 
+            cityName: value.cityName, 
+            cityCode: value.cityCode, 
+            address: value.address, 
+            postCode: value.postCode, 
+            latitude: value.latitude, 
+            longitude: value.longitude });
+        this.contactInfo = new ContactInfo({email: value.email, phoneNumber: value.phoneNumber, website: value.website});
+
     }
 
-    'CREATE TABLE `AssetsDraft` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `assetId` int DEFAULT NULL COMMENT ''reference to forma, just for updatel'',
-  `name` varchar(255) NOT NULL COMMENT ''asset name'',
-  `province` varchar(5) NOT NULL COMMENT ''asset location province'',
-  `city` varchar(5) DEFAULT NULL COMMENT ''asset location city'',
-  `address` varchar(500) DEFAULT NULL COMMENT ''asset location address'',
-  `postCode` varchar(10) DEFAULT NULL COMMENT ''asset postcode'',
-  `longitude` varchar(50) DEFAULT NULL COMMENT ''longitude'',
-  `latitude` varchar(50) DEFAULT NULL COMMENT ''latitude'',
-  `isVolunOpp` bit(1) DEFAULT NULL COMMENT ''if is volunteer Oppoetunities'',
-  `volunOppText` varchar(100) DEFAULT NULL COMMENT '' volunteer Oppoetunities remark'',
-  `phoneNumber` varchar(500) DEFAULT NULL COMMENT ''contractor phoneNumbe'',
-  `email` varchar(500) DEFAULT NULL COMMENT ''contractor email'',
-  `website` varchar(500) DEFAULT NULL COMMENT ''website url'',
-  `isAccessibility` bit(1) DEFAULT NULL COMMENT ''if has Accessibility'',
-  `isWheelchirAcc` bit(1) DEFAULT NULL COMMENT ''if has wheelchair Accessibility'',
-  `languagesOff` varchar(5) DEFAULT NULL COMMENT ''languages offered option(englis/franch/Bilingual)'',
-  `scheduleType` varchar(5) DEFAULT NULL,
-  `volunteerNote` varchar(500) DEFAULT NULL,
-  `registrationNote` varchar(500) DEFAULT NULL,
-  `scheduleNote` varchar(500) DEFAULT NULL,
-  `description` varchar(500) DEFAULT NULL COMMENT ''remark'',
-  `type` varchar(5) DEFAULT NULL COMMENT ''create;update'',
-  `status` varchar(5) DEFAULT NULL COMMENT ''Pending; Approved; Rejectedt'',
-  `createdEmail` varchar(100) DEFAULT NULL COMMENT ''created by user(email)'',
-  `createDate` datetime DEFAULT NULL COMMENT ''create date'',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT=''asset table, include all kind of asset: facility, service, p'''
-    static formatAssetDetails(assetData) {
-        // similar to formatUserDetails
-        return assetData;
-    }
-
-    static async create({ draftId, mainAssetId, name, province, city, address, postCode, longitude, latitude, isVolunOpp, volunOppText, phoneNumber, email, website, isAccessibility, isWheelchirAcc, languagesOff, scheduleType, volunteerNote, registrationNote, scheduleNote, socialWorkerNote, description, isEnable, createdBy }) {
+    async save() {
+        const connection = await db.getConnection();
         try {
-            // Validate the data
-            const { error, value } = assetSchema.validate({ draftId, mainAssetId, name, province, city, address, postCode, longitude, latitude, isVolunOpp, volunOppText, phoneNumber, email, website, isAccessibility, isWheelchirAcc, languagesOff, scheduleType, volunteerNote, registrationNote, scheduleNote, socialWorkerNote, description, isEnable });
-            if (error) throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
+            await connection.beginTransaction();
+            const addressData = await this.address.toDatabaseFormat();
+            const contactData = this.contactInfo.toDatabaseFormat();
 
-            // Insert into the database
-            const query = `
-                INSERT INTO Assets (
-                    draftId, mainAssetId, name, province, city, address, postCode, longitude, latitude, 
-                    isVolunOpp, volunOppText, phoneNumber, email, website, isAccessibility, isWheelchirAcc, 
-                    languagesOff, scheduleType, volunteerNote, registrationNote, scheduleNote, socialWorkerNote, 
-                    description, isEnable, createdBy, createDate
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `;
-            const [result] = await db.query(query, [
-                value.draftId, value.mainAssetId, value.name, value.province, value.city, value.address, 
-                value.postCode, value.longitude, value.latitude, value.isVolunOpp, value.volunOppText, 
-                value.phoneNumber, value.email, value.website, value.isAccessibility, value.isWheelchirAcc, 
-                value.languagesOff, value.scheduleType, value.volunteerNote, value.registrationNote, 
-                value.scheduleNote, value.socialWorkerNote, value.description, value.isEnable, 
-                value.createdBy, value.createDate || new Date()
-            ]);
+            const [result] = await connection.query(
+                `INSERT INTO assetsDraft (assetId, name, description, isVolunOpp, volunOppText, 
+                registrationNote, scheduleNote, status, createdEmail, 
+                 cityCode, address, postCode, longitude, latitude, 
+                 phoneNumber, email, website)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [this.assetId, this.name, this.description, this.isVolunOpp, this.volunOppText, 
+                    this.registrationNote, this.scheduleNote,this.status, this.createdEmail,
+                    addressData.cityCode, addressData.address, addressData.postCode, addressData.longitude, addressData.latitude, 
+                    contactData.phoneNumber, contactData.email, contactData.website]
+            );
+        
+            this.id = result.insertId;
 
-            return await Asset.findById(result.insertId);
-        } catch (err) {
-            throw new Error(`Error creating asset: ${err.message}`);
+            for (const categoryId of this.categoryIds) {
+                await connection.query(
+                    `INSERT INTO draftCategLinks (assetDraftId, categoryId) VALUES (?, ?)`,
+                    [this.id, categoryId]
+                );
+            }
+
+            await connection.commit();
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
         }
     }
 
-    static async findById(assetId) {
-        try {
-            assetId = Number(assetId);
-            if (!assetId || isNaN(assetId)) throw new Error("Invalid asset ID");
+    static async getById(id) {
+        const [rows] = await db.query(
+            `SELECT ad.*, 
+                    GROUP_CONCAT(dcl.categoryId) AS categoryIds
+             FROM assetsDraft ad
+             LEFT JOIN draftCategLinks dcl ON ad.id = dcl.assetDraftId
+             WHERE ad.id = ?
+             GROUP BY ad.id`, 
+            [id]
+        );
+    
+        if (rows.length === 0) return null;
+    
+        const assetDraftData = rows[0];
+    
+        assetDraftData.categoryIds = assetDraftData.categoryIds 
+            ? assetDraftData.categoryIds.split(',').map(Number) 
+            : [];
 
-            const query = `
-                SELECT * 
-                FROM Assets
-                WHERE id = ?
-            `;
-            const [results] = await db.query(query, [assetId]);
-            if (!results.length) return null;
-            
-            return new Asset(results[0]);
-        } catch (err) {
-            throw new Error(`Error finding asset by ID: ${err.message}`);
-        }
+        assetDraftData.isVolunOpp = Boolean(assetDraftData.isVolunOpp.readUInt8(0));
+    
+        return new AssetDraft({ data: assetDraftData });
     }
-
-
 }
+
 
 module.exports = AssetDraft;
