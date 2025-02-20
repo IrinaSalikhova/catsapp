@@ -15,7 +15,7 @@ const authenticateJWT = async (req, res, next) => {
         if (!user || !user.isEnable) {
             return res.status(403).json({ error: "User account is disabled or deleted" });
         }
-        req.userFromToken = decoded;
+        req.userFromToken = user;
         next();
     } catch (err) {
         return res.status(403).json({ error: "Invalid token" });
@@ -23,7 +23,18 @@ const authenticateJWT = async (req, res, next) => {
 };
 
 const generatePasswordResetToken = (userId) => {
-    return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '1d' });
+    return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '1d' });
+};
+
+const generateToken = (user) => {
+    return jwt.sign({ 
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+    }, JWT_SECRET, {
+        expiresIn: "10d",
+    });
 };
 
 
@@ -51,5 +62,5 @@ const userRateLimiter = rateLimit({
     message: 'Too many requests, please try again later.',
 }); 
 
-module.exports = { authenticateJWT, generatePasswordResetToken, globalRateLimiter, userRateLimiter };
+module.exports = { authenticateJWT, generateToken, generatePasswordResetToken, globalRateLimiter, userRateLimiter };
 

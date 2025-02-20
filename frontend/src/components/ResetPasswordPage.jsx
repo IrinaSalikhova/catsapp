@@ -18,9 +18,10 @@ const ResetPasswordPage = () => {
         }
 
         try {
-            const response = await fetch(`/api/users/changepassword/${token}`, {
+            const response = await fetch(`/api/users/changepassword`, {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ newPassword }),

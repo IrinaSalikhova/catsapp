@@ -1,0 +1,104 @@
+@startuml
+
+' User class with attributes and role-based relationships
+class User {
+    +id: int
+    +firstName: string
+    +lastName: string
+    +email: string
+    +jobTitle: string
+    +password: string
+    +role: string
+    +isEnable: boolean
+    +createdBy: string
+    +createDate: date
+    +lastUpdateBy: string
+    +lastUpdateDate: date
+}
+
+' Asset (Community Resource)
+class Asset {
+    +id: int
+    +name: string
+    +description: string
+    +categoryId: int
+    +address: string
+    +contactInfo: string
+    +hours: string
+    +transportation: string
+    +accessibility: string
+    +registrationInfo: string
+    +volunteerOpportunities: string
+    +notes: string
+}
+
+' Category class with hierarchical relationships
+class Category {
+    +id: int
+    +level: int
+    +name: string
+    +parentCategoryId: int
+}
+
+' Utility class for handling emails
+class EmailService {
+    +sendEmail(to: string, subject: string, templateName: string, data: array): void
+    +sendPasswordResetEmail(to: string, subject: string, templateName: string, data: array): void
+    +loadTemplate(templateName: string, data:array): template
+}
+
+' Middleware class for authentication and rate limiting
+class Middleware {
+    +authenticateJWT(request: Request): array
+    +generateToken(user: user): string
+    +generatePasswordResetToken(userId: int): string
+    +globalRateLimiter(request: Request): void
+    +userRateLimiter(request: Request): void
+}
+
+' Database class for handling connections and queries
+class Database {
+    +connect(): void
+}
+
+' API Routes as interfaces
+interface UserRoutes {
+    +PATCH/update/:id(id: id, updates: JSONobject, token: string): string 
+    +PATCH/togglestatus/:id(id: id, isEnable: boolean, token: string): string 
+    +POST/changepassword(newPassword: string, token: string): string 
+    +POST/sendpasswordreset(email: string): string 
+    +POST/register(newUser: JSONobject, token: string): string 
+    +DELETE/delete/:id(id: id, token: string): string 
+    +POST/login(email: string, password: string): string
+    +GET/current(token: string): JSONobject 
+    +GET/usertable(token: string): array(JSONobject)
+}
+
+interface AssetRoutes {
+    +createAsset(asset: Asset): void
+    +getAssets(): List<Asset>
+}
+
+interface CategoryRoutes {
+    +GET/tree(): JSONobject
+}
+
+
+' Connecting routes to models
+UserRoutes ..> User
+AssetRoutes ..> Asset
+CategoryRoutes ..> Category
+
+' Utility and Middleware connections
+EmailService ..> UserRoutes
+EmailService ..> AssetRoutes
+Middleware ..> UserRoutes
+Middleware ..> AssetRoutes
+Middleware ..> CategoryRoutes
+Database ..> User
+Database ..> Asset
+Database ..> Category
+Category ..> Asset
+User ..> Asset
+
+@enduml
