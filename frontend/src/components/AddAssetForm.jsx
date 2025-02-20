@@ -1,68 +1,66 @@
 import React, { useEffect, useState } from 'react';
 import CategoryDropdown from './CategoryDropdown';
-import '../assets/NewAssetForm.css';
+import '../assets/AddAssetForm.css';
 import cchclogo from "/big_logo.png";
 
 const carlingtonIcon = '/carlington_icon.webp';
 
-
-
 const NewAssetForm = ({ onClose }) => {
-
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const handleCategorySelect = (categories) => {
     setSelectedCategories(categories);
     console.log('Selected categories:', categories);
   };
-    
+
   return (
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="header">
-          <h1>Asset Suggestion Form</h1>
+          <h1>New <span title="i.e., a resource, service, program of other community-based activity open to the public">
+          Community Resource</span> Form </h1>
           <button className="close-button" onClick={onClose}>X</button>
         </div>
         <form id="suggestionForm">
         <div class="form-grid">
-                <div>
-                    <label for="assetdivision">Does the new asset provide several services and activities or is it a standalone asset?</label>
+        <div>
+          <label> Hi, thank you for your willingness to help your community with this valuable information. 
+            Before proceeding to the form, please answer the following questions:</label>
+        </div>
+                  <div>
+                    <label for="assetdivision">Are there multiple resources under a single <span title="Entity is either a building, program at a specific location, or an online program to benefit the community">
+                      <u>entity</u></span> or is it a standalone resource?</label>
                     <label id="assetdivision" name="assetdivision"></label>
-                        <input type="checkbox" id="assetdivisionYes" name="assetdivisionYes" value="yes"/> Yes: Proceed to multi-input of main and collateral assets
-                        <input type="checkbox" id="assetdivisionNo" name="assetdivisionNo" value="no"/> No: Proceed to standalone
-                    <label for="assetplace">Does the asset have a physical location?</label>
+                      <button type="assetdivisionMultiple" onClick={ToggleEvent}>Multiple</button>
+                      <button type ="assetdivisionStandalone" onClick={ToggleEvent}>Standalone</button>
+                    <label for="assetplace">Does the entity have a <span title = "Can be a building, or a meeting spot for an activity or program"><u>physical location?</u></span></label>
                     <label id="assetplace" name="assetplace"></label>
-                        <input type="checkbox" id="assetplaceYes" name="assetplaceYes" value="yes"/> Yes: Address is necessary
-                        <input type="checkbox" id="assetplaceNo" name="assetplaceNo" value="no"/> Online: Website is necessary
+                      <button type="assetplaceYes" onClick={ToggleEvent}>Yes</button>
+                      <button type="assetplaceNo" onClick={ToggleEvent}>No</button>
                     <label for="name">Resource Name*</label>
-                    <input type="text" id="name" placeholder="Enter name" required/>
+                    <input type="text" id="name" placeholder="Enter resource name" required/>
                 </div>
-                
-                
-
-                <div>
-                    <CategoryDropdown onCategorySelect={handleCategorySelect} />
+                <div> 
+                  <CategoryDropdown onCategorySelect={handleCategorySelect} />
                 </div>
 
           {/* Display selected category as debug info */}
           <div>
-  <p>Selected Categories:</p>
-  <ul>
-    {selectedCategories.map((category) => (
-      <li key={category.id}>{category.name}</li>
-    ))}
-  </ul>
-</div>
-
-
+            <p>Selected Categories:</p>
+                <ul>
+                    {selectedCategories.map((category) => (
+                      <li key={category.id}>{category.name}</li>
+                    ))}
+                </ul>
+          </div>
                 <div>
                     <label for="description">Description</label>
                     <textarea id="description" placeholder="Describe your suggestion" required></textarea>
 
-                    <label for="volunteer">Volunteer Opportunities</label>
+                    <label for="volunteer">Are there any volunteering opportunities available within this resource?</label>
                     <label id="volunteer" name="volunteer"></label>
-                        <input type="checkbox" id="volunteerYes" name="volunteerYes" value="yes"/> Yes
-                        <input type="checkbox" id="volunteerNo" name="volunteerNo" value="no"/> No
+                      <button type ="volunteerYes" onClick={ToggleEvent}>Yes</button>
+                      <button type ="volunteerNo" onClick={ToggleEvent}>No</button>
                     <label for="volunteerDes">If yes,</label>
                     <textarea id="volunteerDes" placeholder="Description" required></textarea>
                     <label for="address">Address</label>
@@ -103,6 +101,9 @@ const NewAssetForm = ({ onClose }) => {
                 <option value="once">Once</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
+                <option value= "daily">Daily</option>
+                <option value= "always">Always</option>
+                <option value= "onDemand">On-Demand</option>
             </select>
 
             <label for="format">Format</label>
@@ -118,7 +119,8 @@ const NewAssetForm = ({ onClose }) => {
             </div>
             <input type="text" id="registrationInfo" placeholder="Enter Languages Options"/>
 
-            <label for="registrationInfo">Registration Information</label>
+            <label for="registrationInfo"><span title="Information like location, timings or a schedule for a certain program/activity">
+            <u>Registration Information</u></span></label>
             <input type="text" id="registrationInfo" placeholder="Enter registration information"/>
 
             <label for="additionalNotes">Additional Notes</label>
