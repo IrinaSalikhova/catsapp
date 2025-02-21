@@ -27,7 +27,7 @@ class Address {
 
     async toDatabaseFormat() {
         return {
-            cityCode: this.cityCode || (await Address.getCityCode(this.cityName)),
+            cityCode: (await Address.getCityCode(this.cityName)),
             address: this.address,
             postCode: this.postCode,
             longitude: this.longitude,

@@ -5,11 +5,15 @@ folder "CATSAPP" {
     folder "backend" {
         folder "emailTemplates" {
             file "passwordReset.html"
+            file "replyOnDraft.html"
             file "welcome.html"
         }
         folder "model" {
+            file "Address.js"
             file "Asset.js"
+            file "AssetDraft.js"
             file "Category.js"
+            file "ContactInfo.js"
             file "User.js"
         }
         folder "routes" {
@@ -19,7 +23,9 @@ folder "CATSAPP" {
         }
         folder "tests" {
             file "asset.test.js"
+            file "assetDraft.test.js"
             file "category.test.js"
+            file "middleware.test.js"
             file "setup.js"
             file "user.test.js"
         }
@@ -61,13 +67,13 @@ folder "CATSAPP" {
         }
         folder "src" {
             folder "assets" {
+                file "AddAssetForm.css"
                 file "AddUserForm.css"
                 file "AdminPage.css"
                 file "CategoryDropdown.css"
                 file "Footer.css"
                 file "Header.css"
                 file "Login.css"
-                file "NewAssetForm.css"
                 file "ResetPassword.css"
             }
             folder "components" {
@@ -81,8 +87,6 @@ folder "CATSAPP" {
                 file "MainPage.jsx"
                 file "AssetOverview.jsx"
                 file "NavigatorPage.jsx"
-                file "Alert.jsx"
-                file "DashboardPage.jsx"
                 file "ResetPasswordPage.jsx"
             }
             file "App.css"
@@ -107,7 +111,6 @@ folder "CATSAPP" {
     file "package-lock.json"
     file "package.json"
     file "README.md"
-    file "design.md"
 }
 
 @enduml

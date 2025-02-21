@@ -1,43 +1,92 @@
-@startuml
+@startuml catsapp
 
 ' User class with attributes and role-based relationships
 class User {
-    +id: int
-    +firstName: string
-    +lastName: string
-    +email: string
-    +jobTitle: string
-    +password: string
-    +role: string
-    +isEnable: boolean
-    +createdBy: string
-    +createDate: date
-    +lastUpdateBy: string
-    +lastUpdateDate: date
+    - id: int
+    - email: string
+    - role: string
+    - firstName: string
+    - lastName: string
+    - jobTitle: string
+    - password: string
+    - isEnable: boolean
+    - createdBy: string
+    - createDate: Date
+    - lastUpdateBy: string
+    - lastUpdateDate: Date
+
+    + User(data: Object)
+    + static cleanupUserData(userData: Object): void
+    + static formatUserDetails(userData: Object): Object
+    + static create(userData: Object): User
+    + static findById(userId: int): User
+    + static findByEmail(email: string): User
+    + static returnAllUsers(): List<User>
+    + changePassword(newPassword: string, initiatorId: int): Object
+    + toggleUserStatus(isEnable: boolean, initiatorId: int): Object
+    + update(updates: Object, initiatorId: int): Object
+    + delete(): Object
 }
 
-' Asset (Community Resource)
+class Address {
+    -cityName : string
+    -cityCode : string
+    -address : string
+    -postCode : string
+    -longitude : string
+    -latitude : string
+
+    +constructor(cityName: string, cityCode: string, address: string, postCode: string, longitude: string, latitude: string)
+    +getCityCode(cityName: string) : string
+    +toDatabaseFormat() : object
+}
+
+class ContactInfo {
+    -email : string[]
+    -phoneNumber : string[]
+    -website : string[]
+
+    +constructor(email: string[], phoneNumber: string[], website: string[])
+    +toDatabaseFormat() : object
+}
+
+class AssetDraft {
+    -id : number
+    -assetId : number
+    -categoryIds : number[]
+    -name : string
+    -description : string
+    -isVolunOpp : boolean
+    -volunOppText : string
+    -registrationNote : string
+    -scheduleNote : string
+    -status : string
+    -createdEmail : string
+    -createDate : date
+    -address : Address
+    -contactInfo : ContactInfo
+
+    +constructor(data: object)
+    +save() : void
+    +getById(id: number) : AssetDraft
+    +getAllPendingAssets() : AssetDraft[]
+    +hasCreatedEmail() : boolean
+    +sendReply(message: string) : void
+    +changeState(newState: string) : void
+    +editAssetDraft(updatedData: object) : void
+}
+
+
+class Schedule {}
+
+
 class Asset {
-    +id: int
-    +name: string
-    +description: string
-    +categoryId: int
-    +address: string
-    +contactInfo: string
-    +hours: string
-    +transportation: string
-    +accessibility: string
-    +registrationInfo: string
-    +volunteerOpportunities: string
-    +notes: string
 }
 
 ' Category class with hierarchical relationships
 class Category {
-    +id: int
-    +level: int
-    +name: string
-    +parentCategoryId: int
+    +getAllCategories() : object[]
+    +getCategoryTree() : object[]
 }
 
 ' Utility class for handling emails
@@ -47,8 +96,14 @@ class EmailService {
     +loadTemplate(templateName: string, data:array): template
 }
 
-' Middleware class for authentication and rate limiting
-class Middleware {
+class EmailTemplates {
+    [ReplyOnDraft.html]
+    [AnotherTemplate.html]
+    [NotificationTemplate.html]
+}
+
+' middleware class for authentication and rate limiting
+class middleware {
     +authenticateJWT(request: Request): array
     +generateToken(user: user): string
     +generatePasswordResetToken(userId: int): string
@@ -56,49 +111,96 @@ class Middleware {
     +userRateLimiter(request: Request): void
 }
 
-' Database class for handling connections and queries
-class Database {
-    +connect(): void
+' Database for handling connections and queries
+interface Database {
+    +getConnection(): Promise<Connection>
+    +query(sql: String, params: Array): Promise<[ResultSetHeader, any]>
+    +close(): void
 }
 
 ' API Routes as interfaces
 interface UserRoutes {
-    +PATCH/update/:id(id: id, updates: JSONobject, token: string): string 
-    +PATCH/togglestatus/:id(id: id, isEnable: boolean, token: string): string 
-    +POST/changepassword(newPassword: string, token: string): string 
-    +POST/sendpasswordreset(email: string): string 
-    +POST/register(newUser: JSONobject, token: string): string 
-    +DELETE/delete/:id(id: id, token: string): string 
-    +POST/login(email: string, password: string): string
-    +GET/current(token: string): JSONobject 
-    +GET/usertable(token: string): array(JSONobject)
+    +PATCH /update/:id(id: string, updates: Record<string, any>, token: string): JSONobject
+    +PATCH /togglestatus/:id(id: string, isEnable: boolean, token: string): JSONobject
+    +POST /changepassword(newPassword: string, token: string): JSONobject
+    +POST /sendpasswordreset(email: string): JSONobject
+    +POST /register(newUser: Record<string, any>, token: string): JSONobject
+    +DELETE /delete/:id(id: string, token: string): JSONobject
+    +POST /login(email: string, password: string): JSONobject
+    +GET /current(token: string): JSONobject
+    +GET /usertable(token: string): array<JSONobject>
 }
 
 interface AssetRoutes {
-    +createAsset(asset: Asset): void
-    +getAssets(): List<Asset>
+    +POST /suggestNewAsset(newAssetData: JSONobject, token: string): string
+    +POST /reviewAsset(reviewedDraftId: string, reviewDecision: string, reviewComment: string, token: string): string
+    +PUT /editAssetDraft(reviewedDraftId: string, updatedData: JSONobject, token: string): string
+    +GET /getAllPendingAssets(token: string): array(JSONobject)
+    +GET /getAssetDraft(draftId: string, token: string): JSONobject
+    +POST /addNewAsset(newAssetData: JSONobject, token: string): string
 }
 
 interface CategoryRoutes {
-    +GET/tree(): JSONobject
+    +GET /tree(token: string): JSONobject
+}
+
+' Server Class (CatsServer)
+class catsserver {
+  +port: number
+  +app: Express
+  +userRoutes: Router
+  +categoryRoutes: Router
+  +assetRoutes: Router
+  +globalRateLimiter: middleware
+
+  +constructor()
+  +initializeMiddleware()
+  +initializeRoutes()
+  +startServer()
+}
+
+class dotenv {
+  +config(): void
 }
 
 
-' Connecting routes to models
-UserRoutes ..> User
-AssetRoutes ..> Asset
-CategoryRoutes ..> Category
+app.yaml -down-> catsserver : uses
 
-' Utility and Middleware connections
-EmailService ..> UserRoutes
-EmailService ..> AssetRoutes
-Middleware ..> UserRoutes
-Middleware ..> AssetRoutes
-Middleware ..> CategoryRoutes
-Database ..> User
-Database ..> Asset
-Database ..> Category
-Category ..> Asset
-User ..> Asset
+catsserver -down-> dotenv : uses
+catsserver -down-> UserRoutes : uses
+catsserver -down-> CategoryRoutes : uses
+catsserver -down-> AssetRoutes : uses
+
+
+' Connecting routes to models and services
+UserRoutes -down-> middleware : "uses"
+AssetRoutes -down-> middleware : "uses"
+CategoryRoutes -down-> middleware : "uses"
+UserRoutes .down.> User : "manages"
+AssetRoutes .down.> Asset : "manages"
+AssetRoutes .down.> AssetDraft : "manages"
+CategoryRoutes .down.> Category : "manages"
+UserRoutes -down-> EmailService : "uses"
+
+' Utility and middleware connections
+EmailService -down-> EmailTemplates : "uses"
+
+' AssetDraft has Address and ContactInfo (Aggregation)
+AssetDraft "1" -down-> "1" Address : "has"
+AssetDraft "1" -down-> "1" ContactInfo : "has"
+AssetDraft "1" -down-> "1" Schedule : "has"
+AssetDraft -down-> EmailService : "uses"
+
+User -down-> Database : "uses"
+AssetDraft -down-> Database : "uses"
+Category -down-> Database : "uses"
+
+AssetDraft ..> Category
+AssetDraft ..> User
+
+AssetDraft ..> assetDrafttest
+User ..> usertest
+Category ..> categorytest
+middleware ..> middlewaretest
 
 @enduml
