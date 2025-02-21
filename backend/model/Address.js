@@ -14,12 +14,12 @@ class Address {
     static async getCityCode(cityName) {
         if (!cityName) return null;
 
-        const [existingCity] = await db.query('SELECT code FROM cityOptions WHERE name = ?', [cityName]);
+        const [existingCity] = await db.query('SELECT code FROM cityOptions WHERE cityName = ?', [cityName]);
         if (existingCity.length) {
             return existingCity[0].code; 
         }
 
-        await db.query('INSERT INTO cityOptions (name) VALUES (?, ?)', [cityName, 'ON']);
+        await db.query('INSERT INTO cityOptions (cityName, provinceCode) VALUES (?, ?)', [cityName, 'ON']);
         const [newCity] = await db.query('SELECT code FROM cityOptions WHERE name = ?', [cityName]);
 
         return newCity.length ? newCity[0].code : null;

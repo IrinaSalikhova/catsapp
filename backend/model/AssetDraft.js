@@ -6,7 +6,7 @@ const ContactInfo = require('./ContactInfo');
 
 const assetDraftSchema = Joi.object({
     id: Joi.number().integer().optional(), 
-    assetId: Joi.number().integer().optional(),
+    assetId: Joi.number().integer().allow(null).optional(),
     categoryIds: Joi.array().items(Joi.number().integer()).required(),
     name: Joi.string().required(),
     description: Joi.string().allow(null).optional(),

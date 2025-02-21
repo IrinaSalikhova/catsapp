@@ -15,18 +15,15 @@ describe('AssetDraft Class (Database Integration Tests)', () => {
 
     test('Should create and save an AssetDraft correctly', async () => {
         const assetDraftData = {
-            assetId: 1,
-            categoryIds: [1, 2], // Assuming these categories exist in your DB
+            categoryIds: [1, 2], 
             name: "Test Asset",
             description: "This is a test description",
             isVolunOpp: true,
             volunOppText: "Test volunteering text",
             registrationNote: "Test registration note",
             scheduleNote: "Test schedule note",
-            status: "pending",
             createdEmail: "test@gmail.com",
             cityName: "Test City",
-            cityCode: "TC123",
             address: "123 Test St",
             postCode: "12345",
             longitude: 10.1234,
