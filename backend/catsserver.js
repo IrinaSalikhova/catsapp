@@ -8,6 +8,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const assetRoutes = require('./routes/assetRoutes');
 const { globalRateLimiter } = require('./middleware');
 
 app.use(cors()); // comment it out if you want to use localhost:5173
@@ -27,6 +28,9 @@ app.use(express.static(path.join(__dirname, '../frontend/dist')));
 app.use('/api/users', userRoutes);
 
 app.use('/api/categories', categoryRoutes);
+
+app.use('/api/assets', assetRoutes);
+
 
 // Example API endpoint
 app.get('/api/hello', (req, res) => {
