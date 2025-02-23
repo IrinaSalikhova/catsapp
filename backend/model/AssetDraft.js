@@ -9,35 +9,55 @@ const sendEmail = require('../emailService').sendEmail;
 const assetDraftSchema = Joi.object({
     id: Joi.number().integer().optional(), 
     assetId: Joi.number().integer().allow(null).optional(),
+    hasChildren: Joi.boolean().allow(null).default(false),
+    parentAssetDraftId: Joi.number().integer().allow(null).optional(),
+    parentAssetDraftName: Joi.string().max(255).allow(null).optional(),
+
     categoryIds: Joi.array().items(Joi.number().integer()).required(),
-    name: Joi.string().required(),
-    description: Joi.string().allow(null).optional(),
+    name: Joi.string().max(255).required(),
+    description: Joi.string().max(2000).allow(null).optional(),
     isVolunOpp: Joi.boolean().allow(null).default(false),
-    volunOppText: Joi.string().allow(null).optional(),
-    registrationNote: Joi.string().allow(null).optional(),
-    scheduleNote: Joi.string().allow(null).optional(),
+    volunOppText: Joi.string().max(500).allow(null).optional(),
+
+    scheduleType: Joi.string().max(150).allow(null).optional(),
+    registrationNote: Joi.string().max(500).allow(null).optional(),
+    scheduleNote: Joi.string().max(500).allow(null).optional(),
+    socialWorkerOnlyNote: Joi.string().max(1500).allow(null).optional(),
+    
+    isWheelchairAcc: Joi.boolean().default(false),
+    languagesOffered: Joi.alternatives().try(
+        Joi.array().items(Joi.string()).allow(null),
+        Joi.string().max(150).allow(null)
+    ).optional(),
+    format: Joi.alternatives().try(
+        Joi.array().items(
+            Joi.string().valid("online", "on site", "group", "individual", "drop-in", "scheduled event", "self-paced"))
+            .allow(null),
+        Joi.string().max(100).allow(null)
+    ).optional(),
+
     status: Joi.string().valid("pending", "approved", "rejected").default("pending"),
-    createdEmail: Joi.string().allow(null).email().optional(),
+    createdEmail: Joi.string().max(100).allow(null).email().optional(),
     createDate: Joi.date().allow(null).optional(),
 
-    cityName: Joi.string().allow(null).optional(),
+    cityName: Joi.string().max(30).allow(null).optional(),
     cityCode: Joi.number().allow(null).optional(),
-    address: Joi.string().allow(null).optional(),
-    postCode: Joi.string().allow(null).optional(),
+    address: Joi.string().max(500).allow(null).optional(),
+    postCode: Joi.string().max(10).allow(null).optional(),
     longitude: Joi.number().allow(null).optional(),
     latitude: Joi.number().allow(null).optional(),
 
     email: Joi.alternatives().try(
         Joi.array().items(Joi.string().email()).allow(null),
-        Joi.string().allow(null)
+        Joi.string().max(500).allow(null)
     ).optional(),
     phoneNumber: Joi.alternatives().try(
         Joi.array().items(Joi.string()).allow(null),
-        Joi.string().allow(null)
+        Joi.string().max(500).allow(null)
     ).optional(),
     website: Joi.alternatives().try(
         Joi.array().items(Joi.string()).allow(null),
-        Joi.string().allow(null)
+        Joi.string().max(500).allow(null)
     ).optional(),
 });
 
@@ -48,6 +68,9 @@ class AssetDraft {
 
         this.id = value.id;
         this.assetId = value.assetId;
+        this.hasChildren = value.hasChildren instanceof Buffer ? Boolean(value.hasChildren.readUInt8(0)) : value.hasChildren;
+        this.parentAssetDraftId = value.parentAssetDraftId;
+        this.parentAssetDraftName = value.parentAssetDraftName;
         this.categoryIds = value.categoryIds;
         this.name = value.name;
         this.description = value.description;
@@ -55,6 +78,11 @@ class AssetDraft {
         this.volunOppText = value.volunOppText;
         this.registrationNote = value.registrationNote;
         this.scheduleNote = value.scheduleNote;
+        this.isWheelchairAcc = value.isWheelchairAcc instanceof Buffer ? Boolean(value.isWheelchairAcc.readUInt8(0)) : value.isWheelchairAcc;
+        this.languagesOffered = Array.isArray(value.languagesOffered) ? value.languagesOffered : (value.languagesOffered ? value.languagesOffered.split('|').filter(l => l) : []);
+        this.scheduleType = value.scheduleType;
+        this.socialWorkerOnlyNote = value.socialWorkerOnlyNote;
+        this.format = Array.isArray(value.format) ? value.format : (value.format ? value.format.split('|').filter(f => f) : []);
         this.status = value.status;
         this.createdEmail = value.createdEmail;
         this.createDate = value.createDate;
@@ -65,7 +93,10 @@ class AssetDraft {
             postCode: value.postCode, 
             latitude: value.latitude, 
             longitude: value.longitude });
-        this.contactInfo = new ContactInfo({email: value.email, phoneNumber: value.phoneNumber, website: value.website});
+        this.contactInfo = new ContactInfo({
+            email: value.email, 
+            phoneNumber: value.phoneNumber, 
+            website: value.website});
 
     }
 
@@ -73,19 +104,28 @@ class AssetDraft {
         const connection = await db.getConnection();
         try {
             await connection.beginTransaction();
+
             const addressData = await this.address.toDatabaseFormat();
             const contactData = this.contactInfo.toDatabaseFormat();
 
+            const languagesOffered = this.languagesOffered.length ? this.languagesOffered.join('|') : null;
+            const format = this.format.length ? this.format.join('|') : null;
+
+
             const [result] = await connection.query(
-                `INSERT INTO assetsDraft (assetId, name, description, isVolunOpp, volunOppText, 
+                `INSERT INTO assetsDraft (assetId, hasChildren, parentAssetDraftId, 
+                name, description, isVolunOpp, volunOppText, 
                 registrationNote, scheduleNote, status, createdEmail, 
                  cityCode, address, postCode, longitude, latitude, 
-                 phoneNumber, email, website)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                [this.assetId, this.name, this.description, this.isVolunOpp, this.volunOppText, 
+                 phoneNumber, email, website,
+                 isWheelchairAcc, languagesOffered, scheduleType, socialWorkerOnlyNote, format)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [this.assetId, this.hasChildren, this.parentAssetDraftId, 
+                    this.name, this.description, this.isVolunOpp, this.volunOppText, 
                     this.registrationNote, this.scheduleNote,this.status, this.createdEmail,
                     addressData.cityCode, addressData.address, addressData.postCode, addressData.longitude, addressData.latitude, 
-                    contactData.phoneNumber, contactData.email, contactData.website]
+                    contactData.phoneNumber, contactData.email, contactData.website,
+                    this.isWheelchairAcc, languagesOffered, this.scheduleType, this.socialWorkerOnlyNote, format]
             );
         
             this.id = result.insertId;
@@ -110,10 +150,12 @@ class AssetDraft {
         const [rows] = await db.query(
             `SELECT ad.*, 
                     GROUP_CONCAT(dcl.categoryId) AS categoryIds,
-                     co.cityName AS cityName
+                    co.cityName AS cityName,
+                    mad.name AS parentAssetDraftName
              FROM assetsDraft ad
              LEFT JOIN draftCategLinks dcl ON ad.id = dcl.assetDraftId
              LEFT JOIN cityOptions co ON ad.cityCode = co.code 
+             LEFT JOIN assetsDraft mad ON ad.parentAssetDraftId = mad.id
              WHERE ad.id = ?
              GROUP BY ad.id`, 
             [id]
@@ -128,6 +170,10 @@ class AssetDraft {
             : [];
 
         assetDraftData.isVolunOpp = Boolean(assetDraftData.isVolunOpp.readUInt8(0));
+        assetDraftData.hasChildren = Boolean(assetDraftData.hasChildren.readUInt8(0));
+        assetDraftData.isWheelchairAcc = Boolean(assetDraftData.isWheelchairAcc.readUInt8(0));
+        //assetDraftData.languagesOffered = assetDraftData.languagesOffered ? assetDraftData.languagesOffered.split('|') : [];
+        //assetDraftData.format = assetDraftData.format ? assetDraftData.format.split('|') : [];
     
         return new AssetDraft({ data: assetDraftData });
     }
@@ -136,26 +182,85 @@ class AssetDraft {
         const [rows] = await db.query(
             `SELECT ad.*, 
                     GROUP_CONCAT(dcl.categoryId) AS categoryIds,
-                    co.cityName AS cityName
+                    co.cityName AS cityName,
+                    mad.name AS parentAssetDraftName
              FROM assetsDraft ad
              LEFT JOIN draftCategLinks dcl ON ad.id = dcl.assetDraftId
              LEFT JOIN cityOptions co ON ad.cityCode = co.code 
+             LEFT JOIN assetsDraft mad ON ad.parentAssetDraftId = mad.id
              WHERE ad.status = 'pending'
              GROUP BY ad.id`
         );
     
-        return rows.map(row => {
+        const assets = rows.map(row => {
             row.categoryIds = row.categoryIds 
                 ? row.categoryIds.split(',').map(Number) 
                 : [];
             row.isVolunOpp = Boolean(row.isVolunOpp.readUInt8(0));
+            row.hasChildren = Boolean(row.hasChildren.readUInt8(0));
+            row.isWheelchairAcc = Boolean(row.isWheelchairAcc.readUInt8(0));
             return new AssetDraft({ data: row });
         });
+   
+        
+        const parentAssets = assets.filter(asset => asset.hasChildren);
+        const standaloneAssets = assets.filter(asset => !asset.hasChildren && asset.parentAssetDraftId === null);
+        
+        parentAssets.forEach(parent => {
+            parent.children = assets.filter(asset => asset.parentAssetDraftId === parent.id);
+        });
+        
+        return [...standaloneAssets, ...parentAssets];
     };
+
+    static async getParentWithChildren(parentId) {
+        const [parentRows] = await db.query(
+            `SELECT ad.*, GROUP_CONCAT(dcl.categoryId) AS categoryIds,
+                    co.cityName AS cityName
+             FROM assetsDraft ad
+             LEFT JOIN draftCategLinks dcl ON ad.id = dcl.assetDraftId
+             LEFT JOIN cityOptions co ON ad.cityCode = co.code 
+             WHERE ad.id = ?
+             GROUP BY ad.id`, 
+            [parentId]
+        );
+
+        if (parentRows.length === 0) return null;
+
+        const parentData = parentRows[0];
+        parentData.categoryIds = parentData.categoryIds ? parentData.categoryIds.split(',').map(Number) : [];
+        parentData.isVolunOpp = Boolean(parentData.isVolunOpp.readUInt8(0));
+        parentData.hasChildren = Boolean(parentData.hasChildren.readUInt8(0));
+        parentData.isWheelchairAcc = Boolean(parentData.isWheelchairAcc.readUInt8(0));
+        
+        const parent = new AssetDraft({ data: parentData });
+
+        const [childRows] = await db.query(
+            `SELECT ad.*, GROUP_CONCAT(dcl.categoryId) AS categoryIds,
+                    co.cityName AS cityName
+             FROM assetsDraft ad
+             LEFT JOIN draftCategLinks dcl ON ad.id = dcl.assetDraftId
+             LEFT JOIN cityOptions co ON ad.cityCode = co.code 
+             WHERE ad.parentAssetDraftId = ?
+             GROUP BY ad.id`, 
+            [parentId]
+        );
+
+        parent.children = childRows.map(row => {
+            row.categoryIds = row.categoryIds ? row.categoryIds.split(',').map(Number) : [];
+            row.isVolunOpp = Boolean(row.isVolunOpp.readUInt8(0));
+            row.hasChildren = Boolean(row.hasChildren.readUInt8(0));
+            row.isWheelchairAcc = Boolean(row.isWheelchairAcc.readUInt8(0));
+            return new AssetDraft({ data: row });
+        });
+
+        return parent;
+    }
 
     hasCreatedEmail() {
         return this.createdEmail !== null;
     }
+
 
     async sendReply(message) {
         if (!this.hasCreatedEmail()) {
@@ -221,18 +326,22 @@ class AssetDraft {
 
             const addressData = await this.address.toDatabaseFormat();
             const contactData = this.contactInfo.toDatabaseFormat();
+            const languagesOffered = this.languagesOffered.length ? this.languagesOffered.join('|') : null;
+            const format = this.format.length ? this.format.join('|') : null;
     
             await connection.query(
                 `UPDATE assetsDraft 
                  SET name = ?, description = ?, isVolunOpp = ?, volunOppText = ?,
                      registrationNote = ?, scheduleNote = ?, status = ?,
                      cityCode = ?, address = ?, postCode = ?, longitude = ?, latitude = ?,
-                     phoneNumber = ?, email = ?, website = ?
+                     phoneNumber = ?, email = ?, website = ?,
+                     isWheelchairAcc = ?, languagesOffered = ?, scheduleType = ?, socialWorkerOnlyNote = ?, format = ?
                  WHERE id = ?`,
                 [this.name, this.description, this.isVolunOpp, this.volunOppText,
                  this.registrationNote, this.scheduleNote, this.status,
                  addressData.cityCode, addressData.address, addressData.postCode, addressData.longitude, addressData.latitude,
                  contactData.phoneNumber, contactData.email, contactData.website,
+                 this.isWheelchairAcc, languagesOffered, this.scheduleType, this.socialWorkerOnlyNote, format,
                  this.id]
             );
     

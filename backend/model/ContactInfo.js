@@ -2,9 +2,9 @@
 class ContactInfo {
     constructor({ email = [], phoneNumber = [], website = [] }) {
 
-        this.email = Array.isArray(email) ? email : email.split('|').filter(e => e);
-        this.phoneNumber = Array.isArray(phoneNumber) ? phoneNumber : phoneNumber.split('|').filter(p => p);
-        this.website = Array.isArray(website) ? website : website.split('|').filter(w => w);
+        this.email = Array.isArray(email) ? email : (email ? email.split('|').filter(e => e) : []);
+        this.phoneNumber = Array.isArray(phoneNumber) ? phoneNumber : (phoneNumber ? phoneNumber.split('|').filter(p => p) : []);
+        this.website = Array.isArray(website) ? website : (website ? website.split('|').filter(w => w) : []);        
     }
 
     toDatabaseFormat() {
