@@ -2,10 +2,7 @@ body {
     font-family: sans-serif;
     background-color: #05589b; /* Pastel blue background */
     margin: 0;
-    padding-top: 7%;
-    padding-left: 10%;
-    padding-right: 10%;
-    padding-bottom: 10%; /* Add some padding around the body */
+
 }
 
 header {

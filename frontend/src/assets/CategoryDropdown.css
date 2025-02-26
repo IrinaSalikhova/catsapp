@@ -7,7 +7,7 @@
 .dropdown-button {
     width: 100%;
     padding: 10px;
-    background-color: #007bff;
+    background-color: #09579d;
     color: white;
     border: none;
     cursor: pointer;
@@ -16,7 +16,7 @@
 }
 
 .dropdown-button:hover {
-    background-color: #0056b3;
+    background-color: #009BEF;
 }
 
 .dropdown-content {
