@@ -27,14 +27,18 @@ const CategoryDropdown = ({ onCategorySelect }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+
   const handleClickOutside = (event) => {
+event.preventDefault();    
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setDropdownOpen(false);
       setActiveSubcategories(null);
     }
   };
 
-  const handleCategoryClick = (category) => {
+  const handleCategoryClick = (category, event) => {
+     event.preventDefault(); 
+    event.stopPropagation();
     if (category.subcategories.length === 0) {
       const isSelected = selectedCategories.some((c) => c.id === category.id);
       const updatedSelection = isSelected
@@ -68,8 +72,9 @@ const CategoryDropdown = ({ onCategorySelect }) => {
 
   return (
     <div className="dropdown-container" ref={dropdownRef}>
-      <button className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
+      <button type="button" className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
         Select a category
+
       </button>
       {selectedCategories.length > 0 && (
         <button className="clear-button" onClick={clearSelection}>Clear Selection</button>

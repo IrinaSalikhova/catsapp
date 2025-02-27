@@ -1,137 +1,287 @@
-import React, { useEffect, useState } from 'react';
-import CategoryDropdown from './CategoryDropdown';
-import '../assets/AddAssetForm.css';
-import cchclogo from "/big_logo.png";
+import React, { useState, useCallback } from "react";
+import CategoryDropdown from "./CategoryDropdown";
+import "../assets/AddAssetForm.css";
+import requiredIcon from "/required.png";
+import AddAssetFormLocation from "./AddAssetFormLocation";
+import AddAssetFormContacts from "./AddAssetFormContacts";
+import AddAssetFormStep1 from "./AddAssetFormStep1";
 
-const carlingtonIcon = '/carlington_icon.webp';
 
-const NewAssetForm = ({ onClose }) => {
-  const [selectedCategories, setSelectedCategories] = useState([]);
+const NewAssetForm = ({ onClose, onSubmit, assetData, isLoggedIn, userRole, }) => {
+  
+  const STORAGE_KEY = "assetFormData"; // TODO: Key for local storage
+  const [isNew, setIsNew] = useState(true);// TODO:
 
-  const handleCategorySelect = (categories) => {
-    setSelectedCategories(categories);
-    console.log('Selected categories:', categories);
+
+  const [step, setStep] = useState(1);
+  const [assetType, setAssetType] = useState({ multiple: false, physical: false });
+
+  const [showLocation, setShowLocation] = useState(false);
+  const [showContact, setShowContact] = useState(false);
+  const [showFormat, setShowFormat] = useState(false);
+
+  const [formData, setFormData] = useState([
+    {
+      categoryIds: [],
+      assetId: null,
+      name: "",
+      description: "",
+      isVolunOpp: false,
+      volunOppText: "",
+      registrationNote: "",
+      scheduleNote: "",
+      isWheelchairAcc: false,
+      languagesOffered: [],
+      scheduleType: "",
+      socialWorkerOnlyNote: "",
+      format: [],
+      createdEmail: "",
+      cityName: "",
+      address: "",
+      postCode: "",
+      transportation: "",
+      longitude: null,
+      latitude: null,
+      email: [],
+      phoneNumber: [],
+      website: []
+    }
+  ]);
+
+  const handleChange = (e, index, fieldIndex = null) => {
+    const { value, type, checked, multiple, dataset } = e.target;
+    const field = dataset.field; // Correct field reference
+  
+    setFormData(prevData =>
+      prevData.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              [field]: fieldIndex !== null
+                ? item[field].map((val, idx) => (idx === fieldIndex ? value : val)) // Correct nested array handling
+                : type === "checkbox"
+                ? checked
+                : multiple
+                ? item[field].includes(value)
+                  ? item[field].filter(v => v !== value)
+                  : [...item[field], value]
+                : value
+            }
+          : item
+      )
+    );
+  };
+
+
+  const handleCategorySelect = (categories, index, event) => {
+    if (event) event.preventDefault(); 
+    setFormData((prev) =>
+      prev.map((item, i) =>
+        i === index
+          ? { ...item, categoryIds: categories.map((cat) => cat.id) }
+          : item
+      )
+    );
+  };
+
+  const handleAssetTypeSelection = (type, value) => {
+    setAssetType((prev) => ({ ...prev, [type]: value }));
+    if (type === "multiple" && !value) {
+      setFormData([formData[0]]);
+    }
+    
+  };
+ 
+  const isFormValid = (index) => {
+    const service = formData[index];
+    return service.name.trim() !== "" && service.description.trim() !== "";
+  };
+
+  const allFormsValid = formData.every((_, index) => isFormValid(index));
+
+
+
+  const handleAddService = () => {
+    if (allFormsValid) {
+      setFormData([
+        ...formData,
+        {  ...formData[0],
+          categoryIds: [], 
+          assetId: null,
+          name: "",
+          isVolunOpp: false,
+          volunOppText: "",
+          registrationNote: "",
+          scheduleNote: "",
+          isWheelchairAcc: false,
+          languagesOffered: [],
+          scheduleType: "",
+          socialWorkerOnlyNote: "",
+          format: [],
+          email: [],
+          phoneNumber: [],
+          website: [],
+          description: `A service in ${formData[0].name}`,
+        }
+      ]);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Submitted Form Data:", formData);
+    if (onSubmit) {
+      onSubmit(formData);
+    }
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="header">
-          <h1>New <span title="i.e., a resource, service, program of other community-based activity open to the public">
-          Community Resource</span> Form </h1>
+          <h2>New Community Resource Information</h2>
           <button className="close-button" onClick={onClose}>X</button>
         </div>
-        <form id="suggestionForm">
-        <div class="form-grid">
-        <div>
-          <label> Hi, thank you for your willingness to help your community with this valuable information. 
-            Before proceeding to the form, please answer the following questions:</label>
-        </div>
-                  <div>
-                    <label for="assetdivision">Are there multiple resources under a single <span title="Entity is either a building, program at a specific location, or an online program to benefit the community">
-                      <u>entity</u></span> or is it a standalone resource?</label>
-                    <label id="assetdivision" name="assetdivision"></label>
-                      <button type="assetdivisionMultiple" onClick={ToggleEvent}>Multiple</button>
-                      <button type ="assetdivisionStandalone" onClick={ToggleEvent}>Standalone</button>
-                    <label for="assetplace">Does the entity have a <span title = "Can be a building, or a meeting spot for an activity or program"><u>physical location?</u></span></label>
-                    <label id="assetplace" name="assetplace"></label>
-                      <button type="assetplaceYes" onClick={ToggleEvent}>Yes</button>
-                      <button type="assetplaceNo" onClick={ToggleEvent}>No</button>
-                    <label for="name">Resource Name*</label>
-                    <input type="text" id="name" placeholder="Enter resource name" required/>
-                </div>
-                <div> 
-                  <CategoryDropdown onCategorySelect={handleCategorySelect} />
-                </div>
 
-          {/* Display selected category as debug info */}
-          <div>
-            <p>Selected Categories:</p>
-                <ul>
-                    {selectedCategories.map((category) => (
-                      <li key={category.id}>{category.name}</li>
-                    ))}
-                </ul>
-          </div>
-                <div>
-                    <label for="description">Description</label>
-                    <textarea id="description" placeholder="Describe your suggestion" required></textarea>
+        <form id="suggestionForm" onSubmit={handleSubmit}>
+          {step === 1 && (
+  <AddAssetFormStep1 
+    assetType={assetType} 
+    handleAssetTypeSelection={handleAssetTypeSelection} 
+    setStep={setStep} 
+  />
+)}
 
-                    <label for="volunteer">Are there any volunteering opportunities available within this resource?</label>
-                    <label id="volunteer" name="volunteer"></label>
-                      <button type ="volunteerYes" onClick={ToggleEvent}>Yes</button>
-                      <button type ="volunteerNo" onClick={ToggleEvent}>No</button>
-                    <label for="volunteerDes">If yes,</label>
-                    <textarea id="volunteerDes" placeholder="Description" required></textarea>
-                    <label for="address">Address</label>
-                    <input type="text" id="address" placeholder="Enter address" required/>
-                </div>
-                <div>
-                    <label for="city">City</label>
-                    <input type="text" id="city" value="" placeholder="Enter city" required/>
+          {step === 2 && (
+            <div className="form-grid">
+              {formData.map((service, index) => (
+                <div key={index} className="service-section">
+                  <div className="asset-form-field-container">
+                    <label>
+                      Resource Name
+                      <img src={requiredIcon} alt="Required" className="required-icon" />
+                    </label>
+                    <textarea
+                      data-field="name"
+                      placeholder="ex. Carlington Community Health Centre"
+                      maxLength="250"
+                      required
+                      value={service.name}
+                      onChange={(e) => handleChange(e, index)}
+                    />
+                    <div className="character-count">
+                      {250 - service.name.length}/250
+                    </div>
+                  </div>
 
-                    <label for="postal">Postal Code</label>
-                    <input type="text" id="postal" placeholder="Enter postal code" required/>
+                  <div className="asset-form-field-container">
+                  <CategoryDropdown onCategorySelect={(categories, event) => handleCategorySelect(categories, index, event)} />
+                  <img src={requiredIcon} alt="Required" className="required-icon" />
+                  </div>
 
-                    <label for="transportation">Transportation Options</label>
-                    <input type="text" id="transportation" placeholder="Enter options" required/>
-                </div>
-                <div>
-                    <label for="postal">Hours of Operations</label>
-                    <label for="">From</label>
-                    <input type="datetime-local" id="datetime" name="datetime" required/>
-                    <label for="">to</label>
-                    <input type="datetime-local" id="datetime" name="datetime" required/>
+                  <div className="asset-form-field-container">
+                    <label>Description</label>
+                    <textarea
+                      data-field="description"
+                      placeholder="Enter a 50-200 word description"
+                      maxLength="1800"
+                      value={service.description}
+                      onChange={(e) => handleChange(e, index)}
+                    />
+                    <div className="character-count">
+                      {1800 - service.description.length}/1800
+                    </div>
+                  </div>
 
-                    <label for="phone">Phone</label>
-                    <input type="tel" id="phone" placeholder="Enter phone number" required/>
+                  <div className="asset-form-field-container">
+                    <label>Are there any volunteering opportunities?</label>
+                    <button
+                      type="button"
+                      className={`volunteer-button ${service.isVolunOpp ? "active" : ""}`}
+                      onClick={() =>
+                        setFormData((prevData) =>
+                          prevData.map((item, i) =>
+                            i === index ? { ...item, isVolunOpp: !item.isVolunOpp } : item
+                          )
+                        )
+                      }
+                    >
+                      Yes
+                    </button>
 
-                    <label for="additionalPhone">Additional Phone</label>
-                    <input type="tel" id="additionalPhone" placeholder="Enter additional phone number"/>
+                    {service.isVolunOpp && (
+                      <textarea
+                      data-field="volunOppText"
+                        placeholder="Please briefly list volunteering opportunities"
+                        maxLength="400"
+                        value={service.volunOppText}
+                        onChange={(e) => handleChange(e, index)}
+                      />
+                    )}
+                  </div>
 
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter email address" required/>
+                  <div className="foldable-section">
+                    <button 
+                    type= "button"
+                    className="foldable-header" 
+                    onClick={() => setShowLocation(!showLocation)}>
+                    <div>
+                      <span>Location</span>
+                      {assetType.physical && <img src={requiredIcon} alt="Required" className="required-icon" />}
+                    </div>
+                <span className="foldable-arrow">{showLocation ? '▼' : '▶'}</span>
+              </button>
 
-                    <label for="website">Website</label>
-                    <input type="url" id="website" placeholder="Enter website URL"/>
-                </div>
-            <div>
-            <label for="recurrence">Recurrence</label>
-            <select id="recurrence">
-                <option value="once">Once</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value= "daily">Daily</option>
-                <option value= "always">Always</option>
-                <option value= "onDemand">On-Demand</option>
-            </select>
-
-            <label for="format">Format</label>
-            <select id="format">
-                <option value="online">Online</option>
-                <option value="in-person">In-Person</option>
-            </select>
-
-            <label>Accessibility</label>
-            <div class="accessibility-options">
-                <input type="checkbox" id="wheelchairAccessible" name="wheelchairAccessible"/> Wheelchair Accessible
-                <input type="checkbox" id="languagesOffered" name="languagesOffered"/> Languages Offered
+              {showLocation && (
+  <AddAssetFormLocation 
+    handleChange={handleChange} 
+    service={service} 
+    index={index} 
+  />
+)}
             </div>
-            <input type="text" id="registrationInfo" placeholder="Enter Languages Options"/>
 
-            <label for="registrationInfo"><span title="Information like location, timings or a schedule for a certain program/activity">
-            <u>Registration Information</u></span></label>
-            <input type="text" id="registrationInfo" placeholder="Enter registration information"/>
 
-            <label for="additionalNotes">Additional Notes</label>
-            <textarea id="additionalNotes" placeholder="Enter any additional notes"></textarea>
+            <div className="foldable-section">
+                    <button 
+                    type= "button"
+                    className="foldable-header" 
+                    onClick={() => setShowContact(!showContact)}>
+                    <div>
+                      <span>Contact Information</span>
+                      {!assetType.physical && <img src={requiredIcon} alt="Required" className="required-icon" />}
+                    </div>
+                <span className="foldable-arrow">{showContact ? '▼' : '▶'}</span>
+              </button>
+            {showContact && (
+              <AddAssetFormContacts 
+              handleChange={handleChange} 
+              service={service} 
+              index={index} 
+              setFormData={setFormData}
+            />
+)}
+             
+            </div>
 
-            
+
+                </div>
+              ))}
+
+              {assetType.multiple && (
+                <button
+                  type="button"
+                  onClick={handleAddService}
+                  disabled={!allFormsValid}
+                  className={!allFormsValid ? "disabled-button" : ""}
+                >
+                  + Add Another Service or Program
+                </button>
+              )}
+
+              <button type="submit">Submit</button>
             </div>
-            <div className='button-container-form'>
-            <button type="submit">Submit</button>
-            </div>
-            </div>
+          )}
         </form>
       </div>
     </div>
