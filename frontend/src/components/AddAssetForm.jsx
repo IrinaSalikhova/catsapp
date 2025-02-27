@@ -177,6 +177,7 @@ const NewAssetForm = ({ onClose, onSubmit, assetData, isLoggedIn, userRole, }) =
                   <div className="asset-form-field-container">
                   <CategoryDropdown onCategorySelect={(categories, event) => handleCategorySelect(categories, index, event)} />
                   <img src={requiredIcon} alt="Required" className="required-icon" />
+                  
                   </div>
 
                   <div className="asset-form-field-container">

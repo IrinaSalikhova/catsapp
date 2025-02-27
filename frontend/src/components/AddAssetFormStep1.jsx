@@ -3,7 +3,10 @@ import React from "react";
 const AddAssetFormStep1 = ({ assetType, handleAssetTypeSelection, setStep }) => {
   return (
     <div className="form-grid">
-      <label>Before we start, please answer these two quick questions:</label>
+      <label>
+      Thank you for helping your community! Your information will make a real difference. <br></br> <br></br>
+      Before we start, please answer these two quick questions:
+      </label>
 
       <div>
         <label>Is this a group or organization that offers MORE THAN ONE service or program?</label>

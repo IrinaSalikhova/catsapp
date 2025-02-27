@@ -74,6 +74,12 @@ const CategoryDropdown = ({ onCategorySelect }) => {
         Select a category
 
       </button>
+      <p>Selected Categories:</p>
+                <ul>
+                    {selectedCategories.map((category) => (
+                      <li key={category.id}>{category.name}</li>
+                    ))}
+                </ul>
       {selectedCategories.length > 0 && (
         <button className="clear-button" onClick={clearSelection}>Clear Selection</button>
       )}
