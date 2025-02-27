@@ -27,9 +27,16 @@ const [selectedCategories, setSelectedCategories] = useState([]);
         </button>
       </div>
       <div className="main-selection">
-
         <CategoryDropdown onCategorySelect={handleCategorySelect} />
       </div>
+      <div className='selected-categories-bar'>
+            <p>Selected Categories:</p>
+                <ul>
+                    {selectedCategories.map((category) => (
+                      <li key={category.id}>{category.name}</li>
+                    ))}
+                </ul>
+          </div>
     <div className="main">
       <div className="sidebar">
         <div className="title">Community Resources</div>
@@ -80,7 +87,7 @@ const [selectedCategories, setSelectedCategories] = useState([]);
       </div>
       </div>
     </div>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     </div>
   );
 };

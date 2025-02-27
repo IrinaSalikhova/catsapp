@@ -10,7 +10,7 @@ const carlington = { lat: 45.383539135902325, lng: -75.73337435906367 };
 
 const GoogleMapContainer = () => {
   return (
-    <LoadScript googleMapsApiKey="AIzaSyC9lPCFtZZcDup4UwnFNPsFOcrxfuQsgGA">
+    <LoadScript googleMapsApiKey="AIzaSyDgfO9FOsujiJR5OU9VuJdgb35lWCWu6Os">
       <GoogleMap mapContainerStyle={containerStyle} center={carlington} zoom={15}>
         <Marker position={carlington} />
       </GoogleMap>
