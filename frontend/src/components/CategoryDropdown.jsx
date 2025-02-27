@@ -28,17 +28,15 @@ const CategoryDropdown = ({ onCategorySelect }) => {
   }, []);
 
 
-  const handleClickOutside = (event) => {
-event.preventDefault();    
+  const handleClickOutside = (event) => {   
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setDropdownOpen(false);
       setActiveSubcategories(null);
     }
   };
 
-  const handleCategoryClick = (category, event) => {
-     event.preventDefault(); 
-    event.stopPropagation();
+  const handleCategoryClick = (category) => {
+    
     if (category.subcategories.length === 0) {
       const isSelected = selectedCategories.some((c) => c.id === category.id);
       const updatedSelection = isSelected
