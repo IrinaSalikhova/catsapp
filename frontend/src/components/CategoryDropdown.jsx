@@ -31,6 +31,8 @@ const CategoryDropdown = ({ onCategorySelect, selectableParents = false }) => {
   }, []);
 
   const handleCategoryClick = (category, event) => {
+    event.preventDefault(); 
+    event.stopPropagation();
     if (category.subcategories.length > 0 && !selectableParents) {
       if (activeSubcategories && activeSubcategories.id === category.id) {
         setActiveSubcategories(null);
@@ -51,7 +53,7 @@ const CategoryDropdown = ({ onCategorySelect, selectableParents = false }) => {
 
   return (
     <div className="dropdown-container">
-      <button className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
+      <button type="button" className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
         {selectedCategories.length > 0
           ? selectedCategories.map((c) => c.name).join(', ')
           : 'Select a category'}
