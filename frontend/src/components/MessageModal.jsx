@@ -1,20 +1,15 @@
 import React from 'react';
 import '../assets/MessageModal.css';
 
-const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message }) => {
-    if (!isOpen) return null;
-
+const Modal = ({ message, onClose }) => {
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
+        <div className="message-overlay">
+            <div className="message-content">
                 <p>{message}</p>
-                <div className="modal-actions">
-                    <button onClick={onConfirm} className="button-confirm">Confirm</button>
-                    <button onClick={onCancel} className="button-cancel">Cancel</button>
-                </div>
+                <button onClick={onClose} className="message-button">Close</button>
             </div>
         </div>
     );
 };
 
-export default ConfirmationModal;
+export default Modal;

@@ -30,6 +30,7 @@
     "redis": "^4.7.0",
     "sequelize": "^6.37.5",
     "serve-static": "^1.16.2",
+    "tlds": "^1.256.0",
     "validator": "^13.12.0",
     "vite": "^6.1.1"
   },
