@@ -81,34 +81,39 @@ describe('AssetDraft Class (Database Integration Tests)', () => {
     });
 
     test('Should create and save a multilevel AssetDrafts correctly', async () => {
-
-        parentAsset = new AssetDraft({
-            data: {
-                name: 'Parent Asset',
-                categoryIds: [3],
-                description: 'A parent asset',
-                status: 'pending',
-                hasChildren: true,
-                parentAssetDraftId: null
-            }
-        });
-        await parentAsset.save();
-        parentAssetId = parentAsset.id;
-        for (let i = 1; i <= 3; i++) {
-            let childAsset = new AssetDraft({
-                data: {
-                    name: `Child Asset ${i}`,
+    
+            const assetDataArray = [
+                {
+                    name: 'Parent Asset',
                     categoryIds: [3],
-                    description: `Child ${i} of Parent Asset`,
-                    status: 'pending',
-                    hasChildren: false,
-                    parentAssetDraftId: parentAssetId
-                }
-            });
-            await childAsset.save();
-            childAssetIds.push(childAsset.id);
-            childAssets.push(childAsset);
-        }
+                    description: 'A parent asset',
+                    status: 'pending'
+                },
+                ...Array.from({ length: 3 }, (_, i) => ({
+                    name: `Child Asset ${i + 1}`,
+                    categoryIds: [3],
+                    description: `Child ${i + 1} of Parent Asset`,
+                    status: 'pending'
+                }))
+            ];
+        
+            const hasChildren = assetDataArray.length > 1;
+            const [parentAssetData, ...childrenData] = assetDataArray;
+            parentAssetData.hasChildren = hasChildren;
+            
+            parentAsset = new AssetDraft({ data: parentAssetData });
+            await parentAsset.save();
+            parentAssetId = parentAsset.id;
+        
+            for (const childData of childrenData) {
+                childData.parentAssetDraftId = parentAssetId;
+                childData.parentAssetDraftName = parentAsset.name;
+                
+                let childAsset = new AssetDraft({ data: childData });
+                await childAsset.save();
+                childAssetIds.push(childAsset.id);
+                childAssets.push(childAsset);
+            }
     });
 
     test('getAllPendingAssets should return correct hierarchical structure', async () => {

@@ -6,36 +6,38 @@ const router = express.Router();
 
 router.post('/suggestNewAsset', userRateLimiter, async (req, res) => {
     try {
-        const {newAssetData} = req.body;
-        
+        const { newAssetData } = req.body;
 
-        if (!newAssetData.name || !newAssetData.categories) {
+        if (!Array.isArray(newAssetData) || newAssetData.length === 0) {
+            return res.status(400).json({ message: 'Invalid asset data format' });
+        }
+
+        const hasChildren = newAssetData.length > 1;
+        const [parentAsset, ...children] = newAssetData;
+
+        if (!parentAsset.name || !parentAsset.categories) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
-        
-        const hasChildren = newAssetData.hasChildren || false;
-        const children = newAssetData.children || [];
-        
-        delete newAssetData.children;
 
-        const parentAssetDraft = new AssetDraft({ data: newAssetData });
+        parentAsset.hasChildren = hasChildren;
+        
+        const parentAssetDraft = new AssetDraft({ data: parentAsset });
         await parentAssetDraft.save();
 
-        if (hasChildren && children.length > 0) {
-            for (const child of children) {
-                const childData = { 
-                    ...child,
-                    parentAssetDraftId: parentAssetDraft.id, 
-                    parentAssetDraftName: parentAssetDraft.name 
-                };
-                
-                const childAssetDraft = new AssetDraft({ data: childData });
-                await childAssetDraft.save();
-            }
+        for (const child of children) {
+            const childData = { 
+                ...child,
+                parentAssetDraftId: parentAssetDraft.id, 
+                parentAssetDraftName: parentAssetDraft.name 
+            };
+            
+            const childAssetDraft = new AssetDraft({ data: childData });
+            await childAssetDraft.save();
         }
+
         res.status(201).json({ 
             message: 'Thank you! Information is sent for review'
-         });
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error saving asset draft', error: err.message });

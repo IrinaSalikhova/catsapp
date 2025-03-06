@@ -134,8 +134,8 @@ h1, h2 {
     flex-direction: column;
     flex-grow: 1; /* Allow content to grow */
 }
- 
-  
+
+
 .asset-form-field-container textarea {
     width: 100%; /* Take full width of its container */
     height: 100%;
@@ -150,16 +150,28 @@ h1, h2 {
 }
 
 .asset-form-field-container input {
-    width: 100%; /* Take full width of its container */
-    height: 100%;
-    flex-grow: 1; /* Ensure textarea fully occupies the remaining space */
-    background-color: #E9F1FE;
-    font-size: 18px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    overflow-y: auto;
-    min-height: 40px;
-    padding: 8px;
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  font-size: 18px;
+  background-color: #E9F1FE;
+  margin-bottom: 5px; /* Add some space between address and city/postcode */
+}
+
+.city-postcode-container {
+  display: flex;
+  gap: 5px; /* Space between city and postcode */
+}
+
+.city-postcode-container input {
+  width: 50%; /* Each input takes half of the container's width */
+  margin-bottom: 0; /* Remove bottom margin for city and postcode */
+}
+
+/* Adjust Autocomplete input style */
+.asset-form-field-container .pac-container {
+  z-index: 1000; /* Ensure autocomplete dropdown is above other elements */
 }
 
 .character-count {

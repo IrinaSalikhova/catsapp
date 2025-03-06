@@ -5,6 +5,8 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
   const [emailFields, setEmailFields] = useState(service.email || [""]);
   const [websiteFields, setWebsiteFields] = useState(service.website || [""]);
 
+
+
   const addField = (field, setFields) => {
     setFields(prevFields => {
       if (prevFields.length < 5) {
@@ -32,14 +34,14 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
       return newFields;
     });
 
-    handleChange({
-      target: {
-        value,
-        dataset: { field: "phoneNumber" },
-      }
-    }, index, fieldIndex);
+    handleChange(
+      { target: { value, dataset: { field: "phoneNumber" } } }, 
+      index, 
+      fieldIndex
+    );
   }, [handleChange, index]);
 
+  
   const handleEmailChange = useCallback((e, fieldIndex) => {
     const value = e.target.value;
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || value === "";
@@ -53,12 +55,11 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
 
     // Only trigger handleChange for valid values
     if (isValid || value === "") {
-      handleChange({
-        target: {
-          value,
-          dataset: { field: "email" },
-        }
-      }, index, fieldIndex);
+      handleChange(
+        { target: { value, dataset: { field: "email" } } }, 
+        index, 
+        fieldIndex
+      );
     }
   }, [handleChange, index]);
 
@@ -75,12 +76,11 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
 
     // Only trigger handleChange for valid values
     if (isValid || value === "") {
-      handleChange({
-        target: {
-          value,
-          dataset: { field: "website" },
-        }
-      }, index, fieldIndex);
+      handleChange(
+        { target: { value, dataset: { field: "website" } } }, 
+        index, 
+        fieldIndex
+      );
     }
   }, [handleChange, index]);
 
@@ -97,7 +97,7 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
                 placeholder="(123) 456-7890"
                 maxLength="9"
                 value={phone}
-                onChange={(e) => handlePhoneChange(e, fieldIndex)} // Now this is defined to allow only numbers
+                onChange={(e) => handlePhoneChange(e, fieldIndex)}
               />
               <div className="contact-buttons">
                 {phoneFields.length > 1 && (
