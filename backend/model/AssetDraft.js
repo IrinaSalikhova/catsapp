@@ -46,6 +46,7 @@ const assetDraftSchema = Joi.object({
     postCode: Joi.string().max(10).allow(null).optional(),
     longitude: Joi.number().allow(null).optional(),
     latitude: Joi.number().allow(null).optional(),
+    transportation: Joi.string().max(300).allow(null).optional(),
 
     email: Joi.alternatives().try(
         Joi.array().items(Joi.string().email()).allow(null),
@@ -92,7 +93,8 @@ class AssetDraft {
             address: value.address, 
             postCode: value.postCode, 
             latitude: value.latitude, 
-            longitude: value.longitude });
+            longitude: value.longitude,
+            transportation: value.transportation});
         this.contactInfo = new ContactInfo({
             email: value.email, 
             phoneNumber: value.phoneNumber, 
@@ -116,14 +118,14 @@ class AssetDraft {
                 `INSERT INTO assetsDraft (assetId, hasChildren, parentAssetDraftId, 
                 name, description, isVolunOpp, volunOppText, 
                 registrationNote, scheduleNote, status, createdEmail, 
-                 cityCode, address, postCode, longitude, latitude, 
+                 cityCode, address, postCode, longitude, latitude, transportation,
                  phoneNumber, email, website,
                  isWheelchairAcc, languagesOffered, scheduleType, socialWorkerOnlyNote, format)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [this.assetId, this.hasChildren, this.parentAssetDraftId, 
                     this.name, this.description, this.isVolunOpp, this.volunOppText, 
                     this.registrationNote, this.scheduleNote,this.status, this.createdEmail,
-                    addressData.cityCode, addressData.address, addressData.postCode, addressData.longitude, addressData.latitude, 
+                    addressData.cityCode, addressData.address, addressData.postCode, addressData.longitude, addressData.latitude, addressData.transportation,
                     contactData.phoneNumber, contactData.email, contactData.website,
                     this.isWheelchairAcc, languagesOffered, this.scheduleType, this.socialWorkerOnlyNote, format]
             );
@@ -319,6 +321,7 @@ class AssetDraft {
             this.address.postCode = value.postCode;
             this.address.longitude = value.longitude;
             this.address.latitude = value.latitude;
+            this.address.transportation = value.transportation;
             this.contactInfo.phoneNumber = value.phoneNumber;
             this.contactInfo.email = value.email;
             this.contactInfo.website = value.website;
@@ -333,13 +336,13 @@ class AssetDraft {
                 `UPDATE assetsDraft 
                  SET name = ?, description = ?, isVolunOpp = ?, volunOppText = ?,
                      registrationNote = ?, scheduleNote = ?, status = ?,
-                     cityCode = ?, address = ?, postCode = ?, longitude = ?, latitude = ?,
+                     cityCode = ?, address = ?, postCode = ?, longitude = ?, latitude = ?, transportation = ?,
                      phoneNumber = ?, email = ?, website = ?,
                      isWheelchairAcc = ?, languagesOffered = ?, scheduleType = ?, socialWorkerOnlyNote = ?, format = ?
                  WHERE id = ?`,
                 [this.name, this.description, this.isVolunOpp, this.volunOppText,
                  this.registrationNote, this.scheduleNote, this.status,
-                 addressData.cityCode, addressData.address, addressData.postCode, addressData.longitude, addressData.latitude,
+                 addressData.cityCode, addressData.address, addressData.postCode, addressData.longitude, addressData.latitude, addressData.transportation,
                  contactData.phoneNumber, contactData.email, contactData.website,
                  this.isWheelchairAcc, languagesOffered, this.scheduleType, this.socialWorkerOnlyNote, format,
                  this.id]

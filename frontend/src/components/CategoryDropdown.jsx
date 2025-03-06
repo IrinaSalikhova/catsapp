@@ -35,6 +35,7 @@ const CategoryDropdown = ({ onCategorySelect }) => {
   };
 
   const handleCategoryClick = (category) => {
+    
     if (category.subcategories.length === 0) {
       const isSelected = selectedCategories.some((c) => c.id === category.id);
       const updatedSelection = isSelected
@@ -66,8 +67,9 @@ const CategoryDropdown = ({ onCategorySelect }) => {
 
   return (
     <div className="dropdown-container" ref={dropdownRef}>
-      <button className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
+      <button type="button" className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
         Select a category
+
       </button>
       {dropdownOpen && (
         <div className="dropdown-content">

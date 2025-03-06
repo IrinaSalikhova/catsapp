@@ -2,13 +2,14 @@
 const db = require('../db');
 
 class Address {
-    constructor({ cityName, cityCode, address, postCode, longitude, latitude}) {
+    constructor({ cityName, cityCode, address, postCode, longitude, latitude, transportation}) {
         this.cityName = cityName; // Comes from frontend
         this.cityCode = cityCode; // Will be found/inserted in DB
         this.address = address;
         this.postCode = postCode;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.transportation = transportation;
     }
 
     static async getCityCode(cityName) {
@@ -32,6 +33,7 @@ class Address {
             postCode: this.postCode,
             longitude: this.longitude,
             latitude: this.latitude,
+            transportation: this.transportation
         };
     }
 }

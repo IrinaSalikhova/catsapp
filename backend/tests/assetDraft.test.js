@@ -44,6 +44,7 @@ describe('AssetDraft Class (Database Integration Tests)', () => {
             postCode: "12345",
             longitude: 10.1234,
             latitude: 20.5678,
+            transportation: "Test transportation",
             email: ["contact@gmail.com", "contact2@gmail.com"],
             phoneNumber: ["1234567890"],
             website: ["https://example.com"]

@@ -8,7 +8,7 @@ import websiteIcon from '/web_logo.png';
 const Footer = () => {
   return (
     <footer>
-    <div class="footer-content">
+    <div className="footer-content">
       <p>
         <strong>Contributors: </strong>
         <a href="https://www.linkedin.com/in/hưng-lai-5b9148222" target="_blank" rel="noopener">Hung Lai, </a>
@@ -16,8 +16,8 @@ const Footer = () => {
         <a href="https://www.linkedin.com/in/hưng-lai-5b9148222" target="_blank" rel="noopener">Mahima Sawhney, </a>
         <a href="https://www.linkedin.com/in/hưng-lai-5b9148222" target="_blank" rel="noopener">Baoshan Li</a>
       </p>
-      <p>
-        <div class="social-media">
+      
+        <div className="social-media">
         <strong>Contact us:</strong>
                 <a href="https://www.facebook.com/Carlington-Community-Health-Centre-1744342865792993/?fref=ts" target="_blank" rel="noopener">
                           <img 
@@ -48,7 +48,7 @@ const Footer = () => {
                           />
                           </a>
             </div>
-      </p>
+      
     </div>
   </footer>
   );
