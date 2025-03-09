@@ -1,3 +1,4 @@
+// MainPage
 import React, { useState } from 'react';
 import CategoryDropdown from './CategoryDropdown';
 import { useNavigate } from 'react-router-dom';
@@ -6,8 +7,7 @@ import { Outlet } from 'react-router-dom';
 import '../assets/MainPage.css';
 import GoogleMapContainer from "./GoogleMapContainer";
 
-
-const MainPage = () => {
+const MainPage = ({ isLoaded, loadError }) => {
   const navigate = useNavigate();
   const [showOverlay, setShowOverlay] = useState(false);
 const [selectedCategories, setSelectedCategories] = useState([]);
@@ -40,42 +40,45 @@ const [selectedCategories, setSelectedCategories] = useState([]);
         </div>
       <div className="listing card">
 
-          <div class="listing-title">St. Elizabeth Church</div>
-          <div class="listing-info">
-            <span class="listing-icon">⭐</span>
-            <span class="listing-rating">4.7 Stars - 25 ratings</span>
+          <div className="listing-title">St. Elizabeth Church</div>
+          <div className="listing-info">
+            <span className="listing-icon">⭐</span>
+            <span className="listing-rating">4.7 Stars - 25 ratings</span>
           </div>
-          <div class="listing-details">1303 Leaside Av, Ottawa, ON K1Z 7R2</div>
-          <div class="listing-details">(613) 725-2242</div>
+          <div className="listing-details">1303 Leaside Av, Ottawa, ON K1Z 7R2</div>
+          <div className="listing-details">(613) 725-2242</div>
         </div>
         <div className="listing card">
 
-          <div class="listing-title">Alexander Park</div>
-          <div class="listing-info">
-            <span class="listing-icon">⭐</span>
-            <span class="listing-rating">4.3 Stars - 75 ratings</span>
+          <div className="listing-title">Alexander Park</div>
+          <div className="listing-info">
+            <span className="listing-icon">⭐</span>
+            <span className="listing-rating">4.3 Stars - 75 ratings</span>
           </div>
-          <div class="listing-details">960 Silver St, Ottawa, ON K1Z 6H5</div>
+          <div className="listing-details">960 Silver St, Ottawa, ON K1Z 6H5</div>
         </div>
         <div className="listing card">
 
-          <div class="listing-title">Kehillat Beth Israel</div>
-          <div class="listing-info">
-            <span class="listing-icon">⭐</span>
-            <span class="listing-rating">4.5 Stars - 22 ratings</span>
+          <div className="listing-title">Kehillat Beth Israel</div>
+          <div className="listing-info">
+            <span className="listing-icon">⭐</span>
+            <span className="listing-rating">4.5 Stars - 22 ratings</span>
           </div>
-          <div class="listing-details">1400 Coldrey Ave, Ottawa, ON K1Z 7P9</div>
-          <div class="listing-details">(613) 728-3501</div>
+          <div className="listing-details">1400 Coldrey Ave, Ottawa, ON K1Z 7P9</div>
+          <div className="listing-details">(613) 728-3501</div>
         </div>
         <div className="listing card">
 
-          <div class="listing-title">Carlington Community Health Centre</div>
-          <div class="listing-details">1303 Leaside Av, Ottawa</div>
-          <div class="listing-details">(613) 725-2242</div>
+          <div className="listing-title">Carlington Community Health Centre</div>
+          <div className="listing-details">1303 Leaside Av, Ottawa</div>
+          <div className="listing-details">(613) 725-2242</div>
         </div>
         </div>
         <div className="mapcontainer">
-       <GoogleMapContainer />
+       <GoogleMapContainer 
+        isLoaded={isLoaded}
+        loadError={loadError}
+       />
       </div>
       </div>
     </div>

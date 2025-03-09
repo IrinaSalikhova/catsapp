@@ -6,36 +6,38 @@ const router = express.Router();
 
 router.post('/suggestNewAsset', userRateLimiter, async (req, res) => {
     try {
-        const {newAssetData} = req.body;
-        
+        const { newAssetData } = req.body;
 
-        if (!newAssetData.name || !newAssetData.categories) {
+        if (!Array.isArray(newAssetData) || newAssetData.length === 0) {
+            return res.status(400).json({ message: 'Invalid asset data format' });
+        }
+
+        const hasChildren = newAssetData.length > 1;
+        const [parentAsset, ...children] = newAssetData;
+
+        if (!parentAsset.name || !parentAsset.categoryIds) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
-        
-        const hasChildren = newAssetData.hasChildren || false;
-        const children = newAssetData.children || [];
-        
-        delete newAssetData.children;
 
-        const parentAssetDraft = new AssetDraft({ data: newAssetData });
+        parentAsset.hasChildren = hasChildren;
+        
+        const parentAssetDraft = new AssetDraft({ data: parentAsset });
         await parentAssetDraft.save();
 
-        if (hasChildren && children.length > 0) {
-            for (const child of children) {
-                const childData = { 
-                    ...child,
-                    parentAssetDraftId: parentAssetDraft.id, 
-                    parentAssetDraftName: parentAssetDraft.name 
-                };
-                
-                const childAssetDraft = new AssetDraft({ data: childData });
-                await childAssetDraft.save();
-            }
+        for (const child of children) {
+            const childData = { 
+                ...child,
+                parentAssetDraftId: parentAssetDraft.id, 
+                parentAssetDraftName: parentAssetDraft.name 
+            };
+            
+            const childAssetDraft = new AssetDraft({ data: childData });
+            await childAssetDraft.save();
         }
+
         res.status(201).json({ 
             message: 'Thank you! Information is sent for review'
-         });
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error saving asset draft', error: err.message });
@@ -108,14 +110,20 @@ router.put('/editAssetDraft', authenticateJWT, userRateLimiter, async (req, res)
         if (req.userFromToken.role !== 'navigator') {
             return res.status(403).json({ message: 'Access denied: Navigators only' });
         }
-        const {reviewedDraftId, updatedData} = req.body;
+        const {editedAssetData} = req.body;
 
-        if (!reviewedDraftId || !updatedData) {
-            return res.status(400).json({ message: 'Missing information' });
+        if (!Array.isArray(editedAssetData) || editedAssetData.length === 0) {
+            return res.status(400).json({ message: 'Invalid asset data format' });
         }
 
-        const assetDraft = await AssetDraft.findById(reviewedDraftId);
-        await assetDraft.editAssetDraft(updatedData)
+        const [parentAsset, ...children] = newAssetData;
+
+        if (!parentAsset.name || !parentAsset.categoryIds) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+        
+        const parentAssetDraft = await AssetDraft.findById(parentAsset.id);
+        await parentAssetDraft.editAssetDraft(updatedData);
 
         res.status(201).json({ 
             message: 'Asset updated successfully'
@@ -124,6 +132,20 @@ router.put('/editAssetDraft', authenticateJWT, userRateLimiter, async (req, res)
         console.error(err);
         res.status(500).json({ message: 'Error reviewing asset draft', error: err.message });
     }
+
+    
+
+    
+    
+    const parentAssetDraft = new AssetDraft({ data: parentAsset });
+    await parentAssetDraft.save();
+
+    
+
+    res.status(201).json({ 
+        message: 'Thank you! Information is sent for review'
+    });
+
 });
 
 router.get('/getAllPendingAssets', authenticateJWT, userRateLimiter, async (req, res) => {
@@ -209,7 +231,7 @@ router.post('/addNewAsset', authenticateJWT, userRateLimiter, async (req, res) =
         const {newAssetData} = req.body;
         const createdBy = req.userFromToken.id;
 
-        if (!newAssetData.name || !newAssetData.categories) {
+        if (!newAssetData.name || !newAssetData.categoryIds) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 

@@ -11,54 +11,54 @@ const assetDraftSchema = Joi.object({
     assetId: Joi.number().integer().allow(null).optional(),
     hasChildren: Joi.boolean().allow(null).default(false),
     parentAssetDraftId: Joi.number().integer().allow(null).optional(),
-    parentAssetDraftName: Joi.string().max(255).allow(null).optional(),
+    parentAssetDraftName: Joi.string().max(255).allow(null, "").optional(),
 
     categoryIds: Joi.array().items(Joi.number().integer()).required(),
     name: Joi.string().max(255).required(),
-    description: Joi.string().max(2000).allow(null).optional(),
-    isVolunOpp: Joi.boolean().allow(null).default(false),
-    volunOppText: Joi.string().max(500).allow(null).optional(),
+    description: Joi.string().max(2000).allow(null, "").optional(),
+    isVolunOpp: Joi.boolean().default(false),
+    volunOppText: Joi.string().max(500).allow(null, "").optional(),
 
-    scheduleType: Joi.string().max(150).allow(null).optional(),
-    registrationNote: Joi.string().max(500).allow(null).optional(),
-    scheduleNote: Joi.string().max(500).allow(null).optional(),
-    socialWorkerOnlyNote: Joi.string().max(1500).allow(null).optional(),
+    scheduleType: Joi.string().max(150).allow(null, "").optional(),
+    registrationNote: Joi.string().max(500).allow(null, "").optional(),
+    scheduleNote: Joi.string().max(500).allow(null, "").optional(),
+    socialWorkerOnlyNote: Joi.string().max(1500).allow(null, "").optional(),
     
     isWheelchairAcc: Joi.boolean().default(false),
     languagesOffered: Joi.alternatives().try(
-        Joi.array().items(Joi.string()).allow(null),
-        Joi.string().max(150).allow(null)
+        Joi.array().items(Joi.string()).allow(null, ""),
+        Joi.string().max(150).allow(null, "")
     ).optional(),
     format: Joi.alternatives().try(
         Joi.array().items(
-            Joi.string().valid("online", "on site", "group", "individual", "drop-in", "scheduled event", "self-paced"))
-            .allow(null),
-        Joi.string().max(100).allow(null)
+            Joi.string().valid("Online", "On site", "Group", "Individual", "Drop-in", "Scheduled event", "Self-paced"))
+            .allow(null, ""),
+        Joi.string().max(100).allow(null, "")
     ).optional(),
 
     status: Joi.string().valid("pending", "approved", "rejected").default("pending"),
-    createdEmail: Joi.string().max(100).allow(null).email().optional(),
+    createdEmail: Joi.string().max(100).allow(null, "").email().optional(),
     createDate: Joi.date().allow(null).optional(),
 
-    cityName: Joi.string().max(30).allow(null).optional(),
+    cityName: Joi.string().max(30).allow(null, "").optional(),
     cityCode: Joi.number().allow(null).optional(),
-    address: Joi.string().max(500).allow(null).optional(),
-    postCode: Joi.string().max(10).allow(null).optional(),
+    address: Joi.string().max(500).allow(null, "").optional(),
+    postCode: Joi.string().max(10).allow(null, "").optional(),
     longitude: Joi.number().allow(null).optional(),
     latitude: Joi.number().allow(null).optional(),
-    transportation: Joi.string().max(300).allow(null).optional(),
+    transportation: Joi.string().max(300).allow(null, "").optional(),
 
     email: Joi.alternatives().try(
-        Joi.array().items(Joi.string().email()).allow(null),
-        Joi.string().max(500).allow(null)
+        Joi.array().items(Joi.string().allow(null, "")).allow(null).empty(Joi.array().length(0)),
+        Joi.string().max(500).allow(null, "")
     ).optional(),
     phoneNumber: Joi.alternatives().try(
-        Joi.array().items(Joi.string()).allow(null),
-        Joi.string().max(500).allow(null)
+        Joi.array().items(Joi.string().allow(null, "")).allow(null).empty(Joi.array().length(0)),
+        Joi.string().max(500).allow(null, "")
     ).optional(),
     website: Joi.alternatives().try(
-        Joi.array().items(Joi.string()).allow(null),
-        Joi.string().max(500).allow(null)
+        Joi.array().items(Joi.string().allow(null, "")).allow(null).empty(Joi.array().length(0)),
+        Joi.string().max(500).allow(null, "")
     ).optional(),
 });
 
