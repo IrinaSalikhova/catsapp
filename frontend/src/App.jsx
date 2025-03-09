@@ -11,6 +11,7 @@ import Login from './components/Login';
 import AddAssetForm from './components/AddAssetForm';
 import AdminPage from './components/AdminPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
+import NavigatorPage from './components/NavigatorPage';
 
 const libraries = ['places', 'marker', 'geometry'];
 
@@ -85,6 +86,10 @@ const App = () => {
         <Route 
           path="/reset-password/:token" 
           element={<ResetPasswordPage />} />
+          
+        <Route 
+          path="/navigatorpage" 
+          element={<NavigatorPage />} />
       </Routes>
 
       {/* modals */}
