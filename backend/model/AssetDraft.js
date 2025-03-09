@@ -7,7 +7,7 @@ const sendEmail = require('../emailService').sendEmail;
 
 
 const assetDraftSchema = Joi.object({
-    id: Joi.number().integer().optional(), 
+    id: Joi.number().integer().allow(null).optional(), 
     assetId: Joi.number().integer().allow(null).optional(),
     hasChildren: Joi.boolean().allow(null).default(false),
     parentAssetDraftId: Joi.number().integer().allow(null).optional(),
