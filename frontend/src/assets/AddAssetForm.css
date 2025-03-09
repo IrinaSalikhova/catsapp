@@ -63,23 +63,23 @@ h1, h2 {
     width: 100%; 
     gap: 10px;
     padding: 15px;
-    box-sizing: border-box; /* Ensure padding doesn’t shrink the width */
+    box-sizing: border-box; 
     align-items: stretch;
   }
 
   .service-section {
-    border-top: 2px solid #ddd;  /* Creates a clear separation between forms */
+    border-top: 2px solid #ddd;  
     padding: 20px 0;
-    gap: 10px;            /* Adds spacing inside but does not remove child margins */
-    margin-bottom: 20px;         /* Ensures separation from the next section */
+    gap: 10px;            
+    margin-bottom: 20px;        
   }
   
   .service-section:first-child {
-    border-top: none;            /* Removes border from the first form */
+    border-top: none;           
   }
   
   .service-section:last-child {
-    margin-bottom: 0;            /* Avoids unnecessary extra spacing at the end */
+    margin-bottom: 0;            
   }
 
   .foldable-section {
@@ -93,18 +93,18 @@ h1, h2 {
   .foldable-header {
     width: 100%;
     background-color: #E9F1FE;
-    padding: 10px; /* Adjust padding as needed */
-    cursor: pointer; /* Indicate it's clickable */
-    border-bottom: 1px solid #ccc; /* Subtle border line */
-    display: flex; /* For alignment of arrow */
-    justify-content: space-between; /* Arrow to the right */
-    align-items: left; /* Vertical alignment */
+    padding: 10px; 
+    cursor: pointer; 
+    border-bottom: 1px solid #ccc; 
+    display: flex;
+    justify-content: space-between; 
+    align-items: left; 
     font-size: 20px;
     font-weight: bold;
 }
 
 .foldable-header:hover {
-    background-color: #f0f0f0; /* Subtle highlight on hover */
+    background-color: #f0f0f0; 
 }
 
   .foldable-arrow {
@@ -112,19 +112,19 @@ h1, h2 {
   }
 .asset-form-field-container {
     display: flex;
-    align-items: stretch; /* Vertically align label and input/textarea */
-    gap: 10px; /* Space between label and input/textarea */
+    align-items: stretch; 
+    gap: 10px; 
     width: 100%; 
     margin: 10px;
   }
   
   .asset-form-field-container label {
     width: 20%;
-    flex-shrink: 0; /* Prevent label from shrinking */
+    flex-shrink: 0; 
     text-align: left;
     font-size: 18px;
     display: flex;
-    align-items: center; /* Align text vertically */
+    align-items: center; 
     font-weight: bold;
   }
 
@@ -132,14 +132,14 @@ h1, h2 {
     width: 80%;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Allow content to grow */
+    flex-grow: 1; 
 }
 
 
 .asset-form-field-container textarea {
-    width: 100%; /* Take full width of its container */
+    width: 100%; 
     height: 100%;
-    flex-grow: 1; /* Ensure textarea fully occupies the remaining space */
+    flex-grow: 1; 
     background-color: #E9F1FE;
     font-size: 18px;
     border: 1px solid #ccc;
@@ -156,22 +156,22 @@ h1, h2 {
   border: 1px solid #ccc;
   font-size: 18px;
   background-color: #E9F1FE;
-  margin-bottom: 5px; /* Add some space between address and city/postcode */
+  margin-bottom: 5px; 
 }
+
 
 .city-postcode-container {
   display: flex;
-  gap: 5px; /* Space between city and postcode */
+  gap: 5px; 
 }
 
 .city-postcode-container input {
-  width: 50%; /* Each input takes half of the container's width */
-  margin-bottom: 0; /* Remove bottom margin for city and postcode */
+  width: 50%; 
+  margin-bottom: 0; 
 }
 
-/* Adjust Autocomplete input style */
 .asset-form-field-container .pac-container {
-  z-index: 1000; /* Ensure autocomplete dropdown is above other elements */
+  z-index: 1000; 
 }
 
 .character-count {
@@ -190,6 +190,7 @@ h1, h2 {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
+    height: 60px;
     border-radius: 5px;
     transition: background 0.2s, color 0.2s;
 }
@@ -206,10 +207,10 @@ h1, h2 {
 
 
 .required-icon {
-    width: 16px; /* Adjust size as needed */
+    width: 16px; 
     height: 16px;
-    margin-left: 5px; /* Space between label and icon */
-    vertical-align: middle; /* Align icon vertically with text */
+    margin-left: 5px; 
+    vertical-align: middle; 
   }
   
   .error {
@@ -278,28 +279,36 @@ button[type="submit"]:hover {
 
 .contact-form-container {
     width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    margin-top: 10px;
   }
   
   .contact-field-group {
-    display: flex;
-    flex-direction: column;
+    display: contents;
     margin-bottom: 10px;
   }
   
   .contact-label {
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-right: 10px;
+    white-space: nowrap;
+    align-self: start;
   }
   
   .contact-fields {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    margin-right: 5px;
+    justify-content: space-between;
   }
   
   .contact-field-row {
     display: flex;
     align-items: center;
     margin-bottom: 5px;
+    flex-grow: 1;
   }
   
   .contact-input {
@@ -309,11 +318,22 @@ button[type="submit"]:hover {
     border-radius: 4px;
     font-size: 16px;
     background-color: #E9F1FE;
+    margin-right: 5px;
+    white-space: normal;
+    overflow-wrap: break-word;
+    height: auto;
+    resize: vertical;
+    width: 100%;
+  }
+
+  .contact-input.invalid-input {
+    border: 1px solid #dd3349; /* Red border to indicate error */
+    background-color: #dd334a10; /* Light red background */
   }
   
   .contact-buttons {
     display: flex;
-    margin-left: 5px;
+    margin-left: 0px;
   }
   
   .contact-add-button,
@@ -323,14 +343,46 @@ button[type="submit"]:hover {
     border-radius: 4px;
     cursor: pointer;
     background-color: #f0f0f0;
+    margin-left: 5px;
+    margin-right: 10px;
   }
   
   .contact-add-button {
     background-color: #4CAF50;
     color: white;
+    padding: 10px 15px;
+    align-self: center;
+    margin-left: auto;
   }
   
   .contact-remove-button {
     background-color: #f44336;
     color: white;
   }
+
+
+  .pac-container {
+    background-color: #E9F1FE !important; 
+    font-size: 18px !important;
+    border-radius: 5px !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.pac-item {
+    padding: 10px !important;
+    border-bottom: 1px solid #ddd !important;
+    color: black !important;
+}
+
+.pac-item:hover {
+    background-color: #D0E1FF !important;
+}
+
+.autocomplete-input {
+    width: 100%;
+    padding: 8px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    background-color: #E9F1FE;
+}

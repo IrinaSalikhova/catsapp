@@ -1,6 +1,6 @@
 import React from "react";
 
-const AddAssetFormStep4 = ({onClose, resetForm}) => {
+const AddAssetFormStep4 = ({onClose, resetForm, isNavigator, submissionStatus, setStep}) => {
 
   const handleClose = () => {
     resetForm(); 
@@ -10,10 +10,24 @@ const AddAssetFormStep4 = ({onClose, resetForm}) => {
   return (
     <div className="form-grid">
       <label>
-      Thank you for helping your community! Your information was sent for review!
+      {submissionStatus.success
+          ? isNavigator
+            ? "Thank you! New asset is successfully added to the system."
+            : "Thank you for helping your community! Your information was sent for review!"
+          : (
+            <>
+              An error occurred during submission. Please go back to previous steps and try again or contact us.
+              <br />
+              Error: {submissionStatus.message}
+            </>
+          )}
       </label>
 
-      <button type="button" onClick={handleClose}>Close</button>
+      {submissionStatus.success ? (
+        <button type="button" onClick={handleClose}>Close</button>
+      ) : (
+        <button type="button" onClick={() => setStep(2)}>Go back to form</button>
+      )}
     </div>
   );
 };

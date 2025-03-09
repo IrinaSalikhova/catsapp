@@ -18,43 +18,51 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
 
   const removeField = (fieldIndex, fields, setFields) => {
     setFields(prevFields => {
-      if (prevFields.length > 1) {
+      if (prevFields.length > 0) {
         return prevFields.filter((_, idx) => idx !== fieldIndex);
       }
       return prevFields;
     });
   };
 
+
+  const formatPhoneNumber = (input) => {
+    const digits = input.replace(/\D/g, ""); // Remove non-numeric characters
+    if (digits.length === 0) return "";
+    let formatted = `(${digits.slice(0, 3)}`;
+    if (digits.length > 3) formatted += `) ${digits.slice(3, 6)}`;
+    if (digits.length > 6) formatted += `-${digits.slice(6, 10)}`;
+    if (digits.length > 10) formatted += ` ext. ${digits.slice(10)}`;
+    return formatted;
+  };
+
   const handlePhoneChange = useCallback((e, fieldIndex) => {
-    // Allow only numbers in the phone number input
-    const value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+    let value = e.target.value.replace(/\D/g, "");
     setPhoneFields(prevFields => {
       const newFields = [...prevFields];
       newFields[fieldIndex] = value;
       return newFields;
     });
-
+    if (value.length >= 3) {
     handleChange(
       { target: { value, dataset: { field: "phoneNumber" } } }, 
       index, 
       fieldIndex
-    );
+    );};
   }, [handleChange, index]);
 
   
   const handleEmailChange = useCallback((e, fieldIndex) => {
     const value = e.target.value;
-    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || value === "";
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-    // Update email fields regardless of validation for better UX
     setEmailFields(prevFields => {
       const newFields = [...prevFields];
       newFields[fieldIndex] = value;
       return newFields;
     });
 
-    // Only trigger handleChange for valid values
-    if (isValid || value === "") {
+    if (isValid ) {
       handleChange(
         { target: { value, dataset: { field: "email" } } }, 
         index, 
@@ -65,17 +73,15 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
 
   const handleWebsiteChange = useCallback((e, fieldIndex) => {
     const value = e.target.value;
-    const isValid = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(value) || value === "";
+    const isValid = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(value);
 
-    // Update website fields regardless of validation for better UX
     setWebsiteFields(prevFields => {
       const newFields = [...prevFields];
       newFields[fieldIndex] = value;
       return newFields;
     });
 
-    // Only trigger handleChange for valid values
-    if (isValid || value === "") {
+    if (isValid) {
       handleChange(
         { target: { value, dataset: { field: "website" } } }, 
         index, 
@@ -91,22 +97,22 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
         <div className="contact-fields">
           {phoneFields.map((phone, fieldIndex) => (
             <div key={fieldIndex} className="contact-field-row">
-              <input
-                type="text"
-                className="contact-input"
-                placeholder="(123) 456-7890"
-                maxLength="9"
-                value={phone}
+              <textarea
+                className={`contact-input ${phone.length > 0 && phone.length < 3 || (phone.length > 5 && phone.length < 10) ? "invalid-input" : ""}`}
+                placeholder="Please enter numbers only, including extension, without +1"
+                maxLength="30"
+                value={formatPhoneNumber(phone)}
                 onChange={(e) => handlePhoneChange(e, fieldIndex)}
+                rows="1"
               />
               <div className="contact-buttons">
-                {phoneFields.length > 1 && (
+                {phoneFields.length > 0 && (
                   <button type="button" className="contact-remove-button" onClick={() => removeField(fieldIndex, phoneFields, setPhoneFields)}>x</button>
                 )}
               </div>
             </div>
           ))}
-          {phoneFields.length < 5 && (
+          {phoneFields.length < 3 && (
             <button type="button" className="contact-add-button" onClick={() => addField("phoneNumber", setPhoneFields)}>+</button>
           )}
         </div>
@@ -117,22 +123,22 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
         <div className="contact-fields">
           {emailFields.map((email, fieldIndex) => (
             <div key={fieldIndex} className="contact-field-row">
-              <input
-                type="text"
+              <textarea
                 className="contact-input"
                 placeholder="catsformap@gmail.com"
                 maxLength="100"
                 value={email}
-                onChange={(e) => handleEmailChange(e, fieldIndex)} // Email validation and value update
+                onChange={(e) => handleEmailChange(e, fieldIndex)}
+                rows="1"
               />
               <div className="contact-buttons">
-                {emailFields.length > 1 && (
+                {emailFields.length > 0 && (
                   <button type="button" className="contact-remove-button" onClick={() => removeField(fieldIndex, emailFields, setEmailFields)}>x</button>
                 )}
               </div>
             </div>
           ))}
-          {emailFields.length < 5 && (
+          {emailFields.length < 3 && (
             <button type="button" className="contact-add-button" onClick={() => addField("email", setEmailFields)}>+</button>
           )}
         </div>
@@ -143,22 +149,22 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
         <div className="contact-fields">
           {websiteFields.map((website, fieldIndex) => (
             <div key={fieldIndex} className="contact-field-row">
-              <input
-                type="text"
+              <textarea
                 className="contact-input"
                 placeholder="https://example.com"
                 maxLength="100"
                 value={website}
-                onChange={(e) => handleWebsiteChange(e, fieldIndex)} // Website validation and value update
+                onChange={(e) => handleWebsiteChange(e, fieldIndex)} 
+                rows="1"
               />
               <div className="contact-buttons">
-                {websiteFields.length > 1 && (
+                {websiteFields.length > 0 && (
                   <button type="button" className="contact-remove-button" onClick={() => removeField(fieldIndex, websiteFields, setWebsiteFields)}>x</button>
                 )}
               </div>
             </div>
           ))}
-          {websiteFields.length < 5 && (
+          {websiteFields.length < 3 && (
             <button type="button" className="contact-add-button" onClick={() => addField("website", setWebsiteFields)}>+</button>
           )}
         </div>
