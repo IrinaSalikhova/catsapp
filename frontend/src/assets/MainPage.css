@@ -22,7 +22,6 @@ body {
 
 .search-bar {
     width: 500px;
-    height: 50px;
     display: flex;
     padding: 10px;
     margin-top: 20px;
@@ -32,8 +31,8 @@ body {
     background-color:  #09579d;
     border: none;
     cursor: pointer;
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
 }
 
 .search-button i {
@@ -54,7 +53,7 @@ body {
 }
 
 .search-button:hover{
-    background-color: #009BEF;
+    background-color: #82C8E5;
 }
 
 .main {
@@ -63,6 +62,7 @@ body {
 }
 
 .sidebar {
+    margin-left: 10px;
     width: 50%; /* Adjust width as needed */
     padding: 20px;
 }

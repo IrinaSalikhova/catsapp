@@ -1,3 +1,4 @@
+// MainPage
 import React, { useState } from 'react';
 import CategoryDropdown from './CategoryDropdown';
 import { useNavigate } from 'react-router-dom';
@@ -6,8 +7,7 @@ import { Outlet } from 'react-router-dom';
 import '../assets/MainPage.css';
 import GoogleMapContainer from "./GoogleMapContainer";
 
-
-const MainPage = () => {
+const MainPage = ({ isLoaded, loadError }) => {
   const navigate = useNavigate();
   const [showOverlay, setShowOverlay] = useState(false);
 const [selectedCategories, setSelectedCategories] = useState([]);
@@ -29,14 +29,6 @@ const [selectedCategories, setSelectedCategories] = useState([]);
       <div className="main-selection">
         <CategoryDropdown onCategorySelect={handleCategorySelect} />
       </div>
-      <div className='selected-categories-bar'>
-            <p>Selected Categories:</p>
-                <ul>
-                    {selectedCategories.map((category) => (
-                      <li key={category.id}>{category.name}</li>
-                    ))}
-                </ul>
-          </div>
     <div className="main">
       <div className="sidebar">
         <div className="title">Community Resources</div>
@@ -83,7 +75,10 @@ const [selectedCategories, setSelectedCategories] = useState([]);
         </div>
         </div>
         <div className="mapcontainer">
-       <GoogleMapContainer />
+       <GoogleMapContainer 
+        isLoaded={isLoaded}
+        loadError={loadError}
+       />
       </div>
       </div>
     </div>

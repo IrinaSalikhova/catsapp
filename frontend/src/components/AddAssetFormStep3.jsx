@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const AddAssetFormStep3 = ({ handleEmailEntered, handleSubmit, setStep }) => {
+const AddAssetFormStep3 = ({ handleEmailEntered, handleSubmit }) => {
 
 
  const [createdEmail, setCreatedEmail] = useState("");
@@ -13,10 +13,9 @@ const AddAssetFormStep3 = ({ handleEmailEntered, handleSubmit, setStep }) => {
     }, 500); // 500ms delay (0.5 seconds)
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault(); 
-    handleSubmit(e); 
-    setStep(4);
+    await handleSubmit(e); 
   };
 
   return (
@@ -39,7 +38,9 @@ const AddAssetFormStep3 = ({ handleEmailEntered, handleSubmit, setStep }) => {
                     />
                   </div>
       
-      <button type="button" onClick={handleFormSubmit}>Proceed</button>
+      <button type="button" 
+      onClick={(e) => handleFormSubmit(e)}>
+        Submit</button>
     </div>
   );
 };

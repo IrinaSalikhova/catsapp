@@ -8,55 +8,70 @@ import AddAssetFormStep4 from "./AddAssetFormStep4";
 
 const STORAGE_KEY = "assetFormData";
 
-const NewAssetForm = ({ onClose, onSubmit, assetData, isLoggedIn, userRole }) => {
+const NewAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadError }) => {
   
-  const [isNew, setIsNew] = useState(true);// TODO: 
+  const [isNew, setIsNew] = useState(true); 
+  const [editingMode, setEditingMode] = useState(false);
 
   const [step, setStep] = useState(1);
   const [assetType, setAssetType] = useState({ multiple: false, physical: false });
+  const [submissionStatus, setSubmissionStatus] = useState({ success: false, message: "" });
   const [formData, setFormData] = useState([
     {
-      categoryIds: [],
+      id: null,
       assetId: null,
+
       name: "",
+      categoryIds: [],
       description: "",
       isVolunOpp: false,
       volunOppText: "",
-      registrationNote: "",
-      scheduleNote: "",
-      isWheelchairAcc: false,
-      languagesOffered: [],
-      scheduleType: "",
       socialWorkerOnlyNote: "",
-      format: [],
-      createdEmail: "",
+
       cityName: "",
       address: "",
       postCode: "",
       transportation: "",
       longitude: null,
       latitude: null,
+
       email: [],
       phoneNumber: [],
-      website: []
+      website: [],
+
+      registrationNote: "",
+      scheduleNote: "",
+      isWheelchairAcc: false,
+      languagesOffered: [],
+      scheduleType: "",
+      format: [],
+
+      createdEmail: "",
+
     }
   ]);
 
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      const { step, assetType, formData } = JSON.parse(savedData);
-      setStep(step);
-      setAssetType(assetType);
-      setFormData(formData);
+
+    if (existingAssetData) { //TODO: need additional work when will be testible 
+      setEditingMode(true);
+      setFormData([existingAssetData]); 
+      setIsNew(false);
     } else {
-      resetForm();
-    }
-  }, []);
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData && isNew) {
+        const { step, assetType, formData } = JSON.parse(savedData);
+        setStep(step);
+        setAssetType(assetType);
+        setFormData(formData);
+        setIsNew(false);
+  }}}, [isNew, existingAssetData]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, assetType, formData }));
-    console.log("Saving to localStorage:", formData); // Debugging log
+    if (!isNew) {  
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, assetType, formData }));
+      console.log("Saving to localStorage:", formData); // Debugging log
+  }
   }, [step, assetType, formData]);
 
   const resetForm = () => {
@@ -107,22 +122,25 @@ const NewAssetForm = ({ onClose, onSubmit, assetData, isLoggedIn, userRole }) =>
 
 
   const handleChange = (e, index, fieldIndex = null) => {
-    const { value, type, checked, dataset } = e.target;
+    const { value, type, checked, multiple, dataset } = e.target;
     const field = dataset.field;
   
     setFormData(prevData =>
-      prevData.map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              [field]: fieldIndex !== null
-                ? item[field].map((val, idx) => (idx === fieldIndex ? value : val))
-                : type === "checkbox"
-                ? checked
-                : value
-            }
-          : item
-      ));};
+      prevData.map((item, i) => {
+        if (i === index) {
+          const updatedItem = { ...item };
+          if (fieldIndex !== null) {
+            updatedItem[field] = [...(updatedItem[field] || [])];
+            updatedItem[field][fieldIndex] = value;
+          } else {
+            updatedItem[field] = type === "checkbox" ? checked : value;
+          }
+          return updatedItem;
+        } 
+
+        return item;
+      }));};
+
 
 
 
@@ -137,36 +155,48 @@ const NewAssetForm = ({ onClose, onSubmit, assetData, isLoggedIn, userRole }) =>
 
   const handleAssetTypeSelection = (type, value) => {
     setAssetType((prev) => ({ ...prev, [type]: value }));
-    if (type === "multiple" && !value) {
+    if (type === "multiple" && !value && isNew) {
       setFormData([formData[0]]);
     }
-    
+    setIsNew(false);
   };
  
   const isFormValid = (index) => {
     const service = formData[index];
     if (!service.name.trim() || service.categoryIds.length === 0) return false;
 
-    // const isAddressEntered = (service.address && service.postCode && service.cityName) || 
-    //   (service.longitude !== null && service.latitude !== null);
-    // const isContactInfoEntered = service.phoneNumber.length > 0 || service.email.length > 0 || service.website.length > 0;
-    // return assetType.physical ? isAddressEntered : isContactInfoEntered;
-    return true;
+    const isAddressEntered = (service.address && service.postCode && service.cityName) || 
+      (service.longitude !== null && service.latitude !== null);
+    const isContactInfoEntered = service.phoneNumber.length > 0 || service.email.length > 0 || service.website.length > 0;
+    return assetType.physical ? isAddressEntered : isContactInfoEntered;
   };
 
   const allFormsValid = formData.every((_, index) => isFormValid(index));
 
 
 
-  const handleAddService = () => {  // RECHECK!!
+  const handleAddService = () => {  
     if (allFormsValid) {
       setFormData([
         ...formData,
         {  ...formData[0], 
+          id: null,
+          assetId: null,
+
           name: "",
           isVolunOpp: false,
           volunOppText: "",
           description: `A service in ${formData[0].name}`,
+          email: [],
+          phoneNumber: [],
+          website: [],
+
+          registrationNote: "",
+          isWheelchairAcc: false,
+          scheduleNote: "",
+          languagesOffered: [],
+          scheduleType: "",
+          format: [],
         }
       ]);
     }
@@ -178,12 +208,57 @@ const NewAssetForm = ({ onClose, onSubmit, assetData, isLoggedIn, userRole }) =>
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitted Form Data:", formData);
-    if (onSubmit) {
-      onSubmit(formData);
+
+    if (userRole === 'navigator') {
+      console.log("Navigator Submitted Form Data:", formData);
+      // here will be other routes later (for new and editing)
+
+
+
+
+
+    } else {
+      console.log("Form Data to submit:", formData);
+      if (editingMode) {
+        try {
+          // TODO: add editing of existing asset to draft (asset id should be populated)
+          console.log("edited asset Data to submit:", formData);
+        } catch (error) {
+          console.error("Error submitting asset:", error.message);
+          alert("Error submitting asset: " + error.message);
+        }
+      } else {
+      try {
+        const response = await fetch("/api/assets/suggestNewAsset", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ newAssetData: formData }),
+        });
+    
+        const result = await response.json();
+    
+        if (!response.ok) {
+          throw new Error(result.message || "Failed to submit asset data");
+        }
+    
+        console.log("Success:", result.message);
+        setSubmissionStatus({ success: true, message: result.message });
+        setStep(4);
+    
+      } catch (error) {
+        console.error("Error submitting asset:", error.message);
+        setSubmissionStatus({ success: false, message: error.message });
+        setStep(4);
+       } 
+      }
     }
+    
+
+    return true; // add return !
   };
 
   // TODO: add back onhovers spans!
@@ -222,6 +297,10 @@ const NewAssetForm = ({ onClose, onSubmit, assetData, isLoggedIn, userRole }) =>
               resetForm={resetForm}
               setStep={setStep}
               handleRemoveLastService={handleRemoveLastService}
+              isNavigator={userRole === 'navigator'}
+              handleSubmit={handleSubmit}
+              isLoaded={isLoaded}
+              loadError={loadError}
             />
           )}
 
@@ -237,6 +316,9 @@ const NewAssetForm = ({ onClose, onSubmit, assetData, isLoggedIn, userRole }) =>
             <AddAssetFormStep4
               onClose={onClose}
               resetForm={resetForm}
+              isNavigator={userRole === 'navigator'}
+              submissionStatus={submissionStatus}
+              setStep={setStep}
             />
           )}
 

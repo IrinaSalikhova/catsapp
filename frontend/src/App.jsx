@@ -1,6 +1,8 @@
 // App.jsx
 import React, { useEffect, useState } from 'react'; 
 import axios from 'axios';
+import { useLoadScript } from '@react-google-maps/api';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -9,18 +11,22 @@ import Login from './components/Login';
 import AddAssetForm from './components/AddAssetForm';
 import AdminPage from './components/AdminPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
 
+const libraries = ['places', 'marker', 'geometry'];
 
 const App = () => {
-  const [message, setMessage] = useState('');
-  const [count, setCount] = useState(0);
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
   const [isNewAssetModalVisible, setNewAssetModalVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState('');
 
-  // token and role rehydration
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: "AIzaSyDgfO9FOsujiJR5OU9VuJdgb35lWCWu6Os",
+    libraries,
+  });
+
+
+
   useEffect(() => {
     const token = localStorage.getItem('token'); 
     const role = localStorage.getItem('role');
@@ -30,18 +36,14 @@ const App = () => {
     }
   }, []);
 
-  useEffect(() => {
-    axios.get('/api/hello') // Relative path works on the same domain
-        .then((response) => setMessage(response.data.message))
-        .catch((error) => console.error('Error fetching data:', error));
-  }, []);
+
 
   const toggleLoginModal = () => {
     setLoginModalVisible(!isLoginModalVisible);  // Toggle modal visibility
   };
 
   const toggleNewAssetModal = () => {
-    setNewAssetModalVisible(!isNewAssetModalVisible);  // Toggle modal visibility
+    setNewAssetModalVisible((prev) => !prev);
   };
 
   const handleLogout = () => {
@@ -65,10 +67,9 @@ const App = () => {
         <Route
           path="/"
           element={
-            <MainPage
-              message={message}
-              count={count}
-              setCount={setCount}
+            <MainPage 
+            isLoaded={isLoaded}
+            loadError={loadError}
             />
           }
         >
@@ -95,7 +96,12 @@ const App = () => {
         />
       )}
       {isNewAssetModalVisible && (
-        <AddAssetForm onClose={toggleNewAssetModal} />
+        <AddAssetForm 
+        onClose={toggleNewAssetModal}
+        userRole={userRole}
+        isLoaded={isLoaded}
+        loadError={loadError}
+        />
       )}
     </main>
     <Footer />
