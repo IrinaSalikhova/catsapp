@@ -11,14 +11,14 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const assetRoutes = require('./routes/assetRoutes');
 const { globalRateLimiter } = require('./middleware');
 
-//app.use(cors()); // comment it out if you want to use localhost:5173
+app.use(cors()); // comment it out if you want to use localhost:5173
 app.use(express.json()); 
 app.use(globalRateLimiter);
 
-const corsOptions = {
-    origin: 'http://localhost:5173', 
-  };
-  app.use(cors(corsOptions)); 
+// const corsOptions = {
+//     origin: 'http://localhost:5173', 
+//   };
+//   app.use(cors(corsOptions)); 
 
 
 // Serve React static files
