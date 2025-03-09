@@ -27,7 +27,6 @@ const CategoryDropdown = ({ onCategorySelect }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-
   const handleClickOutside = (event) => {   
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setDropdownOpen(false);
@@ -45,8 +44,6 @@ const CategoryDropdown = ({ onCategorySelect }) => {
 
       setSelectedCategories(updatedSelection);
       onCategorySelect(updatedSelection);
-      setDropdownOpen(false);
-      setActiveSubcategories(null);
     }
   };
 
@@ -54,7 +51,7 @@ const CategoryDropdown = ({ onCategorySelect }) => {
     if (category.subcategories.length > 0) {
       setActiveSubcategories(category);
       const rect = event.currentTarget.getBoundingClientRect();
-      setSubMenuPosition({ top: rect.top - 180});
+      // setSubMenuPosition({ top: rect.top});
     }
   };
 
@@ -74,24 +71,15 @@ const CategoryDropdown = ({ onCategorySelect }) => {
         Select a category
 
       </button>
-      <p>Selected Categories:</p>
-                <ul>
-                    {selectedCategories.map((category) => (
-                      <li key={category.id}>{category.name}</li>
-                    ))}
-                </ul>
-      {selectedCategories.length > 0 && (
-        <button className="clear-button" onClick={clearSelection}>Clear Selection</button>
-      )}
       {dropdownOpen && (
         <div className="dropdown-content">
           {categories.map((category) => (
             <div 
-              key={category.id} 
-              className="category-item" 
-              onMouseEnter={(event) => handleMouseEnter(category, event)}>
+            key={category.id} 
+            className={`category-item ${selectedCategories.some((c) => c.id === category.id) ? 'selected' : ''}`} 
+            onMouseEnter={(event) => handleMouseEnter(category, event)}>
               <div 
-                className={category.subcategories.length > 0 ? 'has-subcategories' : ''}
+                className={`category-name ${selectedCategories.some((c) => c.id === category.id) ? 'selected' : ''}`}
                 onClick={() => handleCategoryClick(category)}>
                 {category.name}
               </div>
@@ -104,19 +92,27 @@ const CategoryDropdown = ({ onCategorySelect }) => {
       {activeSubcategories && (
         <div 
           className="subcategory-menu" 
-          style={{ top: `${subMenuPosition.top}px`}}
+          style={{ top: `${subMenuPosition.top}px` }}
           onMouseLeave={handleMouseLeave}>
           {activeSubcategories.subcategories.map((subcategory) => (
             <div 
               key={subcategory.id} 
-              className="subcategory-item" 
+              className={`subcategory-item ${selectedCategories.some((c) => c.id === subcategory.id) ? 'selected' : ''}`}
               onClick={() => handleCategoryClick(subcategory)}>
               {subcategory.name}
             </div>
           ))}
         </div>
       )}
-    </div>
+          <div className="selected-categories" style={{ width: '200%', display: 'flex', flexWrap: 'wrap', gap: '5px', padding: '5px' }}>
+          {selectedCategories.map((category) => (
+            <span key={category.id} className="selected-category">{category.name}, </span>
+          ))}
+        </div>
+                {selectedCategories.length > 0 && (
+          <button className="clear-button" onClick={clearSelection}>Clear Selection</button>
+        )}
+        </div>
   );
 };
 

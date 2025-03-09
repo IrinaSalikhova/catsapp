@@ -29,14 +29,6 @@ const [selectedCategories, setSelectedCategories] = useState([]);
       <div className="main-selection">
         <CategoryDropdown onCategorySelect={handleCategorySelect} />
       </div>
-      <div className='selected-categories-bar'>
-            <p>Selected Categories:</p>
-                <ul>
-                    {selectedCategories.map((category) => (
-                      <li key={category.id}>{category.name}</li>
-                    ))}
-                </ul>
-          </div>
     <div className="main">
       <div className="sidebar">
         <div className="title">Community Resources</div>
