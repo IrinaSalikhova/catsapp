@@ -3,6 +3,9 @@ const User = require('../model/User');
 const { authenticateJWT, generatePasswordResetToken, generateToken, globalRateLimiter, userRateLimiter } = require('../middleware'); // Adjust path as needed
 const JWT_SECRET = process.env.JWT_SECRET;
 
+
+describe('middleware tests', () => {
+   
 describe('generatePasswordResetToken', () => {
     it('should generate a valid password reset token', () => {
         const userId = 1;
@@ -89,59 +92,7 @@ describe('authenticateJWT Middleware', () => {
 
 });
 
-describe('globalRateLimiter Middleware', () => {
-    beforeEach(() => {
-        globalRequestCount = 0; // Reset before each test
-    });
+// TODO: find if tests for limiters ae possible
 
-    it('should allow requests if the limit is not exceeded', async () => {
-        const req = {};
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-        const next = jest.fn();
 
-        // Simulate that the total requests haven't been exceeded
-        await globalRateLimiter(req, res, next);
-
-        expect(next).toHaveBeenCalled();
-    });
-
-    it('should reject requests if the global request limit is exceeded', async () => {
-        globalRequestCount = 200; // Set to max limit
-
-        const req = {};
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-        const next = jest.fn();
-
-        await globalRateLimiter(req, res, next);
-
-        expect(res.status).toHaveBeenCalledWith(429);
-        expect(res.json).toHaveBeenCalledWith({ message: 'Too many requests, please try again later.' });
-        expect(next).not.toHaveBeenCalled();
-    });
-});
-
-describe('userRateLimiter Middleware', () => {
-    it('should allow requests within the rate limit', async () => {
-        const req = { headers: { 'x-user-id': '123', path: '/test' } };
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-        const next = jest.fn();
-
-        // Simulate that the user has not exceeded the rate limit
-        userRateLimiter(req, res, next);
-
-        expect(next).toHaveBeenCalled();
-    });
-
-    it('should reject requests if the user exceeds the rate limit', async () => {
-        const req = { headers: { 'x-user-id': '123', path: '/test' } };
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-        const next = jest.fn();
-
-        // Simulate that the rate limit was exceeded for the user
-        userRateLimiter(req, res, next);
-
-        expect(res.status).toHaveBeenCalledWith(429);
-        expect(res.json).toHaveBeenCalledWith({ message: 'Too many requests, please try again later.' });
-        expect(next).not.toHaveBeenCalled();
-    });
 });

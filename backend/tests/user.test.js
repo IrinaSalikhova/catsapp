@@ -1,13 +1,19 @@
 // user.test.js
 const User = require('../model/User');
 const db = require('../db');
+const bcrypt = require('bcryptjs');
 
 
 jest.mock('../db'); 
+jest.mock('bcryptjs', () => ({
+    hash: jest.fn(),
+    compare: jest.fn(),
+}));
 
 describe('User Model', () => {
     afterEach(() => {
-        jest.clearAllMocks();  // Clear all mocks after each test
+        jest.clearAllMocks();  
+        jest.resetAllMocks();
     });
 
     describe('Constructor', () => {
@@ -91,7 +97,7 @@ describe('User Model', () => {
                 lastUpdateByJobTitle: 'Admin',
             }];
             
-            db.query.mockResolvedValue([mockUserData]); // Mock resolved value for query
+            db.query.mockResolvedValueOnce([mockUserData]); // Mock resolved value for query
     
             const userId = 1;
             const user = await User.findById(userId);
@@ -104,9 +110,9 @@ describe('User Model', () => {
     
         it('should return null when no user is found for a given ID', async () => {
             // Mock the database query for a non-existing user
-            db.query.mockResolvedValue([[]]); // No data returned
+            db.query.mockResolvedValueOnce([[]]); // No data returned
     
-            const userId = 999; // Assuming 999 doesn't exist
+            const userId = 999;
             const user = await User.findById(userId);
     
             expect(user).toBeNull();
@@ -120,7 +126,7 @@ describe('User Model', () => {
     
         it('should throw an error if the database query fails', async () => {
             // Mock a database error
-            db.query.mockRejectedValue(new Error('Database error'));
+            db.query.mockRejectedValueOnce(new Error('Database error'));
     
             const userId = 1;
     
@@ -151,7 +157,7 @@ describe('User Model', () => {
                 lastUpdateByJobTitle: 'Admin',
             }];
             
-            db.query.mockResolvedValue([mockUserData]); // Mock resolved value for query
+            db.query.mockResolvedValueOnce([mockUserData]); // Mock resolved value for query
     
             const email = 'test@example.com';
             const user = await User.findByEmail(email);
@@ -164,7 +170,7 @@ describe('User Model', () => {
     
         it('should return null when no user is found for the given email', async () => {
             // Mock the database query for a non-existing email
-            db.query.mockResolvedValue([[]]); // No data returned
+            db.query.mockResolvedValueOnce([[]]); // No data returned
     
             const email = 'nonexistent@example.com'; // Assuming this email doesn't exist
             const user = await User.findByEmail(email);
@@ -182,7 +188,7 @@ describe('User Model', () => {
     
         it('should throw an error if the database query fails', async () => {
             // Mock a database error
-            db.query.mockRejectedValue(new Error('Database error'));
+            db.query.mockRejectedValueOnce(new Error('Database error'));
     
             const email = 'test@example.com';
     
@@ -191,9 +197,10 @@ describe('User Model', () => {
     });
 
     describe('create', () => {
+
         it('should throw an error if user with the same email already exists', async () => {
             // Mock the findByEmail method to simulate an existing user with the same email
-            User.findByEmail = jest.fn().mockResolvedValue(true);  // Simulate an existing user
+            User.findByEmail = jest.fn().mockResolvedValueOnce(true);  // Simulate an existing user
     
             const userData = {
                 email: 'user@example.com',
@@ -212,9 +219,9 @@ describe('User Model', () => {
                 lastName: 'Doe',
                 role: 'admin'
             };
-            User.findByEmail = jest.fn().mockResolvedValue(null);
+            User.findByEmail = jest.fn().mockResolvedValueOnce(null);
     
-            db.query.mockRejectedValue(new Error('Database insert failed'));
+            db.query.mockRejectedValueOnce(new Error('Database insert failed'));
     
             await expect(User.create(userData)).rejects.toThrow('Error creating user: Database insert failed');
         });
@@ -228,11 +235,8 @@ describe('User Model', () => {
                 createdBy: null
             };
         
-            db.query.mockResolvedValueOnce([[]]);
+            db.query.mockResolvedValueOnce([[]]).mockResolvedValueOnce([[{ id: 1 }]]).mockResolvedValueOnce([{insertId: 1 }]);
         
-            // Mock the role query to return a valid role ID
-            db.query.mockResolvedValueOnce({id: 1}); // This simulates the role query returning a valid role ID
-            db.query.mockResolvedValueOnce([{insertId: 1 }]); 
         
             // Mock findById to return the created user after insertion
             const mockCreatedUser = new User({
@@ -242,14 +246,14 @@ describe('User Model', () => {
                 lastName: 'Doe',
                 role: 'admin'
             });
-            User.findById = jest.fn().mockResolvedValue(mockCreatedUser);
+            User.findById = jest.fn().mockResolvedValueOnce(mockCreatedUser);
         
             // Call create and handle the result
             const result = await User.create(userData);
         
             // Ensure the role lookup query was called
             expect(db.query).toHaveBeenCalledWith('SELECT id FROM roles WHERE name = ?', ['admin']);
-            expect(db.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO users'));
+            expect(db.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO users'), expect.any(Array));
         
             // Ensure the result is the correct user instance
             expect(result).toBeInstanceOf(User);
@@ -289,7 +293,7 @@ describe('User Model', () => {
                 }
             ];
 
-            db.query.mockResolvedValue([mockUserData]); // Mock database result
+            db.query.mockResolvedValueOnce([mockUserData]); // Mock database result
 
             const users = await User.returnAllUsers();
 
@@ -301,7 +305,7 @@ describe('User Model', () => {
 
         it('should return an empty array when no users are found', async () => {
             // Mock an empty database result (no users)
-            db.query.mockResolvedValue([[]]);
+            db.query.mockResolvedValueOnce([[]]);
 
             const users = await User.returnAllUsers();
 
@@ -310,7 +314,7 @@ describe('User Model', () => {
 
         it('should throw an error if the database query fails', async () => {
             // Mock a database error
-            db.query.mockRejectedValue(new Error('Database error'));
+            db.query.mockRejectedValueOnce(new Error('Database error'));
 
             await expect(User.returnAllUsers()).rejects.toThrow('Error fetching all users: Database error');
         });
@@ -326,25 +330,25 @@ describe('User Model', () => {
                 lastName: 'Doe',
                 role: 'admin'
             });
-
+    
             const newPassword = 'newPassword123';
             const initiatorId = 2; // The ID of the user changing the password
-
+    
             // Mock bcrypt.hash to return a hashed password
-            bcrypt.hash.mockResolvedValue('hashedPassword123');
-
+            bcrypt.hash.mockResolvedValueOnce('hashedPassword123');
+    
             // Mock the database query for updating the password
-            db.query.mockResolvedValue([{}]); // Simulate successful query
-
+            db.query.mockResolvedValueOnce([{}]); // Simulate successful query
+    
             const response = await mockUser.changePassword(newPassword, initiatorId);
-
+    
             expect(bcrypt.hash).toHaveBeenCalledWith(newPassword, 10); // Ensure bcrypt is called with correct arguments
             expect(db.query).toHaveBeenCalledWith('UPDATE users SET password = ?, lastUpdateBy = ? WHERE id = ?', [
                 'hashedPassword123', initiatorId, mockUser.id
             ]);
             expect(response).toEqual({ message: 'Password changed successfully' });
         });
-
+    
         it('should throw an error if the password length is invalid', async () => {
             const mockUser = new User({
                 id: 1,
@@ -353,13 +357,13 @@ describe('User Model', () => {
                 lastName: 'Doe',
                 role: 'admin'
             });
-
+    
             const invalidPassword = 'ab'; // Invalid password (too short)
             const initiatorId = 2;
-
+    
             await expect(mockUser.changePassword(invalidPassword, initiatorId)).rejects.toThrow('Password must be between 3 and 20 characters');
         });
-
+    
         it('should throw an error if bcrypt hashing fails', async () => {
             const mockUser = new User({
                 id: 1,
@@ -368,16 +372,16 @@ describe('User Model', () => {
                 lastName: 'Doe',
                 role: 'admin'
             });
-
+    
             const newPassword = 'newPassword123';
             const initiatorId = 2;
-
+    
             // Mock bcrypt.hash to throw an error
-            bcrypt.hash.mockRejectedValue(new Error('Bcrypt error'));
-
+            bcrypt.hash.mockRejectedValueOnce(new Error('Bcrypt error'));
+    
             await expect(mockUser.changePassword(newPassword, initiatorId)).rejects.toThrow('Error changing password: Bcrypt error');
         });
-
+    
         it('should throw an error if the database query fails during password update', async () => {
             const mockUser = new User({
                 id: 1,
@@ -386,27 +390,27 @@ describe('User Model', () => {
                 lastName: 'Doe',
                 role: 'admin'
             });
-
+    
             const newPassword = 'newPassword123';
             const initiatorId = 2;
-
+    
             // Mock bcrypt.hash to return a hashed password
-            bcrypt.hash.mockResolvedValue('hashedPassword123');
-
+            bcrypt.hash.mockResolvedValueOnce('hashedPassword123');
+    
             // Mock the database query to simulate an error
-            db.query.mockRejectedValue(new Error('Database update failed'));
-
+            db.query.mockRejectedValueOnce(new Error('Database update failed'));
+    
             await expect(mockUser.changePassword(newPassword, initiatorId)).rejects.toThrow('Error changing password: Database update failed');
         });
     });
 
     describe('toggleUserStatus', () => {
         it('should activate a user when isEnable is true', async () => {
-            const user = new User({ id: 1, isEnable: false }); // mock user
+            const user = new User({ id: 1, isEnable: false, email: 'old@example.com', role: 'admin' }); // mock user
             const initiatorId = 2;
             
             // Mock the db query to simulate a successful update
-            db.query.mockResolvedValue([{ affectedRows: 1 }]);
+            db.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
     
             const result = await user.toggleUserStatus(true, initiatorId);
     
@@ -416,11 +420,11 @@ describe('User Model', () => {
         });
     
         it('should deactivate a user when isEnable is false', async () => {
-            const user = new User({ id: 1, isEnable: true }); // mock user
+            const user = new User({ id: 1, isEnable: true, email: 'old@example.com', role: 'admin' }); // mock user
             const initiatorId = 2;
             
             // Mock the db query to simulate a successful update
-            db.query.mockResolvedValue([{ affectedRows: 1 }]);
+            db.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
     
             const result = await user.toggleUserStatus(false, initiatorId);
     
@@ -430,11 +434,11 @@ describe('User Model', () => {
         });
     
         it('should throw an error if the user status update fails', async () => {
-            const user = new User({ id: 1, isEnable: false });
+            const user = new User({ id: 1, isEnable: false, email: 'old@example.com', role: 'admin' });
             const initiatorId = 2;
             
             // Mock the db query to simulate no rows affected (failure)
-            db.query.mockResolvedValue([{ affectedRows: 0 }]);
+            db.query.mockResolvedValueOnce([{ affectedRows: 0 }]);
     
             await expect(user.toggleUserStatus(true, initiatorId)).rejects.toThrow('Failed to update user status');
         });
@@ -444,7 +448,7 @@ describe('User Model', () => {
 
     describe('update', () => {
         it('should successfully update user data', async () => {
-            const user = new User({ id: 1, email: 'old@example.com', roleId: 1 });
+            const user = new User({ id: 1, email: 'old@example.com', role: 'navigator' });
             const initiatorId = 2;
             
             const updates = {
@@ -454,7 +458,7 @@ describe('User Model', () => {
             };
             
             // Mock the db query for role lookup
-            db.query.mockResolvedValueOnce([{ id: 1 }]); // Valid role ID
+            db.query.mockResolvedValueOnce([[{ id: 1 }]]); // Valid role ID
             
             // Mock the db query for update operation
             db.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
@@ -462,14 +466,14 @@ describe('User Model', () => {
             const result = await user.update(updates, initiatorId);
     
             expect(db.query).toHaveBeenCalledWith('SELECT id FROM roles WHERE name = ?', ['admin']);
-            expect(db.query).toHaveBeenCalledWith(expect.stringContaining('UPDATE users SET email = ?, firstName = ?, lastUpdateBy = ? WHERE id = ?'));
+            expect(db.query).toHaveBeenCalledWith(expect.stringContaining('UPDATE users SET email = ?, firstName = ?, roleId = ?, lastUpdateBy = ? WHERE id = ?'), expect.any(Array));
             expect(result.message).toBe('User updated successfully');
             expect(user.email).toBe('new@example.com');
             expect(user.firstName).toBe('Jane');
         });
     
         it('should throw an error if an invalid role is specified', async () => {
-            const user = new User({ id: 1, email: 'old@example.com', roleId: 1 });
+            const user = new User({ id: 1, email: 'old@example.com', role: 'navigator' });
             const initiatorId = 2;
             
             const updates = {
@@ -483,8 +487,8 @@ describe('User Model', () => {
             await expect(user.update(updates, initiatorId)).rejects.toThrow('Invalid role specified');
         });
     
-        it('should throw an error if no valid fields are provided', async () => {
-            const user = new User({ id: 1, email: 'old@example.com', roleId: 1 });
+        it('should throw an error if invalid fields are provided', async () => {
+            const user = new User({ id: 1, email: 'old@example.com', role: 'navigator' });
             const initiatorId = 2;
             
             const updates = {
@@ -495,7 +499,7 @@ describe('User Model', () => {
         });
     
         it('should throw an error if no fields to update are provided', async () => {
-            const user = new User({ id: 1, email: 'old@example.com', roleId: 1 });
+            const user = new User({ id: 1, email: 'old@example.com', role: 'navigator' });
             const initiatorId = 2;
             
             const updates = {}; // No updates
@@ -506,10 +510,10 @@ describe('User Model', () => {
 
     describe('delete', () => {
         it('should successfully delete the user', async () => {
-            const user = new User({ id: 1, email: 'delete@example.com' });
+            const user = new User({ id: 1, role: 'navigator', email: 'delete@example.com' });
             
             // Mock the db query to simulate successful deletion
-            db.query.mockResolvedValue([{ affectedRows: 1 }]);
+            db.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
     
             const result = await user.delete();
     
@@ -518,10 +522,10 @@ describe('User Model', () => {
         });
     
         it('should throw an error if no user is found to delete', async () => {
-            const user = new User({ id: 1, email: 'delete@example.com' });
+            const user = new User({ id: 1, role: 'navigator', email: 'delete@example.com' });
             
             // Mock the db query to simulate no rows affected (failure)
-            db.query.mockResolvedValue([{ affectedRows: 0 }]);
+            db.query.mockResolvedValueOnce([{ affectedRows: 0 }]);
     
             await expect(user.delete()).rejects.toThrow('No user found with the provided ID');
         });
