@@ -190,25 +190,27 @@ class User {
             const allowedFields = ['email', 'firstName', 'lastName', 'jobTitle', 'roleId'];
             const updatesToApply = {};
     
-            const [roleResult] = await db.query('SELECT id FROM roles WHERE name = ?', [updates.role]);
-            if (!roleResult.length) {
-                throw new Error('Invalid role specified');
+            if (updates.role) {
+                const [roleResult] = await db.query('SELECT id FROM roles WHERE name = ?', [updates.role]);
+                if (!roleResult || roleResult.length === 0) {
+                    throw new Error('Invalid role specified');
+                }
+                updates.roleId = roleResult[0].id;
+                delete updates.role;
             }
-            const roleId = roleResult[0].id;
-            updates.roleId = roleId;
-            delete updates.role;
-    
+            
             for (const key of Object.keys(updates)) {
                 if (!allowedFields.includes(key)) {
                     throw new Error(`Cannot update field: ${key}`);
                 }
                 updatesToApply[key] = updates[key];
             }
-    
+            
             if (Object.keys(updatesToApply).length === 0) {
                 throw new Error('No valid fields to update');
             }
     
+            
             updatesToApply.lastUpdateBy = initiatorId;
     
             const updateFields = Object.keys(updatesToApply).map(key => `${key} = ?`).join(', ');
