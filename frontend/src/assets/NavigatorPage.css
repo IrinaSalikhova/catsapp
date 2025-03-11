@@ -39,3 +39,25 @@
 .navigator-section.active {
   display: block; /* Only display the active section */
 }
+
+.notification-section {
+  padding: 20px;
+  background-color: #f0f7ff; /* Light blue background */
+}
+
+.notification-item {
+  margin: 10px 0;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background-color: #e0e8ff; /* Slightly darker blue for contrast */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.notification-item:hover {
+  background-color: #cad2f7; /* Even darker on hover */
+}
+
+.notification-item.edit {
+  background-color: #d1eaf5; /* Different color for edits */
+}
