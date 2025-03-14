@@ -72,7 +72,7 @@ describe('AssetDraft Class (Database Integration Tests)', () => {
         await assetDraftMin.save();
         assetDraftMinId = assetDraftMin.id;
 
-        console.log("assetDraftMin", assetDraftMin);
+        //console.log("assetDraftMin", assetDraftMin);
         expect(assetDraftMin.id).toBeDefined();
        
         const [rows] = await db.query('SELECT * FROM assetsDraft WHERE id = ?', [assetDraftMin.id]);
@@ -118,7 +118,7 @@ describe('AssetDraft Class (Database Integration Tests)', () => {
 
     test('getAllPendingAssets should return correct hierarchical structure', async () => {
         const pendingAssets = await AssetDraft.getAllPendingAssets();
-        console.log("Pending Assets:", pendingAssets);
+        //console.log("Pending Assets:", pendingAssets);
         expect(pendingAssets).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({ id: testAssetDraftId, name: "Test Asset" }),
@@ -137,7 +137,7 @@ describe('AssetDraft Class (Database Integration Tests)', () => {
 
     test('getParentWithChildren should return parent with all children', async () => {
         const parentWithChildren = await AssetDraft.getParentWithChildren(parentAssetId);
-        console.log("Parent with children:", parentWithChildren);
+        //console.log("Parent with children:", parentWithChildren);
         expect(parentWithChildren).toBeDefined();
         expect(parentWithChildren.id).toBe(parentAssetId);
         expect(parentWithChildren.children).toHaveLength(3);
@@ -156,7 +156,7 @@ describe('AssetDraft Class (Database Integration Tests)', () => {
         pendingAssets.forEach(asset => {
             expect(asset.status).toBe('pending');
         });
-        console.log('Pending Assets:', pendingAssets);
+        //console.log('Pending Assets:', pendingAssets);
 
     });
 
@@ -227,7 +227,7 @@ describe('AssetDraft Class (Database Integration Tests)', () => {
         await assetDraft.editAssetDraft(updatedData);
         const updatedAsset = await AssetDraft.getById(testAssetDraftId);
         expect(updatedAsset.name).toBe("Test edited Asset");
-        console.log("updatedAsset", updatedAsset);
+        //console.log("updatedAsset", updatedAsset);
 
     });
 

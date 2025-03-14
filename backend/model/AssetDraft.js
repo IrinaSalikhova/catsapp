@@ -3,6 +3,7 @@ const Joi = require('joi');
 const db = require('../db');
 const Address = require('./Address');
 const ContactInfo = require('./ContactInfo');
+const Category = require('./Category');
 const sendEmail = require('../emailService').sendEmail;
 
 
@@ -14,6 +15,7 @@ const assetDraftSchema = Joi.object({
     parentAssetDraftName: Joi.string().max(255).allow(null, "").optional(),
 
     categoryIds: Joi.array().items(Joi.number().integer()).required(),
+    categoryNames: Joi.array().items(Joi.string().max(200)).allow(null, "").optional(),
     name: Joi.string().max(255).required(),
     description: Joi.string().max(2000).allow(null, "").optional(),
     isVolunOpp: Joi.boolean().default(false),
@@ -70,9 +72,10 @@ class AssetDraft {
         this.id = value.id;
         this.assetId = value.assetId;
         this.hasChildren = value.hasChildren instanceof Buffer ? Boolean(value.hasChildren.readUInt8(0)) : value.hasChildren;
-        this.parentAssetDraftId = value.parentAssetDraftId;
-        this.parentAssetDraftName = value.parentAssetDraftName;
-        this.categoryIds = value.categoryIds;
+        this.parentAssetDraftId = value.parentAssetDraftId;        
+        this.parentAssetDraftName = value.parentAssetDraftName;        
+        this.categoryIds = value.categoryIds;   
+        this.categoryNames = value.categoryNames;      
         this.name = value.name;
         this.description = value.description;
         this.isVolunOpp = value.isVolunOpp instanceof Buffer ? Boolean(value.isVolunOpp.readUInt8(0)) : value.isVolunOpp;
@@ -171,11 +174,11 @@ class AssetDraft {
             ? assetDraftData.categoryIds.split(',').map(Number) 
             : [];
 
+        assetDraftData.categoryNames = await Category.getCategoryNamesByIds(assetDraftData.categoryIds);
+
         assetDraftData.isVolunOpp = Boolean(assetDraftData.isVolunOpp.readUInt8(0));
         assetDraftData.hasChildren = Boolean(assetDraftData.hasChildren.readUInt8(0));
         assetDraftData.isWheelchairAcc = Boolean(assetDraftData.isWheelchairAcc.readUInt8(0));
-        //assetDraftData.languagesOffered = assetDraftData.languagesOffered ? assetDraftData.languagesOffered.split('|') : [];
-        //assetDraftData.format = assetDraftData.format ? assetDraftData.format.split('|') : [];
     
         return new AssetDraft({ data: assetDraftData });
     }
@@ -194,15 +197,17 @@ class AssetDraft {
              GROUP BY ad.id`
         );
     
-        const assets = rows.map(row => {
+        const assets = await Promise.all(rows.map(async row => {
             row.categoryIds = row.categoryIds 
                 ? row.categoryIds.split(',').map(Number) 
                 : [];
+            row.categoryNames = await Category.getCategoryNamesByIds(row.categoryIds);
+
             row.isVolunOpp = Boolean(row.isVolunOpp.readUInt8(0));
             row.hasChildren = Boolean(row.hasChildren.readUInt8(0));
             row.isWheelchairAcc = Boolean(row.isWheelchairAcc.readUInt8(0));
             return new AssetDraft({ data: row });
-        });
+        }));
    
         
         const parentAssets = assets.filter(asset => asset.hasChildren);
@@ -231,6 +236,8 @@ class AssetDraft {
 
         const parentData = parentRows[0];
         parentData.categoryIds = parentData.categoryIds ? parentData.categoryIds.split(',').map(Number) : [];
+        parentData.categoryNames = await Category.getCategoryNamesByIds(parentData.categoryIds);
+
         parentData.isVolunOpp = Boolean(parentData.isVolunOpp.readUInt8(0));
         parentData.hasChildren = Boolean(parentData.hasChildren.readUInt8(0));
         parentData.isWheelchairAcc = Boolean(parentData.isWheelchairAcc.readUInt8(0));
@@ -248,13 +255,15 @@ class AssetDraft {
             [parentId]
         );
 
-        parent.children = childRows.map(row => {
+        parent.children = await Promise.all(childRows.map(async row => {
             row.categoryIds = row.categoryIds ? row.categoryIds.split(',').map(Number) : [];
+            row.categoryNames = await Category.getCategoryNamesByIds(row.categoryIds);
             row.isVolunOpp = Boolean(row.isVolunOpp.readUInt8(0));
             row.hasChildren = Boolean(row.hasChildren.readUInt8(0));
             row.isWheelchairAcc = Boolean(row.isWheelchairAcc.readUInt8(0));
             return new AssetDraft({ data: row });
-        });
+        }));
+
 
         return parent;
     }

@@ -33,4 +33,15 @@ describe('Category Model - Database Integration Tests', () => {
         expect(categoryTree[0]).toHaveProperty('subcategories');
         expect(Array.isArray(categoryTree[0].subcategories)).toBe(true);
     });
+
+    test('getCategoryNamesByIds should return correct category names', async () => {
+        const testIds = [1, 2, 3];
+        const categoryNames = await Category.getCategoryNamesByIds(testIds);
+        console.log(categoryNames);
+        expect(Array.isArray(categoryNames)).toBe(true);
+        expect(categoryNames.length).toBeGreaterThan(0);
+        categoryNames.forEach(name => {
+            expect(typeof name).toBe('string');
+        });
+    });
 });

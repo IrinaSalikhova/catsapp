@@ -36,7 +36,7 @@ const AddAssetFormStep1 = ({ assetType, handleAssetTypeSelection, setStep }) => 
             className={assetType.physical ? "active" : ""}
             onClick={() => handleAssetTypeSelection("physical", true)}
           >
-            Yes, they have a place
+            Yes, they have a physical location
           </button>
           <button
             type="button"

@@ -38,6 +38,23 @@ class Category {
           throw error;
       }
   }
+
+  static async getCategoryNamesByIds(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+        throw new Error("Invalid input: Expected an array of category IDs.");
+    }
+
+    try {
+        const placeholders = ids.map(() => '?').join(', ');
+        const query = `SELECT name FROM categories WHERE id IN (${placeholders})`;
+        const [rows] = await db.query(query, ids);
+        return rows.map(row => row.name);
+    } catch (error) {
+        console.error("Error fetching category names by IDs:", error);
+        throw error;
+    }
+}
+
 }
 
 module.exports = Category;

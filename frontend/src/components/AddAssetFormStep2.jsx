@@ -121,7 +121,7 @@ const AddAssetFormStep2 = ({
           <div className="asset-form-field-container">
             <label>Private Note</label>
             <textarea
-              data-field="description"
+              data-field="socialWorkerOnlyNote"
               placeholder="This note will be visible only to registered navigators"
               maxLength="500"
               value={service.socialWorkerOnlyNote}
@@ -165,7 +165,7 @@ const AddAssetFormStep2 = ({
 
           {assetType.multiple && index === formData.length - 1 && formData.length > 1 && (
             <button type="button" className="delete-button" onClick={handleRemoveLastService}>
-              - Remove last service or program
+              - Remove last added service or program
             </button>
           )}
 
