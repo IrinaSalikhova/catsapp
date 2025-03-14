@@ -10,7 +10,7 @@ const AdminPage = () => {
     const formRef = useRef(null);
 
     const token = localStorage.getItem('token');
-    if (!token) { //add validity check and redirection to main page 
+    if (!token) { //TODO: add validity check and redirection to main page 
         console.error('User not authenticated');
         window.location.href = '/login';
         return null;

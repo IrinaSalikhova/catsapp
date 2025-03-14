@@ -36,7 +36,7 @@ describe('AssetDraft Class (Database Integration Tests)', () => {
             isWheelchairAcc: true,
             languagesOffered: ["English", "French", "abrakadabra"],
             scheduleType: "weekly",
-            socialWorkerOnlyNote: "Test social worker only note",
+            socialWorkerOnlyNote: "Test social worker only note", 
             format: ["Online", "On site", "Group", "Individual", "Drop-in", "Scheduled event", "Self-paced"],
             createdEmail: "test@gmail.com",
             cityName: "Test City",

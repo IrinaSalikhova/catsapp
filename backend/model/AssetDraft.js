@@ -13,6 +13,8 @@ const assetDraftSchema = Joi.object({
     hasChildren: Joi.boolean().allow(null).default(false),
     parentAssetDraftId: Joi.number().integer().allow(null).optional(),
     parentAssetDraftName: Joi.string().max(255).allow(null, "").optional(),
+    childrenIds: Joi.array().items(Joi.number().integer()).allow(null, "").optional(),
+    childrenNames: Joi.array().items(Joi.string().max(255)).allow(null, "").optional(),
 
     categoryIds: Joi.array().items(Joi.number().integer()).required(),
     categoryNames: Joi.array().items(Joi.string().max(200)).allow(null, "").optional(),
@@ -73,7 +75,9 @@ class AssetDraft {
         this.assetId = value.assetId;
         this.hasChildren = value.hasChildren instanceof Buffer ? Boolean(value.hasChildren.readUInt8(0)) : value.hasChildren;
         this.parentAssetDraftId = value.parentAssetDraftId;        
-        this.parentAssetDraftName = value.parentAssetDraftName;        
+        this.parentAssetDraftName = value.parentAssetDraftName;  
+        this.childrenIds = value.childrenIds;
+        this.childrenNames = value.childrenNames;      
         this.categoryIds = value.categoryIds;   
         this.categoryNames = value.categoryNames;      
         this.name = value.name;
@@ -179,6 +183,18 @@ class AssetDraft {
         assetDraftData.isVolunOpp = Boolean(assetDraftData.isVolunOpp.readUInt8(0));
         assetDraftData.hasChildren = Boolean(assetDraftData.hasChildren.readUInt8(0));
         assetDraftData.isWheelchairAcc = Boolean(assetDraftData.isWheelchairAcc.readUInt8(0));
+
+        if (assetDraftData.hasChildren) {
+            const [childrenRows] = await db.query(
+                `SELECT id, name FROM assetsDraft WHERE parentAssetDraftId = ?`,
+                [id]
+            );
+            assetDraftData.childrenIds = childrenRows.map(child => child.id);
+            assetDraftData.childrenNames = childrenRows.map(child => child.name);
+        } else {
+            assetDraftData.childrenIds = [];
+            assetDraftData.childrenNames = [];
+        }
     
         return new AssetDraft({ data: assetDraftData });
     }
