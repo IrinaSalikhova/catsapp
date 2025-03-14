@@ -1,0 +1,63 @@
+.navigator-container {
+  display: flex;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+}
+
+.navigator-sidebar {
+  flex: 1;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-right: 2px solid #ccc;
+}
+
+.navigator-content {
+  flex: 3;
+  padding: 20px;
+}
+
+.navigator-nav {
+  list-style: none;
+  padding: 0;
+}
+
+.navigator-nav li {
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: #e2e2e2;
+  cursor: pointer;
+}
+
+.navigator-nav li:hover {
+  background-color: #d4d4d4;
+}
+
+.navigator-section {
+  display: none; /* Hide all sections initially */
+}
+
+.navigator-section.active {
+  display: block; /* Only display the active section */
+}
+
+.notification-section {
+  padding: 20px;
+  background-color: #f0f7ff; /* Light blue background */
+}
+
+.notification-item {
+  margin: 10px 0;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background-color: #e0e8ff; /* Slightly darker blue for contrast */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.notification-item:hover {
+  background-color: #cad2f7; /* Even darker on hover */
+}
+
+.notification-item.edit {
+  background-color: #d1eaf5; /* Different color for edits */
+}

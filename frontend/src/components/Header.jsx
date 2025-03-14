@@ -23,7 +23,7 @@ const Header = ({ isLoggedIn, userRole, onLogout, toggleLoginModal, toggleNewAss
           <button className='admin-page-button' onClick={() => navigate('/adminpage')}>Admin Page</button>
         )}
         {isLoggedIn && userRole === 'navigator' && (
-          <button className='navigator-page-button' onClick={() => alert('Navigator page is under development')}>
+          <button className='navigator-page-button' onClick={() => navigate('/navigatorpage')}>
             Navigator Page
           </button>
         )}
