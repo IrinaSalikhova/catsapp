@@ -40,7 +40,7 @@ const NavigatorPage = () => {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
-                        'draftid': '563'
+                        'draftid': '563' // it should be added by code to load whatever is needed. 
                     }
                 });
 
