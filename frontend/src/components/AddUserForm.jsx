@@ -104,6 +104,7 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                         onChange={handleChange}
                         required
                         disabled={isSubmitting}
+                        maxlength="100"
                     />
                     {emailError && <p className="error-message">{emailError}</p>}
 
@@ -115,6 +116,7 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                         onChange={handleChange}
                         required
                         disabled={isSubmitting}
+                        maxlength="50"
                     />
 
                     <label>Last Name:</label>
@@ -125,6 +127,7 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                         onChange={handleChange}
                         required
                         disabled={isSubmitting}
+                        maxlength="50"
                     />
 
                     <label>Job Title:</label>
@@ -135,6 +138,7 @@ const AddUserForm = ({ onClose, onSave, userData }) => {
                         onChange={handleChange}
                         required
                         disabled={isSubmitting}
+                        maxlength="100"
                     />
 
                     <label>Role:</label>
