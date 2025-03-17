@@ -1,5 +1,6 @@
 const express = require('express');
 const AssetDraft = require('../model/AssetDraft');
+const Asset = require('../model/Asset');
 const {userRateLimiter, authenticateJWT} = require("../middleware");
 
 const router = express.Router();
@@ -168,6 +169,24 @@ router.get('/getAllPendingAssets', authenticateJWT, userRateLimiter, async (req,
     }
 });
 
+router.get('/getAllEnabledAssets', userRateLimiter, async (req, res) => {
+
+    try {
+        const allAssets = await Asset.getAllEnabledAssets();
+
+        if (!allAssets) {
+            return res.status(404).json({ message: 'No assets found' });
+        }
+        res.status(200).json({
+            allAssets
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error retrieving assets', error: err.message });
+    }
+});
+
+
 router.get('/getAssetDraft', authenticateJWT, userRateLimiter, async (req, res) => {
    
     try {
@@ -194,7 +213,30 @@ router.get('/getAssetDraft', authenticateJWT, userRateLimiter, async (req, res) 
     }
 });
 
-router.get('/getParentAssetDraft', authenticateJWT, userRateLimiter, async (req, res) => {
+router.get('/getAsset', userRateLimiter, async (req, res) => {
+   
+    try {
+        const assetId = req.headers['assetId'];
+
+        if (!assetId) {
+            return res.status(400).json({ message: 'Missing information about assetId' });
+        }
+
+        const asset = await Asset.getById(assetId);
+
+        if (!asset) {
+            return res.status(404).json({ message: 'No asset found' });
+        }
+        res.status(200).json({
+            asset
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error retrieving asset ', error: err.message });
+    }
+});
+
+router.get('/getParentAssetDraftTree', authenticateJWT, userRateLimiter, async (req, res) => {
    
     try {
         if (req.userFromToken.role !== 'navigator') {
@@ -220,6 +262,28 @@ router.get('/getParentAssetDraft', authenticateJWT, userRateLimiter, async (req,
     }
 });
 
+router.get('/getParentAssetTree', userRateLimiter, async (req, res) => {
+   
+    try {
+        const assetId = req.headers['assetId'];
+
+        if (!assetId) {
+            return res.status(400).json({ message: 'Missing information about assetId' });
+        }
+
+        const asset = await Asset.getParentWithChildren(assetId);
+
+        if (!asset) {
+            return res.status(404).json({ message: 'No asset found' });
+        }
+        res.status(200).json({
+            asset
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error retrieving asset', error: err.message });
+    }
+});
 
 router.post('/addNewAsset', authenticateJWT, userRateLimiter, async (req, res) => {
     try {

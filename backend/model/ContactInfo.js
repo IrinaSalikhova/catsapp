@@ -9,9 +9,9 @@ class ContactInfo {
 
     toDatabaseFormat() {
         return {
-            email: this.email.length ? this.email.join('|') : null,
-            phoneNumber: this.phoneNumber.length ? this.phoneNumber.join('|') : null,
-            website: this.website.length ? this.website.join('|') : null,
+            email: this.email?.length ? this.email.join('|') : null,
+            phoneNumber: this.phoneNumber?.length ? this.phoneNumber.join('|') : null,
+            website: this.website?.length ? this.website.join('|') : null,
         };
     }
 

@@ -1,4 +1,4 @@
-// AssetDraft.js
+// AssetDraft.js 
 const Joi = require('joi');
 const db = require('../db');
 const Address = require('./Address');
@@ -390,6 +390,40 @@ class AssetDraft {
         } finally {
             connection.release();
         }
+    }
+
+    toPlainData() {
+        return {
+            draftId: this.id,
+            hasChildren: this.hasChildren,
+            categoryIds: this.categoryIds,
+           
+            name: this.name,
+            description: this.description,
+            isVolunOpp: this.isVolunOpp,
+            volunOppText: this.volunOppText,
+
+            socialWorkerOnlyNote: this.socialWorkerOnlyNote,
+            registrationNote: this.registrationNote,
+            scheduleNote: this.scheduleNote,
+            isWheelchairAcc: this.isWheelchairAcc,
+            scheduleType: this.scheduleType,
+
+            languagesOffered: this.languagesOffered,
+            format: this.format,
+
+            cityName: this.address.cityName,
+            cityCode: this.address.cityCode,
+            address: this.address.address,
+            postCode: this.address.postCode,
+            longitude: this.address.longitude,
+            latitude: this.address.latitude,
+            transportation: this.address.transportation,
+
+            email: this.contactInfo.email,
+            phoneNumber: this.contactInfo.phoneNumber,
+            website: this.contactInfo.website,
+        };
     }
     
 }
