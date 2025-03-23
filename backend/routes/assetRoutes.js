@@ -248,42 +248,4 @@ router.post('/addNewAsset', authenticateJWT, userRateLimiter, async (req, res) =
     }
 });
 
-// // Endpoint to get an asset by ID
-// router.get('/assets/:id', async (req, res) => {
-//   try {
-//     const asset = await Asset.getById(req.params.id);
-//     res.json(asset);
-//   } catch (error) {
-//     res.status(500).json({ message: 'Error fetching asset', error });
-//   }
-// });
-
-// // Endpoint to get all pending assets
-// router.get('/assets/pending', async (req, res) => {
-//   try {
-//     const assets = await AssetDraft.getAllPendingAssets(); // Make sure this method exists and is correct
-//     res.json(assets);
-//   } catch (error) {
-//     res.status(500).json({ message: 'Error fetching pending assets', error });
-//   }
-// });
-
-// Mock database of assets
-const assets = {
-    '1': { id: 1, name: "Community Library", description: "A public library offering a wide range of books." },
-    '2': { id: 2, name: "City Park", description: "A large urban park with playgrounds." },
-    '3': { id: 3, name: "Senior Center", description: "A community center offering activities for the elderly." }
-};
-
-// Endpoint to get an asset by ID
-router.get('/assets/:id', (req, res) => {
-    const asset = assets[req.params.id];
-    if (asset) {
-        res.json(asset);
-    } else {
-        res.status(404).send('Asset not found');
-    }
-});
-
-
 module.exports = router;
