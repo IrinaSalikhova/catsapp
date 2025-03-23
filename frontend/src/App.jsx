@@ -1,7 +1,8 @@
+// App.jsx
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useLoadScript } from '@react-google-maps/api';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { decode as jwt_decode } from 'jwt-decode';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -25,37 +26,32 @@ const App = () => {
     libraries,
   });
 
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        const decoded = jwt_decode(token);
-        const isExpired = decoded.exp < Date.now() / 1000;
-        if (!isExpired) {
-          setIsLoggedIn(true);
-          setUserRole(localStorage.getItem('role') || '');
-        } else {
-          handleLogout();
-        }
-      }
-    };
 
-    checkAuth();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    if (token) {
+      setIsLoggedIn(true);
+      setUserRole(role || '');
+    }
   }, []);
+
+
+
+  const toggleLoginModal = () => {
+    setLoginModalVisible(!isLoginModalVisible);  // Toggle modal visibility
+  };
+
+  const toggleNewAssetModal = () => {
+    setNewAssetModalVisible((prev) => !prev);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     setIsLoggedIn(false);
     setUserRole('');
-  };
-
-  const toggleLoginModal = () => {
-    setLoginModalVisible(!isLoginModalVisible);
-  };
-
-  const toggleNewAssetModal = () => {
-    setNewAssetModalVisible((prev) => !prev);
   };
 
   return (
@@ -69,22 +65,54 @@ const App = () => {
       />
       <main className="app-content">
         <Routes>
-          <Route path="/" element={<MainPage isLoaded={isLoaded} loadError={loadError} />} />
-          <Route path="/adminpage" element={isLoggedIn ? <AdminPage /> : <Navigate to="/" />} />
-          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-          <Route path="/navigatorpage" element={<NavigatorPage />} />
+          <Route
+            path="/"
+            element={
+              <MainPage
+                isLoaded={isLoaded}
+                loadError={loadError}
+              />
+            }
+          >
+          </Route>
+
+          {/* Admin page route */}
+          <Route
+            path="/adminpage"
+            element={
+              isLoggedIn ? <AdminPage /> : <div>Please login first.</div>
+            }
+          />
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPasswordPage />} />
+
+          <Route
+            path="/navigatorpage"
+            element={<NavigatorPage />} />
         </Routes>
 
+        {/* modals */}
         {isLoginModalVisible && (
-          <Login onClose={toggleLoginModal} setIsLoggedIn={setIsLoggedIn} setUserRole={setUserRole} />
+          <Login
+            onClose={toggleLoginModal}
+            setIsLoggedIn={setIsLoggedIn}
+            setUserRole={setUserRole}
+          />
         )}
         {isNewAssetModalVisible && (
-          <AddAssetForm onClose={toggleNewAssetModal} userRole={userRole} isLoaded={isLoaded} loadError={loadError} />
+          <AddAssetForm
+            onClose={toggleNewAssetModal}
+            userRole={userRole}
+            isLoaded={isLoaded}
+            loadError={loadError}
+          />
         )}
       </main>
       <Footer />
     </Router>
   );
 };
+
 
 export default App;
