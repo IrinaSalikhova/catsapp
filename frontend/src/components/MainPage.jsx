@@ -1,21 +1,73 @@
-// MainPage
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Correctly import useEffect here
 import CategoryDropdown from './CategoryDropdown';
 import { useNavigate } from 'react-router-dom';
-
-import { Outlet } from 'react-router-dom';
+import AssetOverview from './AssetOverview';
 import '../assets/MainPage.css';
 import GoogleMapContainer from "./GoogleMapContainer";
 
 const MainPage = ({ isLoaded, loadError }) => {
   const navigate = useNavigate();
-  const [showOverlay, setShowOverlay] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState(null);
+  const [selectedAsset, setSelectedAsset] = useState(null);  // Define state for selected asset
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [assets, setAssets] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleCategorySelect = (categories) => {
     setSelectedCategories(categories);
     console.log('Selected categories:', categories);
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error('User not authenticated');
+        window.location.href = '/login';
+        return;
+    }
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch("/api/assets/getAllPendingAssets", {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || "Failed to retrieve assets");
+            }
+
+            const data = await response.json();
+            setAssets(data.pendingAssets); // Assuming API returns an object with a pendingAssets array
+        } catch (error) {
+            console.error("Error retrieving assets:", error);
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchData();
+  }, []);
+
+const openModal = (asset) => {
+    setSelectedAsset(asset); // Set the entire asset object to state
+    setIsModalOpen(true);
+};
+
+const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedAsset(null);
+};
+
+if (error) return <div>{error}</div>;
+if (loading) return;
 
   return (
     <div className="main-page">
@@ -39,40 +91,19 @@ const MainPage = ({ isLoaded, loadError }) => {
               <button className="filter-button">Filter 3</button>
             </div>
             <div className="listing card">
-
-              <div className="listing-title">St. Elizabeth Church</div>
-              <div className="listing-info">
-                <span className="listing-icon">⭐</span>
-                <span className="listing-rating">4.7 Stars - 25 ratings</span>
-              </div>
-              <div className="listing-details">1303 Leaside Av, Ottawa, ON K1Z 7R2</div>
-              <div className="listing-details">(613) 725-2242</div>
-            </div>
-            <div className="listing card">
-
-              <div className="listing-title">Alexander Park</div>
-              <div className="listing-info">
-                <span className="listing-icon">⭐</span>
-                <span className="listing-rating">4.3 Stars - 75 ratings</span>
-              </div>
-              <div className="listing-details">960 Silver St, Ottawa, ON K1Z 6H5</div>
-            </div>
-            <div className="listing card">
-
-              <div className="listing-title">Kehillat Beth Israel</div>
-              <div className="listing-info">
-                <span className="listing-icon">⭐</span>
-                <span className="listing-rating">4.5 Stars - 22 ratings</span>
-              </div>
-              <div className="listing-details">1400 Coldrey Ave, Ottawa, ON K1Z 7P9</div>
-              <div className="listing-details">(613) 728-3501</div>
-            </div>
-            <div className="listing card">
-
-              <div className="listing-title">Carlington Community Health Centre</div>
-              <div className="listing-details">1303 Leaside Av, Ottawa</div>
-              <div className="listing-details">(613) 725-2242</div>
-            </div>
+                          {assets.map(asset => (
+                                <div key={asset.id} onClick={() => openModal(asset)} className="listing">
+                                    <div className="listing-info">
+                                        <div className="listing-title">{asset.name}</div>
+                                        <div className="listing-details">ID: {asset.id}</div>
+                                    </div>
+                                </div>
+                            ))}
+                          {isModalOpen && selectedAsset && <AssetOverview 
+                        asset={selectedAsset} 
+                        onRequestClose={closeModal} 
+                    />}
+                      </div>
           </div>
           <div className="mapcontainer">
             <GoogleMapContainer

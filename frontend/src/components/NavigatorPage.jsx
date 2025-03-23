@@ -42,7 +42,30 @@ const NavigatorPage = () => {
             } finally {
                 setLoading(false);
             }
-        };
+
+        try {
+            const response = await fetch("/api/assets/getAssetDraft", {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'draftid': '1058' // it should be added by code to load whatever is needed. 
+                }
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || "Failed to retrieve draft by id");
+            }
+
+            console.log("???????????????????", result);
+
+        } catch (error) {
+            console.error("Error retrieving draft by id:", error.message);
+        }
+    };
+
 
         fetchData();
     }, []);
