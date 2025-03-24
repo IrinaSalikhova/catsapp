@@ -8,8 +8,6 @@ const AssetDraft = require('./AssetDraft');
 const User = require('./User');
 
 
-
-
 const assetSchema = Joi.object({
     id: Joi.number().integer().allow(null).optional(), 
     draftId: Joi.number().integer().allow(null).optional(),
@@ -382,7 +380,7 @@ class Asset {
     }
 
     async editAsset(data, who) {
-
+        // make sure parentId are specifically passed
         if (data instanceof AssetDraft) {
             data = data.toPlainData();
         }
@@ -393,7 +391,7 @@ class Asset {
         if (!this.id) {
             throw new Error("Asset not found");
         }
-
+        
         const connection = await db.getConnection();
         try {
             await connection.beginTransaction();
@@ -401,33 +399,41 @@ class Asset {
             this.isEnable = true;
             this.lastUpdateBy = who;
 
-            this.categoryIds = value.categoryIds;
+            this.categoryIds = value.categoryIds ?? this.categoryIds;
 
-            this.draftId = value.draftId;
-            this.hasChildren = value.hasChildren;
-            this.parentAssetId = value.parentAssetId;
+            this.draftId = value.draftId ?? this.draftId;
+            if (data.hasChildren !== undefined && data.hasChildren !== null) {
+                this.hasChildren = value.hasChildren;
+            }
+            this.parentAssetId = value.parentAssetId ?? this.parentAssetId;
         
-            this.name = value.name;
-            this.description = value.description;
-            this.isVolunOpp = value.isVolunOpp;
-            this.volunOppText = value.volunOppText;
+            this.name = value.name ?? this.name;
+            this.description = value.description ?? this.description;
+            if (data.isVolunOpp !== undefined && data.isVolunOpp !== null) {
+                this.isVolunOpp = value.isVolunOpp;
+            }
+            this.volunOppText = value.volunOppText ?? this.volunOppText;
 
-            this.scheduleType = value.scheduleType;
-            this.registrationNote = value.registrationNote;
-            this.scheduleNote = value.scheduleNote;
-            this.socialWorkerOnlyNote = value.socialWorkerOnlyNote;
-            this.isWheelchairAcc = value.isWheelchairAcc;
+            this.scheduleType = value.scheduleType ?? this.scheduleType;
+            this.registrationNote = value.registrationNote ?? this.registrationNote;
+            this.scheduleNote = value.scheduleNote ?? this.scheduleNote;
+            this.socialWorkerOnlyNote = value.socialWorkerOnlyNote ?? this.socialWorkerOnlyNote;
+            if (data.isWheelchairAcc !== undefined && data.isWheelchairAcc !== null) {
+                this.isWheelchairAcc = value.isWheelchairAcc;
+            }
+            this.languagesOffered = value.languagesOffered ?? this.languagesOffered;
+            this.format = value.format ?? this.format;
 
-            this.address.cityName = value.cityName;
-            this.address.address = value.address;
-            this.address.postCode = value.postCode;
-            this.address.longitude = value.longitude;
-            this.address.latitude = value.latitude;
-            this.address.transportation = value.transportation;
+            this.address.cityName = value.cityName ?? this.address.cityName;
+            this.address.address = value.address ?? this.address.address;
+            this.address.postCode = value.postCode ?? this.address.postCode;
+            this.address.longitude = value.longitude ?? this.address.longitude;
+            this.address.latitude = value.latitude ?? this.address.latitude;
+            this.address.transportation = value.transportation ?? this.address.transportation;
 
-            this.contactInfo.phoneNumber = value.phoneNumber;
-            this.contactInfo.email = value.email;
-            this.contactInfo.website = value.website;
+            this.contactInfo.phoneNumber = value.phoneNumber ?? this.contactInfo.phoneNumber;
+            this.contactInfo.email = value.email ?? this.contactInfo.email;
+            this.contactInfo.website = value.website ?? this.contactInfo.website;
 
            
             const addressData = this.address.toDatabaseFormat();
@@ -472,6 +478,186 @@ class Asset {
         }
     }
 
+    static async searchAssets({ categoryIds = [], isVolunOpp = false, searchPhrase = "" }) {
+        const connection = await db.getConnection();
+        try {
+            const firstConditions = ["asset.isEnable = 1"];
+            const secondConditions = [];
+            const params = [];
+    
+            if (categoryIds.length > 0) {
+                firstConditions.push(`asset.id IN
+                    (SELECT DISTINCT acl.assetId 
+                    FROM assetCategLinks acl 
+                    WHERE acl.categoryId IN (${categoryIds.map(() => "?").join(", ")}))`);
+                params.push(...categoryIds);
+            }
+    
+            if (isVolunOpp) {
+                firstConditions.push("asset.isVolunOpp = 1");
+            }
+    
+            let searchQuery = "";
+            let relevanceQuery = "";
+            let sql = "";
+    
+            if (searchPhrase !== "") {
+                
+                const escapedSearchPhrase = connection.escape(searchPhrase);
+                const words = escapedSearchPhrase.split(/[\s,.\/\\!@#\$%\^&\*\(\)\-=\+_`~\[\]\{\}\|;:'"<>\?]+/);
+                const filteredWords = words.filter(word => word !== '');
+    
+                searchQuery = `(MATCH(asset.name) AGAINST (${escapedSearchPhrase} IN NATURAL LANGUAGE MODE) OR
+                MATCH(asset.description, asset.socialWorkerOnlyNote) AGAINST (${escapedSearchPhrase} IN NATURAL LANGUAGE MODE) OR
+                MATCH(asset.scheduleNote, asset.registrationNote, asset.volunOppText, asset.transportation, asset.format, asset.languagesOffered) AGAINST (${escapedSearchPhrase} IN NATURAL LANGUAGE MODE) OR
+                MATCH(asset.website, asset.address, asset.email) AGAINST (${escapedSearchPhrase} IN NATURAL LANGUAGE MODE)`;
+
+                relevanceQuery =  `(
+                    MATCH(asset.name) AGAINST (${escapedSearchPhrase} IN NATURAL LANGUAGE MODE) * 20 +
+                    MATCH(asset.description, asset.socialWorkerOnlyNote) AGAINST (${escapedSearchPhrase} IN NATURAL LANGUAGE MODE) * 15 +
+                    MATCH(asset.scheduleNote, asset.registrationNote, asset.volunOppText, asset.transportation, asset.format, asset.languagesOffered) AGAINST (${escapedSearchPhrase} IN NATURAL LANGUAGE MODE) * 10 +
+                    MATCH(asset.website, asset.address, asset.email) AGAINST (${escapedSearchPhrase} IN NATURAL LANGUAGE MODE) * 5`; 
+
+                    for (const word of filteredWords) {
+                            searchQuery += ` OR (ga.categoryNames LIKE CONCAT('%', "${word}", '%'))`
+                            relevanceQuery += ` + (ga.categoryNames LIKE CONCAT('%', "${word}", '%')) * 2`
+                        }
+                    searchQuery += ")";
+                    relevanceQuery += ")";
+
+                        
+                if (searchPhrase.match(/\b(accessibility|wheelchair|accessible|accessibles)\b/i)) {
+                    searchQuery = `(${searchQuery} OR asset.isWheelchairAcc = 1)`;
+                }
+            
+                secondConditions.push(searchQuery);
+        
+    
+                sql = `
+                WITH grouped_assets AS (
+                    SELECT 
+                        asset.*,
+                        GROUP_CONCAT(DISTINCT acl.categoryId) AS categoryIds,
+                        GROUP_CONCAT(DISTINCT cat.name) AS categoryNames,
+                        co.cityName AS cityName, 
+                        mas.name AS parentAssetName, 
+                        c.firstName AS createdByFirstName, c.lastName AS createdByLastName, c.jobTitle AS createdByJobTitle,
+                        l.firstName AS lastUpdateByFirstName, l.lastName AS lastUpdateByLastName, l.jobTitle AS lastUpdateByJobTitle
+                    FROM assets asset
+                    LEFT JOIN assetCategLinks acl ON asset.id = acl.assetId
+                    LEFT JOIN categories cat ON acl.categoryId = cat.id
+                    LEFT JOIN cityOptions co ON asset.cityCode = co.code  
+                    LEFT JOIN assets mas ON asset.parentAssetId = mas.id
+                    LEFT JOIN users c ON asset.createdBy = c.id
+                    LEFT JOIN users l ON asset.lastUpdateBy = l.id
+                    ${firstConditions.length ? `WHERE ${firstConditions.join(" AND ")}` : ""}
+                    GROUP BY asset.id
+                )
+                SELECT 
+                    ga.*,
+                    ${relevanceQuery} AS relevance_score
+                FROM grouped_assets ga
+                JOIN assets asset ON ga.id = asset.id  
+                ${secondConditions.length ? `WHERE ${secondConditions.join(" AND ")}` : ""}
+                ORDER BY relevance_score DESC;`;
+            } else {
+                sql = `
+                    SELECT 
+                        asset.*,
+                        GROUP_CONCAT(DISTINCT acl.categoryId) AS categoryIds, 
+                        co.cityName AS cityName, 
+                        mas.name AS parentAssetName, 
+                        c.firstName AS createdByFirstName, c.lastName AS createdByLastName, c.jobTitle AS createdByJobTitle,
+                        l.firstName AS lastUpdateByFirstName, l.lastName AS lastUpdateByLastName, l.jobTitle AS lastUpdateByJobTitle
+                    FROM assets asset
+                    LEFT JOIN assetCategLinks acl ON asset.id = acl.assetId
+                    LEFT JOIN categories cat ON acl.categoryId = cat.id
+                    LEFT JOIN cityOptions co ON asset.cityCode = co.code  
+                    LEFT JOIN assets mas ON asset.parentAssetId = mas.id
+                    LEFT JOIN users c ON asset.createdBy = c.id
+                    LEFT JOIN users l ON asset.lastUpdateBy = l.id
+                    ${firstConditions.length ? `WHERE ${firstConditions.join(" AND ")}` : ""}
+                    GROUP BY asset.id;`;
+            }
+
+            console.log("Final SQL Query:", sql);
+            const [rows] = await connection.query(sql, params);
+
+            const assets = await Promise.all(rows.map(async row => {
+
+                const assetData = this.formatUserData(row);
+                assetData.categoryIds = (row.categoryIds ?? "").split(',').filter(Boolean).map(Number);
+                assetData.categoryNames = await Category.getCategoryNamesByIds(row.categoryIds);
+                assetData.isVolunOpp = Boolean(row.isVolunOpp.readUInt8(0));
+                assetData.hasChildren = Boolean(row.hasChildren.readUInt8(0));
+                assetData.isWheelchairAcc = Boolean(row.isWheelchairAcc.readUInt8(0));
+                assetData.isEnable = Boolean(row.isEnable.readUInt8(0));;
+
+                if (assetData.hasChildren) {
+                    const [childrenRows] = await db.query(
+                        `SELECT id, name FROM assets WHERE parentAssetId = ? AND isEnable = 1`,
+                        [assetData.id]
+                    );
+                    assetData.childrenIds = childrenRows.map(child => child.id); 
+                    assetData.childrenNames = childrenRows.map(child => child.name); 
+                } else { 
+                    assetData.childrenIds = [];
+                    assetData.childrenNames = [];
+                }
+                if (searchPhrase !== "") {
+
+                delete assetData.relevance_score;
+                }
+                return new Asset({ data: assetData });
+            }));
+    
+            return assets;
+    
+        } catch (error) {
+            console.error("Error in searchAssets:", error);
+            throw error;
+        } finally {
+            connection.release();
+        }
+    }
+    
+    
+    
+    
+
+    toPlainData() {
+        return {
+            assetId: this.id,
+            hasChildren: this.hasChildren,
+            categoryIds: this.categoryIds,
+           
+            name: this.name,
+            description: this.description,
+            isVolunOpp: this.isVolunOpp,
+            volunOppText: this.volunOppText,
+
+            socialWorkerOnlyNote: this.socialWorkerOnlyNote,
+            registrationNote: this.registrationNote,
+            scheduleNote: this.scheduleNote,
+            isWheelchairAcc: this.isWheelchairAcc,
+            scheduleType: this.scheduleType,
+
+            languagesOffered: this.languagesOffered,
+            format: this.format,
+
+            cityName: this.address.cityName,
+            cityCode: this.address.cityCode,
+            address: this.address.address,
+            postCode: this.address.postCode,
+            longitude: this.address.longitude,
+            latitude: this.address.latitude,
+            transportation: this.address.transportation,
+
+            email: this.contactInfo.email,
+            phoneNumber: this.contactInfo.phoneNumber,
+            website: this.contactInfo.website,
+        };
+    }
 }
 
 module.exports = Asset;

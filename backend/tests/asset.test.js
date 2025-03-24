@@ -1,3 +1,4 @@
+const e = require('express');
 const db = require('../db'); 
 
 const Asset = require('../model/Asset'); 
@@ -13,12 +14,12 @@ describe('Asset Class (Database Integration Tests)', () => {
     let assetDraft;
 
     beforeAll(async () => {
-        assetDraft = await AssetDraft.getById(558);
+        assetDraft = await AssetDraft.getById(1058);
        // console.log("assetDraft", assetDraft);
     });
 
     afterAll(async () => {
-        const allIds = [assetMaxId, assetMinId, assetFromDraftId, parentAssetId, ...childAssetIds];
+        const allIds = [assetMaxId, assetMinId, assetFromDraftId, ...childAssetIds, parentAssetId ];
         for (const id of allIds) {
             await db.query('DELETE FROM assetCategLinks WHERE assetId = ?', [id]);
             await db.query('DELETE FROM assets WHERE id = ?', [id]);   
@@ -151,7 +152,7 @@ describe('Asset Class (Database Integration Tests)', () => {
             const [rows] = await db.query('SELECT * FROM assets WHERE id = ?', [assetFromDraftId]);
             expect(rows.length).toBe(1);
             expect(rows[0].name).toBe(assetDraft.name);
-            expect(rows[0].draftId).toBe(558);
+            expect(rows[0].draftId).toBe(1058);
             //console.log(rows[0]);
 
         });
@@ -161,12 +162,17 @@ describe('Asset Class (Database Integration Tests)', () => {
                 {
                     name: 'Parent Asset',
                     categoryIds: [3],
-                    description: 'A parent asset'
+                    description: 'A parent asset',
+                    scheduleNote: 'Parent Asset Initial Schedule Note'
+
                 },
                 ...Array.from({ length: 3 }, (_, i) => ({
                     name: `Child Asset ${i + 1}`,
                     categoryIds: [3],
-                    description: `Child ${i + 1} of Parent Asset`
+                    description: `Child ${i + 1} of Parent Asset`,
+                    isVolunOpp: true,
+                    isWheelchairAcc: true,
+                    languagesOffered: ["English", "Spanish"],
                 }))
             ];
         
@@ -210,13 +216,13 @@ describe('Asset Class (Database Integration Tests)', () => {
             const retrievedDraftedAsset = await Asset.getById(assetFromDraftId);
             expect(retrievedDraftedAsset).not.toBeNull();
             //console.log(retrievedDraftedAsset);
-            expect(retrievedDraftedAsset.name).toBe('MAIN ASSET');
+            expect(retrievedDraftedAsset.name).toBe('Rental at W.E. Gowling Public School');
         });
 
         test('Should retrieve a parent Asset by ID', async () => {
             const retrievedParentAssetOnly = await Asset.getById(parentAssetId);
             expect(retrievedParentAssetOnly).not.toBeNull();
-            //console.log(retrievedParentAssetOnly);
+            //console.log("retrievedParentAssetOnly", retrievedParentAssetOnly);
             expect(retrievedParentAssetOnly.name).toBe('Parent Asset');
             expect(retrievedParentAssetOnly.parentAssetId).toBeNull();
             expect(retrievedParentAssetOnly.childrenIds.length).toBe(3);
@@ -226,7 +232,7 @@ describe('Asset Class (Database Integration Tests)', () => {
         test('getParentWithChildren should return parent with all children', async () => {
             const retrievedParentAssetTree = await Asset.getParentWithChildren(parentAssetId);
             expect(retrievedParentAssetTree).not.toBeNull();
-            //console.log(retrievedParentAssetTree);
+           //console.log("retrievedParentAssetTree", retrievedParentAssetTree);
             expect(retrievedParentAssetTree.name).toBe('Parent Asset');
             expect(retrievedParentAssetTree.children.length).toBe(3);
             expect(retrievedParentAssetTree.children[0].name).toBe('Child Asset 1');
@@ -238,10 +244,10 @@ describe('Asset Class (Database Integration Tests)', () => {
 
         });
 
-        test('Should retrieve all enabled assets', async () => { // will fail until data fixed
-            // const assets = await Asset.getAllEnabledAssets();
-            // expect(assets.length).toBeGreaterThan(0);
-            // console.log(assets);
+        test('Should retrieve all enabled assets', async () => { 
+            const assets = await Asset.getAllEnabledAssets();
+            expect(assets.length).toBeGreaterThan(0);
+            //console.log(assets);
 
         });
     });
@@ -340,7 +346,7 @@ describe('Asset Class (Database Integration Tests)', () => {
                 const assetToEdit = await Asset.getById(parentAssetId);
                 await assetToEdit.editAsset(updateParentData, 5);
 
-                updateChildData.parentAssetId = parentAssetId;
+                updateChildData.parentAssetId = parentAssetId; 
 
                 for (const childId of childAssetIds) {
                     const childAssettoEdit = await Asset.getById(childId);
@@ -349,6 +355,7 @@ describe('Asset Class (Database Integration Tests)', () => {
                 }
                 const retrievedParentAssetTree = await Asset.getParentWithChildren(parentAssetId);
                 expect(retrievedParentAssetTree).not.toBeNull();
+                expect(retrievedParentAssetTree.hasChildren).toBe(true);
                 //console.log(retrievedParentAssetTree);
                 expect(retrievedParentAssetTree.name).toBe('Updated Parent Asset');
                 expect(retrievedParentAssetTree.children.length).toBe(3);
@@ -356,8 +363,40 @@ describe('Asset Class (Database Integration Tests)', () => {
                 expect(retrievedParentAssetTree.children[0].isEnable).toBe(true);
                 expect(retrievedParentAssetTree.children[1].isEnable).toBe(true);
                 expect(retrievedParentAssetTree.children[2].isEnable).toBe(true);
+                expect(retrievedParentAssetTree.children[0].isVolunOpp).toBe(true);
+                expect(retrievedParentAssetTree.children[0].isWheelchairAcc).toBe(true);
 
             });
         });
+
+        describe('searchAssets', () => {
+            test('Should search for assets and filter them correctly', async () => {
+                const results = await Asset.searchAssets({ 
+                    categoryIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],  
+                    searchPhrase: "accessible school" 
+                });
+                console.log(results);
+                expect(results.length).toBeGreaterThan(0);
+                expect(results[0].name).toBe('Rental at W.E. Gowling Public School');
+                const isAccessible = results[0].categoryIds.includes(29) || results[0].isWheelchairAcc === true;
+                expect(isAccessible).toBe(true);
+
+            });
+
+
+            test('Should filter assets correctly', async () => {
+                const results = await Asset.searchAssets({ 
+                    categoryIds: [1, 3],
+                    isVolunOpp: true, 
+                });
+                //console.log(results);
+                expect(results.length).toBeGreaterThan(0);
+                for (const result of results) {
+                    expect(result.isVolunOpp).toBe(true);
+                    const isTrue = result.categoryIds.includes(1) || result.categoryIds.includes(3)
+                    expect(isTrue).toBe(true); 
+                }
+        });
+    });
 
     });

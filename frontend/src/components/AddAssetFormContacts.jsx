@@ -152,7 +152,7 @@ const AddAssetFormContacts = ({ handleChange, service, index, setFormData }) => 
               <textarea
                 className="contact-input"
                 placeholder="https://example.com"
-                maxLength="100"
+                maxLength="250"
                 value={website}
                 onChange={(e) => handleWebsiteChange(e, fieldIndex)} 
                 rows="1"
