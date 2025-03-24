@@ -120,7 +120,6 @@ body {
 }
 
 .listing-info {
-    display: flex;
     align-items: center;
     margin-bottom: 5px;
 }

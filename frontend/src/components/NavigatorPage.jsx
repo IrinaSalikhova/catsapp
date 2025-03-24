@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import AssetOverview from './AssetOverview';
 import '../assets/NavigatorPage.css';
 
 const NavigatorPage = () => {
     const [activeSection, setActiveSection] = useState('notification');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAsset, setSelectedAsset] = useState(null);  // Store the entire asset object
+    const [assets, setAssets] = useState([]);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -13,8 +19,9 @@ const NavigatorPage = () => {
         }
 
         const fetchData = async () => {
+            setLoading(true);
             try {
-                const response = await fetch("/api/assets/getAllPendingAssets", {
+                const response = await fetch("/api/assets/getAllPendingAssets", { //  "/api/assets/getById"
                     method: "GET",
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -22,43 +29,59 @@ const NavigatorPage = () => {
                     }
                 });
 
-                const result = await response.json();
-
                 if (!response.ok) {
-                    throw new Error(result.message || "Failed to retrieve pending assets");
+                    const data = await response.json();
+                    throw new Error(data.message || "Failed to retrieve assets");
                 }
 
-                console.log("!!!!!!!!!!!!!!", result);
-
+                const data = await response.json();
+                setAssets(data.pendingAssets); // Assuming API returns an object with a pendingAssets array
             } catch (error) {
-                console.error("Error retrieving pending assets:", error.message);
+                console.error("Error retrieving assets:", error);
+                setError(error.message);
+            } finally {
+                setLoading(false);
             }
 
-            try {
-                const response = await fetch("/api/assets/getAssetDraft", {
-                    method: "GET",
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                        'draftid': '563' // it should be added by code to load whatever is needed. 
-                    }
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || "Failed to retrieve draft by id");
+        try {
+            const response = await fetch("/api/assets/getAssetDraft", {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'draftid': '1058' // it should be added by code to load whatever is needed. 
                 }
+            });
 
-                console.log("???????????????????", result);
+            const result = await response.json();
 
-            } catch (error) {
-                console.error("Error retrieving draft by id:", error.message);
+            if (!response.ok) {
+                throw new Error(result.message || "Failed to retrieve draft by id");
             }
-        };
+
+            console.log("???????????????????", result);
+
+        } catch (error) {
+            console.error("Error retrieving draft by id:", error.message);
+        }
+    };
+
 
         fetchData();
-    }, []); // Run only on component mount
+    }, []);
+
+    const openModal = (asset) => {
+        setSelectedAsset(asset); // Set the entire asset object to state
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedAsset(null);
+    };
+
+    if (error) return <div>Error: {error}</div>;
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="navigator-container">
@@ -73,11 +96,19 @@ const NavigatorPage = () => {
                 </ul>
             </div>
             <div className="navigator-content">
-                <div className={`navigator-section ${activeSection === 'notification' ? 'active' : ''}`}>
-                    <h2>Notification</h2>
-                </div>
                 <div className={`navigator-section ${activeSection === 'assetReview' ? 'active' : ''}`}>
                     <h2>Asset Review</h2>
+                    <ul>
+                        {assets.map(asset => (
+                            <li key={asset.id} onClick={() => openModal(asset)} className="asset-item">
+                                {asset.name}, {asset.id}
+                            </li>
+                        ))}
+                    </ul>
+                    {isModalOpen && selectedAsset && <AssetOverview 
+                        asset={selectedAsset} 
+                        onRequestClose={closeModal} 
+                    />}
                 </div>
             </div>
         </div>

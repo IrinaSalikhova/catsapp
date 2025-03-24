@@ -1,0 +1,39 @@
+.asset-overview-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+  }
+  
+  .asset-overview-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 1051;
+  }
+  
+  .asset-overview-close {
+    cursor: pointer;
+    background-color: #f44336;
+    border: none;
+    color: white;
+    margin-left: 85%;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  
+  .asset-details {
+    margin-bottom: 20px;
+  }
+  
+  .pending-assets-list {
+    list-style: none;
+    padding: 0;
+  }
+  
