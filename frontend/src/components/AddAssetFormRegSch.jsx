@@ -138,7 +138,7 @@ const AddAssetFormRegSch = ({ handleChange, service, index, setFormData }) => {
               onChange={handleOtherLanguageChange}
               rows="1"
             />
-            <div className="character-count">{50 - otherLanguage}/50</div>
+            <div className="character-count">{50 - otherLanguage.length}/50</div>
             </div>
           )}
   </div>
