@@ -1,4 +1,4 @@
-// AssetDraft.js
+// AssetDraft.js 
 const Joi = require('joi');
 const db = require('../db');
 const Address = require('./Address');
@@ -322,7 +322,7 @@ class AssetDraft {
         }
     }
 
-    async editAssetDraft(updatedData) {
+    async editAssetDraft(updatedData) {    
         const { error, value } = assetDraftSchema.validate(updatedData);
         if (error) throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
 
@@ -333,24 +333,40 @@ class AssetDraft {
         const connection = await db.getConnection();
         try {
             await connection.beginTransaction();
-    
-            this.name = value.name;
-            this.description = value.description;
-            this.isVolunOpp = value.isVolunOpp;
-            this.volunOppText = value.volunOppText;
-            this.registrationNote = value.registrationNote;
-            this.scheduleNote = value.scheduleNote;
-            this.status = value.status;
-            this.address.cityName = value.cityName;
-            this.address.address = value.address;
-            this.address.postCode = value.postCode;
-            this.address.longitude = value.longitude;
-            this.address.latitude = value.latitude;
-            this.address.transportation = value.transportation;
-            this.contactInfo.phoneNumber = value.phoneNumber;
-            this.contactInfo.email = value.email;
-            this.contactInfo.website = value.website;
-            this.categoryIds = value.categoryIds;
+
+            this.assetId = value.assetId ?? this.assetId;
+            
+            this.name = value.name ?? this.name;
+            this.description = value.description ?? this.description;
+            if (updatedData.isVolunOpp !== undefined && updatedData.isVolunOpp !== null) {
+                this.isVolunOpp = value.isVolunOpp;
+            }
+            this.volunOppText = value.volunOppText ?? this.volunOppText;
+            this.registrationNote = value.registrationNote ?? this.registrationNote;
+            this.scheduleNote = value.scheduleNote ?? this.scheduleNote;
+            this.socialWorkerOnlyNote = value.socialWorkerOnlyNote ?? this.socialWorkerOnlyNote;
+            this.status = 'pending';
+            this.address.cityName = value.cityName ?? this.address.cityName;
+            this.address.address = value.address ?? this.address.address;
+            this.address.postCode = value.postCode ?? this.address.postCode;
+            this.address.longitude = value.longitude ?? this.address.longitude;
+            this.address.latitude = value.latitude ?? this.address.latitude;
+            this.address.transportation = value.transportation ?? this.address.transportation;
+            this.contactInfo.phoneNumber = value.phoneNumber ?? this.contactInfo.phoneNumber;
+            this.contactInfo.email = value.email ?? this.contactInfo.email;
+            this.contactInfo.website = value.website ?? this.contactInfo.website;
+            this.categoryIds = value.categoryIds ?? this.categoryIds;
+            if (updatedData.isWheelchairAcc !== undefined && updatedData.isWheelchairAcc !== null) {
+                this.isWheelchairAcc = value.isWheelchairAcc;
+            }
+            this.languagesOffered = value.languagesOffered ?? this.languagesOffered;
+            this.format = value.format ?? this.format;
+
+            if (updatedData.hasChildren !== undefined && updatedData.hasChildren !== null) {
+                this.hasChildren = value.hasChildren;
+            }
+            this.parentAssetDraftId = value.parentAssetDraftId ?? this.parentAssetDraftId;
+
 
             const addressData = await this.address.toDatabaseFormat();
             const contactData = this.contactInfo.toDatabaseFormat();
@@ -359,17 +375,19 @@ class AssetDraft {
     
             await connection.query(
                 `UPDATE assetsDraft 
-                 SET name = ?, description = ?, isVolunOpp = ?, volunOppText = ?,
+                 SET assetId = ?, name = ?, description = ?, isVolunOpp = ?, volunOppText = ?,
                      registrationNote = ?, scheduleNote = ?, status = ?,
                      cityCode = ?, address = ?, postCode = ?, longitude = ?, latitude = ?, transportation = ?,
                      phoneNumber = ?, email = ?, website = ?,
-                     isWheelchairAcc = ?, languagesOffered = ?, scheduleType = ?, socialWorkerOnlyNote = ?, format = ?
+                     isWheelchairAcc = ?, languagesOffered = ?, scheduleType = ?, socialWorkerOnlyNote = ?, format = ?,
+                     hasChildren = ?, parentAssetDraftId = ?
                  WHERE id = ?`,
-                [this.name, this.description, this.isVolunOpp, this.volunOppText,
+                [this.assetId, this.name, this.description, this.isVolunOpp, this.volunOppText,
                  this.registrationNote, this.scheduleNote, this.status,
                  addressData.cityCode, addressData.address, addressData.postCode, addressData.longitude, addressData.latitude, addressData.transportation,
                  contactData.phoneNumber, contactData.email, contactData.website,
                  this.isWheelchairAcc, languagesOffered, this.scheduleType, this.socialWorkerOnlyNote, format,
+                 this.hasChildren, this.parentAssetDraftId,
                  this.id]
             );
     
@@ -390,6 +408,40 @@ class AssetDraft {
         } finally {
             connection.release();
         }
+    }
+
+    toPlainData() {
+        return {
+            draftId: this.id,
+            hasChildren: this.hasChildren,
+            categoryIds: this.categoryIds,
+           
+            name: this.name,
+            description: this.description,
+            isVolunOpp: this.isVolunOpp,
+            volunOppText: this.volunOppText,
+
+            socialWorkerOnlyNote: this.socialWorkerOnlyNote,
+            registrationNote: this.registrationNote,
+            scheduleNote: this.scheduleNote,
+            isWheelchairAcc: this.isWheelchairAcc,
+            scheduleType: this.scheduleType,
+
+            languagesOffered: this.languagesOffered,
+            format: this.format,
+
+            cityName: this.address.cityName,
+            cityCode: this.address.cityCode,
+            address: this.address.address,
+            postCode: this.address.postCode,
+            longitude: this.address.longitude,
+            latitude: this.address.latitude,
+            transportation: this.address.transportation,
+
+            email: this.contactInfo.email,
+            phoneNumber: this.contactInfo.phoneNumber,
+            website: this.contactInfo.website,
+        };
     }
     
 }

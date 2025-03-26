@@ -53,13 +53,24 @@ class ContactInfo {
 class AssetDraft {
     -id : number
     -assetId : number
+    -hasChildren : boolean
+    -parentAssetDraftId : number
+    -parentAssetDraftName : string
+    -childrenIds : number[]
+    -childrenNames : string[]
     -categoryIds : number[]
+    -categoryNames : string[]
     -name : string
     -description : string
     -isVolunOpp : boolean
     -volunOppText : string
     -registrationNote : string
     -scheduleNote : string
+    -socialWorkerOnlyNote : string
+    -isWheelchairAcc : boolean
+    -languagesOffered : string[]
+    -scheduleType : string
+    -format : string[]
     -status : string
     -createdEmail : string
     -createDate : date
@@ -74,19 +85,59 @@ class AssetDraft {
     +sendReply(message: string) : void
     +changeState(newState: string) : void
     +editAssetDraft(updatedData: object) : void
+    +toPlainData() : object
 }
-
-
-class Schedule {}
 
 
 class Asset {
+-id : number
+-draftId : number
+-hasChildren : boolean
+-parentAssetId : number
+-parentAssetName : string
+-childrenIds : number[]
+-childrenNames : string[]
+-categoryIds : number[]
+-categoryNames : string[]
+-name : string
+-description : string
+-isVolunOpp : boolean
+-volunOppText : string
+-registrationNote : string
+-scheduleNote : string
+-socialWorkerOnlyNote : string
+-isWheelchairAcc : boolean
+-languagesOffered : string[]
+-scheduleType : string
+-format : string[]
+-isEnable : boolean
+-createdBy : number
+-createdName : string
+-createDate : date
+-lastUpdateBy : number
+-lastUpdateName : string
+-lastUpdateDate : date
+-address : Address
+-contactInfo : ContactInfo
+
++constructor(data: object)
++save(who: number) : Promise<void>
++disableAsset() : Promise<void>
++editAsset(data: object, who: number) : Promise<void>
++toPlainData() : object
++getById(id: number) : Promise<Asset>
++getAllEnabledAssets() : Promise<Asset[]>
++getParentWithChildren(parentId: number) : Promise<Asset>
++formatUserData(assetData: object) : object
++searchAssets(categoryIds: number[], isVolunOpp: boolean, searchPhrase: string) : Promise<Asset[]>
+
 }
 
-' Category class with hierarchical relationships
+ 
 class Category {
     +getAllCategories() : object[]
     +getCategoryTree() : object[]
+    +getCategoryNamesByIds(ids: number[]) : string[]
 }
 
 ' Utility class for handling emails
@@ -132,12 +183,20 @@ interface UserRoutes {
 }
 
 interface AssetRoutes {
-    +POST /suggestNewAsset(newAssetData: JSONobject, token: string): string
-    +POST /reviewAsset(reviewedDraftId: string, reviewDecision: string, reviewComment: string, token: string): string
-    +PUT /editAssetDraft(reviewedDraftId: string, updatedData: JSONobject, token: string): string
-    +GET /getAllPendingAssets(token: string): array(JSONobject)
-    +GET /getAssetDraft(draftId: string, token: string): JSONobject
-    +POST /addNewAsset(newAssetData: JSONobject, token: string): string
+    +POST /suggestNewAsset(newAssetData: JSONobject[]): { message: string }
+    +POST /recommendChange(editAssetData: JSONobject[]): { message: string }
+    +POST /addNewAsset(newAssetData: JSONobject[], token: string): { message: string }
+    +POST /reviewStandaloneDraft(reviewedDraftId: string, reviewDecision: 'approved' | 'rejected', reviewComment?: string, token: string): { message: string }
+    +POST /reviewMultilevelAsset(reviewedParentDraftId: string, reviewDecision: 'approved' | 'rejected', reviewComment?: string, token: string): { message: string }
+    +PUT /editAssetDraft(editedAssetDraftData: JSONobject[], token: string): { message: string }
+    +PUT /editAsset(editedAssetData: JSONobject[], token: string): { message: string }
+    +GET /getAllPendingAssets(token: string): { pendingAssets: JSONobject[] }
+    +GET /getAllEnabledAssets(): { allAssets: JSONobject[] }
+    +GET /getAssetDraft(draftId: string, token: string): { assetDraft: JSONobject }
+    +GET /getAsset(assetId: number): { asset: JSONobject }
+    +GET /getParentAssetDraftTree(draftId: string, token: string): { assetDraft: JSONobject }
+    +GET /getParentAssetTree(assetId: string): { asset: JSONobject }
+    +GET /findAssets(categoryIds?: number[], isVolunOpp?: boolean, searchPhrase?: string): { assets: JSONobject[] }
 }
 
 interface CategoryRoutes {
