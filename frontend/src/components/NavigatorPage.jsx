@@ -97,7 +97,7 @@ const NavigatorPage = () => {
             </div>
             <div className="navigator-content">
                 <div className={`navigator-section ${activeSection === 'assetReview' ? 'active' : ''}`}>
-                    <h2>Asset Review</h2>
+                    <h2>Asset Management</h2>
                     <ul>
                         {assets.map(asset => (
                             <li key={asset.id} onClick={() => openModal(asset)} className="asset-item">

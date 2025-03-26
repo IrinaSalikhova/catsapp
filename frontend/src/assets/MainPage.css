@@ -112,6 +112,12 @@ body {
     border-radius: 5px;
 }
 
+.listing-container {
+    max-height: 630px;  /* Set a max-height that fits within your design */
+    overflow-y: auto;   /* Enable vertical scrolling */
+    padding: 8px;       /* Optional: for better spacing */
+}
+
 .listing-title {
     font-family: sans-serif;
     font-size: 18px;
