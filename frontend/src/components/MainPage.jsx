@@ -26,7 +26,7 @@ const MainPage = ({ isLoaded, loadError }) => {
     { id: 8, name: "Botanical Gardens", description: "Expansive gardens featuring flora from around the world." },
     { id: 9, name: "City Zoo", description: "Home to a wide range of exotic animals and educational programs." },
     { id: 10, name: "Cultural Arts Theatre", description: "A venue for live theatre productions and cultural events." }
-];
+  ];
 
 
   const handleCategorySelect = (categories) => {
@@ -66,18 +66,18 @@ const MainPage = ({ isLoaded, loadError }) => {
   //   fetchData();
   // }, []);
 
-const openModal = (asset) => {
+  const openModal = (asset) => {
     setSelectedAsset(asset); // Set the entire asset object to state
     setIsModalOpen(true);
-};
+  };
 
-const closeModal = () => {
+  const closeModal = () => {
     setIsModalOpen(false);
     setSelectedAsset(null);
-};
+  };
 
-if (error) return <div>{error}</div>;
-if (loading) return;
+  if (error) return <div>{error}</div>;
+  if (loading) return;
 
   return (
     <div className="main-page">
@@ -101,20 +101,20 @@ if (loading) return;
               <button className="filter-button">Filter 3</button>
             </div>
             <div className="listing-container">
-                          {mockAssets.map(asset => (
-                                <div key={asset.id} onClick={() => openModal(asset)} className="listing">
-                                    <div className="listing-info">
-                                        <div className="listing-title">{asset.name}</div>
-                                        <div className="listing-details">ID: {asset.id}</div>
-                                        <div className="listing-details">Des: {asset.description}</div>
-                                    </div>
-                                </div>
-                            ))}
-                          {isModalOpen && selectedAsset && <AssetOverview 
-                        asset={selectedAsset} 
-                        onRequestClose={closeModal} 
-                    />}
-                      </div>
+              {mockAssets.map(asset => (
+                <div key={asset.id} onClick={() => openModal(asset)} className="listing">
+                  <div className="listing-info">
+                    <div className="listing-title">{asset.name}</div>
+                    <div className="listing-details">ID: {asset.id}</div>
+                    <div className="listing-details">Des: {asset.description}</div>
+                  </div>
+                </div>
+              ))}
+              {isModalOpen && selectedAsset && <AssetOverview
+                asset={selectedAsset}
+                onRequestClose={closeModal}
+              />}
+            </div>
           </div>
           <div className="mapcontainer">
             <GoogleMapContainer
