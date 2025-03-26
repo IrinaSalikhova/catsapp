@@ -2,7 +2,6 @@ const express = require('express');
 const AssetDraft = require('../model/AssetDraft');
 const Asset = require('../model/Asset');
 const {userRateLimiter, authenticateJWT} = require("../middleware");
-const { Asset } = require('../model/Asset'); // Update with your actual import paths
 
 const router = express.Router();
 
