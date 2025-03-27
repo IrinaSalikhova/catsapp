@@ -52,12 +52,12 @@ const GoogleMapContainer = ({ isLoaded, loadError, latitude, longitude }) => {
         ],
       }}
     >
-      {/* <Marker 
+      <Marker 
       position={center} 
       icon={{
       url: markerIcon,
       scaledSize: new window.google.maps.Size(40, 40),
-      }} /> */}
+      }} />
       <Polygon
         paths={polygonCoords}
         options={{

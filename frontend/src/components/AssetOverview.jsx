@@ -4,7 +4,6 @@ import GoogleMapContainer from "./GoogleMapContainer";
 
 const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
     const languagesOffered = asset.languagesOffered?.join(', ') || 'Not specified';
-    const categories = asset.categoryIds?.join(', ') || 'No categories specified';
     const email = asset.contactInfo?.email?.join(', ') || 'No email provided';
     const phoneNumber = asset.contactInfo?.phoneNumber?.join(', ') || 'No phone number provided';
     const website = asset.contactInfo?.website?.join(', ') || 'No website provided';
@@ -23,19 +22,19 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
                     <p><strong>Description:</strong> {asset.description || 'No description provided'}</p>
                     <p><strong>Volunteer Opportunities:</strong> {asset.isVolunOpp ? asset.volunOppText : 'No volunteer opportunities'}</p>
                     <p><strong>Languages Offered:</strong> {languagesOffered}</p>
-                    <p><strong>Address:</strong> {asset.address ? `${asset.address.cityName}, ${asset.address.address}` : 'No address provided'}</p>
+                    <p><strong>Address:</strong> {asset.address ? `${asset.address.cityName}, ${asset.address.address}, ${asset.address.postCode}` : 'No address provided'}</p>
                     <p><strong>Contact:</strong></p>
                     <p>Email: {email}</p>
                     <p>Phone Number: {phoneNumber}</p>
                     <p>Website: {website}</p>
-                    <p><strong>Categories:</strong> {categories}</p>
+                    <p><strong>Categories:</strong> {asset.categoryNames.join(', ') || 'No categories specified'}</p>
                 </div>
-                <div className="mapcontainer">
+                <div className="overview-map-container">
                     <GoogleMapContainer
                         isLoaded={isLoaded}
                         loadError={loadError}
-                    //   longitude= {longitude}
-                    //   latitude= {latitude}
+                        longitude={longitude}
+                        latitude={latitude}
                     />
                 </div>
             </div>

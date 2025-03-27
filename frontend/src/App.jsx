@@ -13,6 +13,8 @@ import AdminPage from './components/AdminPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
 import NavigatorPage from './components/NavigatorPage';
 import AssetOverview from './components/AssetOverview';
+import GoogleMapContainer from './components/GoogleMapContainer';
+
 
 const libraries = ['places', 'marker', 'geometry'];
 const googleMapsApiKey = "AIzaSyDgfO9FOsujiJR5OU9VuJdgb35lWCWu6Os";
@@ -22,6 +24,7 @@ const App = () => {
   const [isNewAssetModalVisible, setNewAssetModalVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState('');
+  const [selectedAsset, setSelectedAsset] = useState(null);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey,
@@ -56,6 +59,8 @@ const App = () => {
     setUserRole('');
   };
 
+  const closeModal = () => setSelectedAsset(null);
+
   return (
     <Router>
       <Header
@@ -70,7 +75,7 @@ const App = () => {
           <Route
             path="/"
             element={
-              <MainPage isLoaded={isLoaded} loadError={loadError}/>
+              <MainPage isLoaded={isLoaded} loadError={loadError} />
             }
           >
           </Route>
@@ -88,7 +93,7 @@ const App = () => {
 
           <Route
             path="/navigatorpage"
-            element={<NavigatorPage isLoaded={isLoaded} loadError={loadError}/>}
+            element={<NavigatorPage isLoaded={isLoaded} loadError={loadError} />}
           />
         </Routes>
 
@@ -108,6 +113,15 @@ const App = () => {
             loadError={loadError}
           />
         )}
+        {selectedAsset && (
+          <AssetOverview
+            asset={selectedAsset}
+            onRequestClose={closeModal}
+            isLoaded={isLoaded}
+            loadError={loadError}
+          />
+        )}
+
       </main>
       <Footer />
     </Router>

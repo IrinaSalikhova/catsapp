@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import AssetOverview from './AssetOverview';
 import '../assets/NavigatorPage.css';
-import GoogleMapContainer from "./GoogleMapContainer";
 
 const NavigatorPage = ({ isLoaded, loadError }) => {
     const [activeSection, setActiveSection] = useState('notification');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAsset, setSelectedAsset] = useState(null);
     const [assetDrafts, setAssetDrafts] = useState([]);
-    const [enabledAssets, setEnabledAssets] = useState([]);    
+    const [enabledAssets, setEnabledAssets] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -30,7 +29,7 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                     }),
                     fetch("/api/assets/getAllEnabledAssets", {
                         method: "GET",
-                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+                        headers: { 'Content-Type': 'application/json' }
                     }),
                     fetch("/api/assets/getAssetDraft", {
                         method: "GET",
@@ -50,12 +49,13 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                 const enabledData = await enabledResponse.json();
                 const draftDetails = await draftDetailResponse.json();
                 const assetDetails = await assetDetailsResponse.json();
-                
-                console.log("Draft:", assetDetails);
-                console.log("assets:", enabledData);
-                console.log("Draft details:", draftDetails);
+
+                console.log("enabled:", assetDetails);
+                console.log("enabledassets:", enabledData);
+                console.log("draft:", draftDetails);
+                console.log("draftassets:", draftData);
                 setAssetDrafts(draftData.pendingAssets);
-                setEnabledAssets(enabledData.enabledAssets);
+                setEnabledAssets(enabledData.allAssets);
             } catch (error) {
                 console.error("Error retrieving assets:", error);
                 setError(error.message);
@@ -89,22 +89,33 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                 </ul>
             </div>
             <div className="navigator-content">
+                <h2>Asset Management</h2>
                 <div className={`navigator-section ${activeSection === 'assetReview' ? 'active' : ''}`}>
-                    <h2>Asset Management</h2>
-                    <ul>
-                        {assetDrafts.map(asset => (
-                            <li key={asset.id} onClick={() => openModal(asset)} className="asset-item">{asset.name}, {asset.id}</li>
-                        ))}
-                    </ul>
-                    <ul>
-                        {enabledAssets.map(asset => (
-                            <li key={asset.id} onClick={() => openModal(asset)} className="asset-item">{asset.name}, {asset.id}</li>
-                        ))}
-                    </ul>
-                    {isModalOpen && selectedAsset && <AssetOverview asset={selectedAsset} onRequestClose={closeModal} />}
-                </div>
-                <div className="mapcontainer">
-                    <GoogleMapContainer isLoaded={isLoaded} loadError={loadError} />
+                    <div className="nav-list-container">
+                        <h3>Draft Assets</h3>
+                        <div className="nav-list">
+                            {assetDrafts.map(asset => (
+                                <div key={asset.id} onClick={() => openModal(asset)} className="nav-asset-item">
+                                    {asset.name}, {asset.id}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="nav-list-container">
+                        <h3>Available Assets</h3>
+                        <div className="nav-list">
+                            {enabledAssets.map(asset => (
+                                <div key={asset.id} onClick={() => openModal(asset)} className="nav-asset-item">
+                                    {asset.name}, {asset.id}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    {isModalOpen && selectedAsset && <AssetOverview 
+                    asset={selectedAsset} 
+                    onRequestClose={closeModal} 
+                    isLoaded={isLoaded}
+                    loadError={loadError} />}
                 </div>
             </div>
         </div>
