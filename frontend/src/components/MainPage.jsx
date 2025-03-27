@@ -7,7 +7,6 @@ import searchIcon from "/search.png";
 
 
 const MainPage = ({ isLoaded, loadError }) => {
-  const navigate = useNavigate();
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isVolunOpp, setIsVolunOpp] = useState(false);
   const [searchPhrase, setSearchPhrase] = useState("");

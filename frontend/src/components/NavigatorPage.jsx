@@ -38,7 +38,7 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                     }),
                     fetch("/api/assets/getAsset", {
                         method: "GET",
-                        headers: { 'Content-Type': 'application/json', 'assetId': 862 }
+                        headers: { 'Content-Type': 'application/json', 'assetid': 862 }
                     })
                 ]);
 
