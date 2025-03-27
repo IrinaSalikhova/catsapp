@@ -29,14 +29,16 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
                     <p>Website: {website}</p>
                     <p><strong>Categories:</strong> {asset.categoryNames.join(', ') || 'No categories specified'}</p>
                 </div>
-                <div className="overview-map-container">
-                    <GoogleMapContainer
-                        isLoaded={isLoaded}
-                        loadError={loadError}
-                        longitude={longitude}
-                        latitude={latitude}
-                    />
-                </div>
+                {longitude && latitude && // This will ensure the map is rendered only if both values are available
+                    <div className="overview-map-container">
+                        <GoogleMapContainer
+                            isLoaded={isLoaded}
+                            loadError={loadError}
+                            longitude={longitude}
+                            latitude={latitude}
+                        />
+                    </div>
+                }
             </div>
         </div>
     );
