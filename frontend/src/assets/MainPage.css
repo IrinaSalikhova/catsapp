@@ -2,60 +2,92 @@ body {
     font-family: sans-serif;
 
 }
-
-.container {
+.main-selection {
     font-family: sans-serif;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff; /* White background for the container */
-    border-radius: 15px; /* Rounded corners */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    overflow: hidden; /* Prevent overflow */
+    background-color: #ffffff;
     margin: 0 auto;
-}
-
-.main-selection{
-    display: block;
-    width: 200px;
     margin-left: 50px;
-}
-
-.search-bar {
-    width: 500px;
+    margin-right: 50px;
+  }
+  
+  .search-bar {
     display: flex;
+    border-radius: 15px;
     padding: 10px;
-    margin-top: 20px;
-    margin-left: 40px;
-}
-
-.search-button {
-    background-color:  #09579d;
-    border: none;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-}
-
-.search-button i {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: #fff;
-}
-
-.search-input {
+    align-items: stretch;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-input {
+    flex-grow: 1; /* Allow input to take up remaining space */
     font-family: sans-serif;
-    width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
+    box-sizing: border-box;
     border-radius: 5px;
-    font-size: 16px;
-}
+    font-size: 18px;
+    height: 50px;
+    margin-left: 10px;
+    margin-right: 5px; /* Add some space between input and button */
+  }
 
-.search-button:hover{
-    background-color: #82C8E5;
-}
+  .search-button {
+    background-color: #09579d;
+    border: none;
+    padding: 10px; /* Initial padding */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 10px; 
+    transition: background-color 0.1s ease;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+  }
+  
+  .search-button img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  
+  .search-button:hover {
+    background-color: #007bff;
+  }
+  
+  .filter-buttons {
+    display: flex;
+    justify-content: flex-start; /* Align buttons to the start */
+    margin: 10px 20px 10px 20px; /* Adjusted margins */
+    flex-wrap: wrap; /* Allow buttons to wrap to the next line */
+    gap: 10px; /* space between buttons */
+    font-size: 16px;
+    font-family: sans-serif;
+  }
+  
+  .filter-button {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    white-space: nowrap; /* Prevent text from wrapping */
+  }
+  
+  .filter-button:hover {
+    background-color: #ddd;
+  }
+  
+  .filter-button.active {
+    background-color: #007bff ;
+    color: white;
+  }
+  
+  .filter-button.active:hover {
+    background-color: #4b6791;
+  }
 
 .main {
     display: flex; /* Use flexbox to align sidebar and mapcontainer */
@@ -64,16 +96,18 @@ body {
 
 .sidebar {
     margin-left: 10px;
-    width: 50%; /* Adjust width as needed */
-    padding: 20px;
+    width: 40%; /* Adjust width as needed */
+    padding: 10px;
 }
 
 .mapcontainer {
     width: 70%; /* Adjust width as needed */
-    margin-top: 40px;
-    margin-right: 40px;
-    margin-left: 20px;
-    margin-bottom: 30px;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    height: 650px;
+    border-radius: 15px;
 }
 
 
@@ -82,34 +116,25 @@ body {
     font-family: sans-serif;
     font-size: 24px;
     font-weight: bold;
-    margin-bottom: 20px;
-}
-
-.filter-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.filter-button {
-    padding: 10px 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px / 10px; /* Set horizontal and vertical radii */
-    background-color: #fff;
-    cursor: pointer;
+    margin-bottom: 15px;
 }
 
 .listing {
-    border: 1px solid #ccc;
+    border: 0.5px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     padding: 15px;
     margin-bottom: 10px;
-    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
 }
+.listing:hover {
+    background-color: #f1f1f1;
+  }
 
 .listing-container {
-    max-height: 630px;  /* Set a max-height that fits within your design */
-    overflow-y: auto;   /* Enable vertical scrolling */
-    padding: 8px;       /* Optional: for better spacing */
+    max-height: 600px;
+    overflow-y: auto;     
 }
 
 .listing-title {
@@ -130,10 +155,6 @@ body {
 
 .listing-details {
     margin-left: 10px;
-}
-
-.listing-rating {
-    color: #ffc107;
 }
 
 .selected-categories-bar{

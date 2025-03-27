@@ -473,7 +473,7 @@ router.get('/getAssetDraft', authenticateJWT, userRateLimiter, async (req, res) 
         if (req.userFromToken.role !== 'navigator') {
             return res.status(403).json({ message: 'Access denied: Navigators only' });
         }
-        const draftId = req.headers['draftid'];
+        const draftId = req.headers['draftId'];
 
         if (!draftId) {
             return res.status(400).json({ message: 'Missing information about draftId' });
@@ -565,14 +565,14 @@ router.get('/getParentAssetTree', userRateLimiter, async (req, res) => {
     }
 });
 
-router.get('/findAssets', userRateLimiter, async (req, res) => {
+router.post('/findAssets', userRateLimiter, async (req, res) => {
     try {
-        const { categoryIds, isVolunOpp, searchPhrase } = req.query;
+        const { categoryIds, isVolunOpp, searchPhrase } = req.body;
         
         const parsedCategoryIds = categoryIds ? categoryIds : [];
-        const parsedIsVolunOpp = isVolunOpp === 'true';
+        const parsedIsVolunOpp = isVolunOpp === true;
         const parsedSearchPhrase = searchPhrase ? searchPhrase.trim() : "";
-        
+        console.log(parsedCategoryIds, parsedIsVolunOpp, parsedSearchPhrase);
         if (parsedCategoryIds.length === 0 && !parsedIsVolunOpp && parsedSearchPhrase === "") {
             const allAssets = await Asset.getAllEnabledAssets();
             return res.status(200).json({ assets: allAssets });
