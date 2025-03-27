@@ -245,10 +245,9 @@ router.post('/reviewMultilevelAsset', authenticateJWT, userRateLimiter, async (r
         if (!parentAssetDraftTree) {
             return res.status(404).json({ message: 'Asset draft not found' });
         }
-
+        const parentAssetDraft = await AssetDraft.getById(parentAssetDraftTree.id);
         const hasChildren = parentAssetDraftTree.children.length > 0;
-        const { children, ...parentAssetDraft } = parentAssetDraftTree;
-        
+        const children = parentAssetDraftTree.children;
         let parentAsset;
         
         if (reviewDecision === 'approved') {
@@ -265,7 +264,7 @@ router.post('/reviewMultilevelAsset', authenticateJWT, userRateLimiter, async (r
                 }
             }
             else {
-                parentAsset = new Asset({data: parentAssetDraft});
+                parentAsset = new Asset({data: parentAssetDraft.toPlainData()});
                 parentAsset.hasChildren = hasChildren;
                 await parentAsset.save(createdBy);
             }

@@ -67,10 +67,16 @@ const CategoryDropdown = ({ onCategorySelect }) => {
 
   return (
     <div className="dropdown-container" ref={dropdownRef}>
-      <button type="button" className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
-        Select a category
 
-      </button>
+      <div className="dropdown-header">
+        <button type="button" className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
+          {selectedCategories.length > 0 ? selectedCategories.map(c => c.name).join(', ') : 'Select a category'}
+        </button>
+        {selectedCategories.length > 0 && (
+          <button className="clear-button" onClick={clearSelection}>X</button>
+        )}
+      </div>
+      
       {dropdownOpen && (
         <div className="dropdown-content">
           {categories.map((category) => (
@@ -104,14 +110,6 @@ const CategoryDropdown = ({ onCategorySelect }) => {
           ))}
         </div>
       )}
-          <div className="selected-categories" style={{ width: '200%', display: 'flex', flexWrap: 'wrap', gap: '5px', padding: '5px' }}>
-          {selectedCategories.map((category) => (
-            <span key={category.id} className="selected-category">{category.name}, </span>
-          ))}
-        </div>
-                {selectedCategories.length > 0 && (
-          <button className="clear-button" onClick={clearSelection}>Clear Selection</button>
-        )}
         </div>
   );
 };

@@ -24,6 +24,7 @@ const App = () => {
   const [isNewAssetModalVisible, setNewAssetModalVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState('');
+  const [token, setToken] = useState('');
   const [selectedAsset, setSelectedAsset] = useState(null);
 
   const { isLoaded, loadError } = useLoadScript({
@@ -39,6 +40,7 @@ const App = () => {
     if (token) {
       setIsLoggedIn(true);
       setUserRole(role || '');
+      setToken(token);
     }
   }, []);
 
@@ -111,6 +113,7 @@ const App = () => {
             userRole={userRole}
             isLoaded={isLoaded}
             loadError={loadError}
+            token={token}
           />
         )}
         {selectedAsset && (

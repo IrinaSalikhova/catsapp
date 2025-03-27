@@ -72,7 +72,7 @@ const GoogleMapContainer = ({ isLoaded, loadError, assets, latitude, longitude }
         }}
       />
 
-  {assets.map((asset, index) => (
+{assets && Array.isArray(assets) && assets.map((asset, index) => (
         <Marker
           key={asset.id}
           position={{ lat: asset.address.latitude, lng: asset.address.longitude }}
