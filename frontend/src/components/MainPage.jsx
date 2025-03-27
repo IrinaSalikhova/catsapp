@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import CategoryDropdown from './CategoryDropdown';
 import { useNavigate } from 'react-router-dom';
 import AssetOverview from './AssetOverview';
 import '../assets/MainPage.css';
 import GoogleMapContainer from "./GoogleMapContainer";
 import searchIcon from "/search.png";
+
 
 
 const MainPage = ({ isLoaded, loadError }) => {
@@ -75,11 +76,6 @@ const MainPage = ({ isLoaded, loadError }) => {
     setSearchPhrase(searchInput);
   };
 
-  const memoizedMap = useMemo(() => (
-    <GoogleMapContainer isLoaded={isLoaded} loadError={loadError} />
-  ), [isLoaded, loadError]); 
-
-
   if (error) return <div className="error-message">{error}</div>;
   
   return (
@@ -133,7 +129,7 @@ const MainPage = ({ isLoaded, loadError }) => {
             </div>
           </div>
           <div className="mapcontainer">
-            {memoizedMap}
+            { <GoogleMapContainer isLoaded={isLoaded} loadError={loadError} assets={assets} />}
           </div>
         </div>
     </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { GoogleMap, Marker, Polygon } from "@react-google-maps/api";
 import markerIcon from "/marker_red.png";
+import transparentMarker from "/marker_transparent.svg";
 
 const containerStyle = {
   width: "100%",
@@ -19,9 +20,16 @@ const polygonCoords = [
   { lat: 45.379200, lng: -75.750300 }  // Back to start (Clyde & Carling)
 ];
 
-const GoogleMapContainer = ({ isLoaded, loadError }) => {
+const generateColor = (id) => {
+  const colors = ["red", "blue", "green", "orange", "purple", "pink", "cyan"];
+  return colors[id % colors.length]; // Cycle through colors
+};
+
+const GoogleMapContainer = ({ isLoaded, loadError, assets }) => {
   if (!isLoaded) return <div>Loading map...</div>; 
   if (loadError) return <div>Error loading maps</div>;
+
+  
 
   return (
     <GoogleMap
@@ -52,12 +60,7 @@ const GoogleMapContainer = ({ isLoaded, loadError }) => {
         ],
       }}
     >
-      {/* <Marker 
-      position={center} 
-      icon={{
-      url: markerIcon,
-      scaledSize: new window.google.maps.Size(40, 40),
-      }} /> */}
+
       <Polygon
         paths={polygonCoords}
         options={{
@@ -68,6 +71,22 @@ const GoogleMapContainer = ({ isLoaded, loadError }) => {
           strokeWeight: 2,
         }}
       />
+
+  {assets.map((asset, index) => (
+        <Marker
+          key={asset.id}
+          position={{ lat: asset.address.latitude, lng: asset.address.longitude }}
+          icon={{
+            url: transparentMarker,
+            scaledSize: new window.google.maps.Size(30, 30),
+            fillColor: "green",
+            fillOpacity: 1,
+            strokeWeight: 1,
+            scale: 10, // Adjust size as needed
+          }}
+          title={asset.name}
+        />
+      ))}
     </GoogleMap>
   );
 };
