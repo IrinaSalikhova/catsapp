@@ -22,6 +22,7 @@
 .dropdown-content {
     position: absolute;
     width: 100%;
+    top: 100%;
     max-height: 400px; /* Increased height to fit more categories */
     overflow-y: auto;
     background: white;

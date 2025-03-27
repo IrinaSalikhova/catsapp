@@ -28,13 +28,36 @@ const GoogleMapContainer = ({ isLoaded, loadError }) => {
       mapContainerStyle={containerStyle}
       center={center}
       zoom={15}
+      options={{
+        zoomControl: true,
+        scrollwheel: true,
+        styles: [
+          {
+            featureType: "poi.business",
+            stylers: [{ visibility: "off" }],
+          },
+          {
+            featureType: "poi.sports_complex",
+            stylers: [{ visibility: "off" }],
+          },
+          {
+            featureType: "poi.attraction",
+            stylers: [{ visibility: "off" }],
+          },
+          {
+            featureType: "poi.place_of_worship",
+            stylers: [{ visibility: "off" }],
+          },
+
+        ],
+      }}
     >
-      <Marker 
+      {/* <Marker 
       position={center} 
       icon={{
       url: markerIcon,
       scaledSize: new window.google.maps.Size(40, 40),
-      }} />
+      }} /> */}
       <Polygon
         paths={polygonCoords}
         options={{

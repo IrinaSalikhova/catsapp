@@ -205,6 +205,10 @@ h1, h2 {
     background-color: #ddd;
 }
 
+.volunteer-button.active:hover {
+  background-color: #4b6791;
+}
+
 
 .required-icon {
     width: 16px; 
