@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import AssetOverview from './AssetOverview';
 import '../assets/NavigatorPage.css';
+import GoogleMapContainer from "./GoogleMapContainer";
 
-const NavigatorPage = () => {
+const NavigatorPage = ({ isLoaded, loadError }) => {
     const [activeSection, setActiveSection] = useState('notification');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAsset, setSelectedAsset] = useState(null);  // Store the entire asset object
@@ -43,28 +44,28 @@ const NavigatorPage = () => {
                 setLoading(false);
             }
 
-        try {
-            const response = await fetch("/api/assets/getAssetDraft", {
-                method: "GET",
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'draftid': '1058' // it should be added by code to load whatever is needed. 
+            try {
+                const response = await fetch("/api/assets/getAssetDraft", {
+                    method: "GET",
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'draftid': 1058 // it should be added by code to load whatever is needed. 
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || "Failed to retrieve draft by id");
                 }
-            });
 
-            const result = await response.json();
+                console.log("???????????????????", result);
 
-            if (!response.ok) {
-                throw new Error(result.message || "Failed to retrieve draft by id");
+            } catch (error) {
+                console.error("Error retrieving draft by id:", error.message);
             }
-
-            console.log("???????????????????", result);
-
-        } catch (error) {
-            console.error("Error retrieving draft by id:", error.message);
-        }
-    };
+        };
 
 
         fetchData();
@@ -105,10 +106,16 @@ const NavigatorPage = () => {
                             </li>
                         ))}
                     </ul>
-                    {isModalOpen && selectedAsset && <AssetOverview 
-                        asset={selectedAsset} 
-                        onRequestClose={closeModal} 
+                    {isModalOpen && selectedAsset && <AssetOverview
+                        asset={selectedAsset}
+                        onRequestClose={closeModal}
                     />}
+                </div>
+                <div className="mapcontainer">
+                    <GoogleMapContainer
+                        isLoaded={isLoaded}
+                        loadError={loadError}
+                    />
                 </div>
             </div>
         </div>

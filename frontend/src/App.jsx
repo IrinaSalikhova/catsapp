@@ -12,8 +12,10 @@ import AddAssetForm from './components/AddAssetForm';
 import AdminPage from './components/AdminPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
 import NavigatorPage from './components/NavigatorPage';
+import AssetOverview from './components/AssetOverview';
 
 const libraries = ['places', 'marker', 'geometry'];
+const googleMapsApiKey = "AIzaSyDgfO9FOsujiJR5OU9VuJdgb35lWCWu6Os";
 
 const App = () => {
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
@@ -22,7 +24,7 @@ const App = () => {
   const [userRole, setUserRole] = useState('');
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyDgfO9FOsujiJR5OU9VuJdgb35lWCWu6Os",
+    googleMapsApiKey,
     libraries,
   });
 
@@ -68,10 +70,7 @@ const App = () => {
           <Route
             path="/"
             element={
-              <MainPage
-                isLoaded={isLoaded}
-                loadError={loadError}
-              />
+              <MainPage isLoaded={isLoaded} loadError={loadError}/>
             }
           >
           </Route>
@@ -89,7 +88,8 @@ const App = () => {
 
           <Route
             path="/navigatorpage"
-            element={<NavigatorPage />} />
+            element={<NavigatorPage/>}
+          />
         </Routes>
 
         {/* modals */}

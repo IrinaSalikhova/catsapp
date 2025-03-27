@@ -1,33 +1,26 @@
 import React, { useState, useEffect } from 'react'; // Correctly import useEffect here
 import CategoryDropdown from './CategoryDropdown';
-import { useNavigate } from 'react-router-dom';
 import AssetOverview from './AssetOverview';
 import '../assets/MainPage.css';
 import GoogleMapContainer from "./GoogleMapContainer";
 
 const MainPage = ({ isLoaded, loadError }) => {
-  const navigate = useNavigate();
   const [selectedCategories, setSelectedCategories] = useState(null);
   const [selectedAsset, setSelectedAsset] = useState(null);  // Define state for selected asset
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [assets, setAssets] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [assets, setAssets] = useState([]); // Initialize with mock data
 
   const mockAssets = [
-    { id: 1, name: "Community Library", description: "A large library with extensive resources available to the public." },
-    { id: 2, name: "Local Park", description: "A beautiful park with walking trails, a pond, and picnic areas." },
-    { id: 3, name: "Museum of History", description: "A museum dedicated to the history of the region with interactive exhibits." },
-    { id: 4, name: "Art Gallery", description: "Contemporary art gallery featuring local and international artists." },
-    { id: 5, name: "Senior Community Center", description: "Provides activities and support for the senior community." },
-    { id: 6, name: "Recreational Sports Complex", description: "Sports complex with facilities for various sports." },
-    { id: 7, name: "Public Swimming Pool", description: "A public facility with indoor and outdoor pools." },
-    { id: 8, name: "Botanical Gardens", description: "Expansive gardens featuring flora from around the world." },
-    { id: 9, name: "City Zoo", description: "Home to a wide range of exotic animals and educational programs." },
-    { id: 10, name: "Cultural Arts Theatre", description: "A venue for live theatre productions and cultural events." }
-  ];
-
+    { id: 1, name: "Community Library", description: "A large library with extensive resources available to the public.", address: { latitude: 45.380955, longitude: -75.734694 } },
+    { id: 2, name: "Local Park", description: "A beautiful park with walking trails, a pond, and picnic areas.", address: { latitude: 45.377619, longitude: -75.733562 } },
+    { id: 3, name: "Museum of History", description: "A museum dedicated to the history of the region with interactive exhibits.", address: { latitude: 45.385345, longitude: -75.729487 } },
+    { id: 4, name: "Art Gallery", description: "Contemporary art gallery featuring local and international artists.", address: { latitude: 45.380078, longitude: -75.725889 } },
+    { id: 5, name: "Senior Community Center", description: "Provides activities and support for the senior community.", address: { latitude: 45.381802, longitude: -75.737976 } },
+    { id: 6, name: "Recreational Sports Complex", description: "Sports complex with facilities for various sports.", address: { latitude: 45.377961, longitude: -75.728098 } },
+    { id: 7, name: "Public Swimming Pool", description: "A public facility with indoor and outdoor pools.", address: { latitude: 45.382499, longitude: -75.729980 } },
+    { id: 8, name: "Botanical Gardens", description: "Expansive gardens featuring flora from around the world.", address: { latitude: 45.372159, longitude: -75.735219 } },
+    { id: 9, name: "City Zoo", description: "Home to a wide range of exotic animals and educational programs.", address: { latitude: 45.389990, longitude: -75.726067 } },
+    { id: 10, name: "Cultural Arts Theatre", description: "A venue for live theatre productions and cultural events.", address: { latitude: 45.374810, longitude: -75.723509 } }
+];
 
   const handleCategorySelect = (categories) => {
     setSelectedCategories(categories);
@@ -75,9 +68,6 @@ const MainPage = ({ isLoaded, loadError }) => {
     setIsModalOpen(false);
     setSelectedAsset(null);
   };
-
-  if (error) return <div>{error}</div>;
-  if (loading) return;
 
   return (
     <div className="main-page">
