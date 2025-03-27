@@ -126,20 +126,15 @@ router.post('/addNewAsset', authenticateJWT, userRateLimiter, async (req, res) =
         if (req.userFromToken.role !== 'navigator') {
             return res.status(403).json({ message: 'Access denied: Navigators only' });
         }
-        
         const { newAssetData } = req.body;
-
-        if (!parentData.name || !Array.isArray(parentData.categoryIds) || parentData.categoryIds.length === 0) {
-            return res.status(400).json({ message: 'Missing or invalid required fields' });
-        }
 
         const createdBy = req.userFromToken.id;
 
         const hasChildren = newAssetData.length > 1;
         const [parentData, ...children] = newAssetData;
 
-        if (!parentData.name || !parentData.categoryIds) {
-            return res.status(400).json({ message: 'Missing required fields' });
+        if (!parentData.name || !Array.isArray(parentData.categoryIds) || parentData.categoryIds.length === 0) {
+            return res.status(400).json({ message: 'Missing or invalid required fields' });
         }
 
         parentData.hasChildren = hasChildren;
@@ -568,7 +563,7 @@ router.post('/findAssets', userRateLimiter, async (req, res) => {
     try {
         const { categoryIds, isVolunOpp, searchPhrase } = req.body;
         
-        const parsedCategoryIds = categoryIds ? categoryIds : [];
+        const parsedCategoryIds = Array.isArray(categoryIds) ? categoryIds : [];
         const parsedIsVolunOpp = isVolunOpp === true;
         const parsedSearchPhrase = searchPhrase ? searchPhrase.trim() : "";
         console.log(parsedCategoryIds, parsedIsVolunOpp, parsedSearchPhrase);
