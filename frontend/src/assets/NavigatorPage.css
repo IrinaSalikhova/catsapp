@@ -61,3 +61,24 @@
 .notification-item.edit {
   background-color: #d1eaf5; /* Different color for edits */
 }
+
+/* NavigatorPage.css */
+.nav-list-container {
+  margin-bottom: 50px;
+}
+
+.nav-list {
+  max-height: 200px; /* Adjust based on your preference */
+  overflow-y: auto;
+  padding: 10px;
+  border-radius: 5px; /* Optional: rounded corners */
+}
+
+.nav-asset-item {
+  padding: 8px;
+  margin: 2px;
+  cursor: pointer; /* Indicates the item is clickable */
+  background-color: white; /* Background for each item */
+  border: 1px solid #ddd; /* Border for each item */
+  border-radius: 3px; /* Rounded corners for each item */
+}

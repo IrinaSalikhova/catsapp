@@ -473,7 +473,7 @@ router.get('/getAssetDraft', authenticateJWT, userRateLimiter, async (req, res) 
         if (req.userFromToken.role !== 'navigator') {
             return res.status(403).json({ message: 'Access denied: Navigators only' });
         }
-        const draftId = req.headers['draftId'];
+        const draftId = req.headers['draftid'];
 
         if (!draftId) {
             return res.status(400).json({ message: 'Missing information about draftId' });
@@ -496,7 +496,7 @@ router.get('/getAssetDraft', authenticateJWT, userRateLimiter, async (req, res) 
 router.get('/getAsset', userRateLimiter, async (req, res) => {
    
     try {
-        const assetId = req.headers['assetId'];
+        const assetId = req.headers['assetid'];
 
         if (!assetId) {
             return res.status(400).json({ message: 'Missing information about assetId' });

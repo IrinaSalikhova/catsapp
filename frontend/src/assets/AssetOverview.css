@@ -12,6 +12,10 @@
   }
   
   .asset-overview-content {
+    max-width: 1000px;
+    min-width: 700px;
+    max-height: 800px;
+    overflow-y: auto;
     background: white;
     padding: 20px;
     border-radius: 5px;
@@ -23,7 +27,7 @@
     background-color: #f44336;
     border: none;
     color: white;
-    margin-left: 85%;
+    margin-left: 90%;
     border-radius: 5px;
     font-weight: bold;
   }
@@ -37,3 +41,7 @@
     padding: 0;
   }
   
+  .overview-map-container {
+    width: 100%; /* Adjust width as needed */
+    height: 400px;
+}

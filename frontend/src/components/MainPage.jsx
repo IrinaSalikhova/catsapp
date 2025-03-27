@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'; 
 import CategoryDropdown from './CategoryDropdown';
-import { useNavigate } from 'react-router-dom';
 import AssetOverview from './AssetOverview';
 import '../assets/MainPage.css';
 import GoogleMapContainer from "./GoogleMapContainer";
@@ -9,16 +8,15 @@ import searchIcon from "/search.png";
 
 
 const MainPage = ({ isLoaded, loadError }) => {
-  const navigate = useNavigate();
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isVolunOpp, setIsVolunOpp] = useState(false);
   const [searchPhrase, setSearchPhrase] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [selectedAsset, setSelectedAsset] = useState(null);  
+  const [selectedAsset, setSelectedAsset] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [assets, setAssets] = useState([]); 
+  const [assets, setAssets] = useState([]);
 
   const handleCategorySelect = (categories) => {
     const categoryIds = categories.map(category => category.id);
@@ -39,12 +37,12 @@ const MainPage = ({ isLoaded, loadError }) => {
             searchPhrase,
           }),
         });
-        
+
         const data = await response.json();
         if (!response.ok) {
           throw new Error(data.message || "Failed to retrieve assets");
         }
-        
+
         setAssets(data.assets);
       } catch (error) {
         console.error("Error retrieving assets:", error);
@@ -57,7 +55,7 @@ const MainPage = ({ isLoaded, loadError }) => {
   }, [selectedCategories, isVolunOpp, searchPhrase]);
 
   const openModal = (asset) => {
-    setSelectedAsset(asset); 
+    setSelectedAsset(asset);
     setIsModalOpen(true);
   };
 
@@ -77,61 +75,63 @@ const MainPage = ({ isLoaded, loadError }) => {
   };
 
   if (error) return <div className="error-message">{error}</div>;
-  
+
   return (
     <div className="main-page">
 
-        <div className="main-selection">
+      <div className="main-selection">
         <div className="search-bar">
-          <CategoryDropdown onCategorySelect={handleCategorySelect}/>
-          <input 
-            type="text" 
-            className="search-input" 
-            placeholder="Search for resources..." 
-            value={searchInput} 
+          <CategoryDropdown onCategorySelect={handleCategorySelect} />
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search for resources..."
+            value={searchInput}
             onChange={handleSearchChange}
             onKeyDown={(e) => e.key === "Enter" && handleSearchClick()}
           />
-           <button 
-           className="search-button" 
-           title="Search" 
-           onClick={handleSearchClick}>
-           <img src={searchIcon} alt="Search" />
+          <button
+            className="search-button"
+            title="Search"
+            onClick={handleSearchClick}>
+            <img src={searchIcon} alt="Search" />
           </button>
         </div>
         <div className="filter-buttons">
-          <button 
-          className={`filter-button ${isVolunOpp ? "active" : ""}`} 
-          onClick={toggleVolunFilter}>
+          <button
+            className={`filter-button ${isVolunOpp ? "active" : ""}`}
+            onClick={toggleVolunFilter}>
             Look for volunteering opportunities
           </button>
         </div>
-        </div>
-        <div className="main">
-          <div className="sidebar">
-            <div className="title">Community Resources</div>
-            <div className="listing-container">
-              {loading ? (
-                <div className="loading-message">Loading assets...</div>
-              ) : (
-                assets.map(asset => (
-                  <div key={asset.id} onClick={() => openModal(asset)} className="listing">
-                    <div className="listing-info">
-                      <div className="listing-title">{asset.name}</div>
-                      <div className="listing-details">{asset.categoryNames.join(', ')}</div>
-                    </div>
+      </div>
+      <div className="main">
+        <div className="sidebar">
+          <div className="title">Community Resources</div>
+          <div className="listing-container">
+            {loading ? (
+              <div className="loading-message">Loading assets...</div>
+            ) : (
+              assets.map(asset => (
+                <div key={asset.id} onClick={() => openModal(asset)} className="listing">
+                  <div className="listing-info">
+                    <div className="listing-title">{asset.name}</div>
+                    <div className="listing-details">{asset.categoryNames.join(', ')}</div>
                   </div>
-                ))
-              )}
-              {isModalOpen && selectedAsset && (
-                <AssetOverview asset={selectedAsset} onRequestClose={closeModal} />
-              )}
-            </div>
-          </div>
-          <div className="mapcontainer">
-            { <GoogleMapContainer isLoaded={isLoaded} loadError={loadError} assets={assets} />}
+                </div>
+              ))
+            )}
+            {isModalOpen && selectedAsset && <AssetOverview
+              asset={selectedAsset}
+              onRequestClose={closeModal}
+              isLoaded={isLoaded}
+              loadError={loadError} />}
           </div>
         </div>
+        <div className="mapcontainer">
+         <GoogleMapContainer isLoaded={isLoaded} loadError={loadError} assets={assets} />
+        </div>
+      </div>
     </div>
   );
 };

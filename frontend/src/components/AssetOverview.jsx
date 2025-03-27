@@ -1,100 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import '../assets/AssetOverview.css';
+import GoogleMapContainer from "./GoogleMapContainer";
 
-const AssetOverview = ({ assetId, onRequestClose }) => {
-    const [asset, setAsset] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
+    const languagesOffered = asset.languagesOffered?.join(', ') || 'Not specified';
+    const email = asset.contactInfo?.email?.join(', ') || 'No email provided';
+    const phoneNumber = asset.contactInfo?.phoneNumber?.join(', ') || 'No phone number provided';
+    const website = asset.contactInfo?.website?.join(', ') || 'No website provided';
 
-    const mockAsset = {
-        id: 1275,
-        name: "Central Library",
-        description: "A large library with a wide selection of books and resources.",
-        isVolunOpp: true,
-        volunOppText: "Volunteers needed for event organization.",
-        languagesOffered: ["English", "Spanish", "French"],
-        address: {
-            cityName: "Metropolis",
-            address: "1234 Main St"
-        },
-        contactInfo: {
-            email: ["info@centrallibrary.com"],
-            phoneNumber: ["555-1234"],
-            website: ["www.centrallibrary.com"]
-        },
-        categoryIds: [1, 3, 5]
-    };
-
-    // useEffect(() => {
-    //     const fetchAsset = async () => {
-    //         if (!assetId) return;
-
-    //         setLoading(true);
-    //         const token = localStorage.getItem('token'); // Ensure token is retrieved inside useEffect
-    //         if (!token) {
-    //             setError('User not authenticated');
-    //             console.error('User not authenticated');
-    //             setLoading(false);
-    //             return;
-    //         }
-
-    //         try {
-    //             const response = await fetch(`/api/assets/getAsset`, { // /${assetId}
-    //                 method: "GET",
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                     'assetId': assetId,
-    //                 }
-    //             });
-
-    //             if (!response.ok) {
-    //                 const data = await response.json();
-    //                 throw new Error(data.message || "Failed to retrieve asset");
-    //             }
-
-    //             const data = await response.json();
-    //             setAsset(data);
-    //         } catch (error) {
-    //             console.error("Error retrieving asset:", error);
-    //             setError(error.message);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     fetchAsset();
-    // }, [assetId]);
-
-    useEffect(() => {
-        setLoading(true);
-        try {
-            // Simulate fetching data by setting the mock data after a delay
-            setTimeout(() => {
-                setAsset(mockAsset);
-                setLoading(false);
-            }, 1000); // Delay to mimic an API call
-        } catch (error) {
-            console.error("Failed to load mock data:", error);
-            setError("Failed to load data");
-            setLoading(false);
-        }
-    }, []);
-
-    if (loading) return;
-    if (error) return <div className="asset-overview-error">Error: {error}</div>;
-    if (!asset) return <div className="asset-overview-no-data">No asset found</div>;
+    // Extract longitude and latitude from the asset object
+    const longitude = asset.address.longitude;
+    const latitude = asset.address.latitude;
+    console.log(longitude, latitude);
 
     return (
         <div className="asset-overview-modal">
             <div className="asset-overview-content">
                 <button onClick={onRequestClose} className="asset-overview-close">Close</button>
-                <h2>{asset.name}</h2>
-                <p><strong>Description:</strong> {asset.description}</p>
-                <p><strong>Volunteer Opportunities:</strong> {asset.isVolunOpp ? asset.volunOppText : 'N/A'}</p>
-                <p><strong>Languages Offered:</strong> {asset.languagesOffered.join(', ')}</p>
-                <p><strong>Address:</strong> {asset.address ? `${asset.address.cityName}, ${asset.address.address}` : 'No address provided'}</p>
-                <p><strong>Contact:</strong> Email: {asset.contactInfo.email.join(', ')}, Phone: {asset.contactInfo.phoneNumber.join(', ')}</p>
-                <p><strong>Categories:</strong> {asset.categoryIds.join(', ')}</p>
+                <div key={asset.id} className="asset-overview-asset">
+                    <h2>{asset.name}</h2>
+                    <p><strong>Description:</strong> {asset.description || 'No description provided'}</p>
+                    <p><strong>Volunteer Opportunities:</strong> {asset.isVolunOpp ? asset.volunOppText : 'No volunteer opportunities'}</p>
+                    <p><strong>Languages Offered:</strong> {languagesOffered}</p>
+                    <p><strong>Address:</strong> {asset.address ? `${asset.address.cityName}, ${asset.address.address}, ${asset.address.postCode}` : 'No address provided'}</p>
+                    <p><strong>Contact:</strong></p>
+                    <p>Email: {email}</p>
+                    <p>Phone Number: {phoneNumber}</p>
+                    <p>Website: {website}</p>
+                    <p><strong>Categories:</strong> {asset.categoryNames.join(', ') || 'No categories specified'}</p>
+                </div>
+                {longitude && latitude && // This will ensure the map is rendered only if both values are available
+                    <div className="overview-map-container">
+                        <GoogleMapContainer
+                            isLoaded={isLoaded}
+                            loadError={loadError}
+                            longitude={longitude}
+                            latitude={latitude}
+                        />
+                    </div>
+                }
             </div>
         </div>
     );
