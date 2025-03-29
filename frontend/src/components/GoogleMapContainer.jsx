@@ -73,20 +73,21 @@ const GoogleMapContainer = ({ isLoaded, loadError, assets, latitude, longitude }
       />
 
 {assets && Array.isArray(assets) && assets.map((asset, index) => (
-        <Marker
-          key={asset.id}
-          position={{ lat: asset.address.latitude, lng: asset.address.longitude }}
-          icon={{
-            url: transparentMarker,
-            scaledSize: new window.google.maps.Size(30, 30),
-            fillColor: "green",
-            fillOpacity: 1,
-            strokeWeight: 1,
-            scale: 10, // Adjust size as needed
-          }}
-          title={asset.name}
-        />
-      ))}
+  asset.address.latitude && asset.address.longitude ? (
+    <Marker
+      key={asset.id}
+      position={{ lat: asset.address.latitude, lng: asset.address.longitude }}
+      icon={{
+        url: transparentMarker,
+        scaledSize: new window.google.maps.Size(30, 30), // Ensure Google Maps API is loaded
+        fillColor: "green",
+        fillOpacity: 1,
+        strokeWeight: 1,
+      }}
+      title={asset.name}
+    />
+  ) : null
+))}
     </GoogleMap>
   );
 };

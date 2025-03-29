@@ -71,7 +71,7 @@ const AddAssetFormStep2 = ({
           </div>
 
           <div className="asset-form-field-container">
-            <CategoryDropdown onCategorySelect={(categories, event) => handleCategorySelect(categories, index, event)} />
+            <CategoryDropdown onCategorySelect={(categories, event) => handleCategorySelect(categories, index, event)} initialSelectedCategoryIds={service.categoryIds} />
             <img src={requiredIcon} alt="Required" className="required-icon" />
           </div>
 

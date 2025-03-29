@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import '../assets/CategoryDropdown.css';
 
-const CategoryDropdown = ({ onCategorySelect }) => {
+const CategoryDropdown = ({ onCategorySelect, initialSelectedCategoryIds = [] }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -10,18 +10,49 @@ const CategoryDropdown = ({ onCategorySelect }) => {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
+    let categoryTreeFetched;
     const fetchCategories = async () => {
+      const cachedCategories = sessionStorage.getItem("cachedCategories");
+      const expirationTime = 60 * 60 * 24000; // 24 hour
+      if (cachedCategories) {
+        const { categories, timestamp } = JSON.parse(cachedCategories);
+        if (Date.now() - timestamp < expirationTime) {
+          setCategories(categories);
+          categoryTreeFetched = categories;
+          return;
+        }
+      }
       try {
         const response = await fetch('/api/categories/tree');
         if (response.ok) {
           const data = await response.json();
-          setCategories(data.categoryTree);
+          categoryTreeFetched = data.categoryTree;
+          setCategories(categoryTreeFetched);
+          sessionStorage.setItem("cachedCategories", JSON.stringify({
+            categories: categoryTreeFetched,
+            timestamp: Date.now(),
+          }));
         }
       } catch (err) {
         console.error('Error fetching categories', err);
       }
     };
     fetchCategories();
+
+    const flatCategories = [];
+    categoryTreeFetched.forEach(category => {
+      flatCategories.push(category);
+      if (category.subcategories && category.subcategories.length > 0) {
+        category.subcategories.forEach(subcategory => {
+          flatCategories.push(subcategory);
+        });
+      }
+    }); 
+    const preselected = flatCategories.filter(category => initialSelectedCategoryIds.includes(category.id));
+    console.log("categoryTreeFetched", categoryTreeFetched);
+    console.log("initialSelectedCategoryIds", initialSelectedCategoryIds);
+    console.log("preselected", preselected);
+    setSelectedCategories(preselected);
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
