@@ -10,6 +10,10 @@
     align-items: center;
     z-index: 1050;
   }
+
+  .asset-overview-modal .asset-overview-modal {
+    z-index: 1060; /* Increment z-index for nested modals */
+}
   
   .asset-overview-content {
     max-width: 1000px;
@@ -44,4 +48,18 @@
   .overview-map-container {
     width: 100%; /* Adjust width as needed */
     height: 400px;
+}
+
+.overview-contact-info{
+  margin-left: 20px;
+}
+
+.overview-description{
+  display: flex;
+  margin-top: 1em;
+  margin-left: 5px;
+}
+
+.overview-description-container{
+  display: flex;
 }
