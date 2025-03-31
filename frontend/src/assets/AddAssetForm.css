@@ -211,7 +211,7 @@ h1, h2 {
 
 /* Submit button */
 button[type="submit"] {
-    background-color: #009BEF;
+    background-color: #09579d;
     color: white;
     border: none;
     padding: 15px;
@@ -224,7 +224,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background-color: #007BB5;
+    background-color: #009BEF;
 }
 
 
@@ -252,7 +252,7 @@ button[type="submit"]:hover {
 
 /* Active button styling */
 .question-toggle button.active {
-    background: #009bef;
+    background: #09579d;
     color: white;
 }
 
