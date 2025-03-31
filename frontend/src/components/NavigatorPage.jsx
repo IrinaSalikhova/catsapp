@@ -37,7 +37,7 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                     }),
                     fetch("/api/assets/getAsset", {
                         method: "GET",
-                        headers: { 'Content-Type': 'application/json', 'assetid': 862 }
+                        headers: { 'Content-Type': 'application/json', 'assetid': 1 }
                     })
                 ]);
 
@@ -68,9 +68,11 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
     }, []);
 
     const openModal = (asset) => {
+        console.log('Selected Asset:', asset);  // Log the selected asset details
         setSelectedAsset(asset);
         setIsModalOpen(true);
     };
+    
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -85,7 +87,7 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
             <div className="navigator-sidebar">
                 <ul className="navigator-nav">
                     <li onClick={() => setActiveSection('notification')} className={activeSection === 'notification' ? 'active' : ''}>Notification</li>
-                    <li onClick={() => setActiveSection('assetReview')} className={activeSection === 'assetReview' ? 'active' : ''}>Asset Review</li>
+                    <li onClick={() => setActiveSection('assetReview')} className={activeSection === 'assetReview' ? 'active' : ''}>Asset Management</li>
                 </ul>
             </div>
             <div className="navigator-content">
@@ -96,7 +98,7 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                         <div className="nav-list">
                             {assetDrafts.map(asset => (
                                 <div key={asset.id} onClick={() => openModal(asset)} className="nav-asset-item">
-                                    {asset.name}, {asset.id}
+                                    <strong>{asset.name}</strong> {asset.id}
                                 </div>
                             ))}
                         </div>
@@ -106,7 +108,7 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                         <div className="nav-list">
                             {enabledAssets.map(asset => (
                                 <div key={asset.id} onClick={() => openModal(asset)} className="nav-asset-item">
-                                    {asset.name}, {asset.id}
+                                    <strong>{asset.name}</strong> {asset.id}
                                 </div>
                             ))}
                         </div>
