@@ -4,6 +4,7 @@ import GoogleMapContainer from "./GoogleMapContainer";
 
 const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
     const [selectedChild, setSelectedChild] = useState(null);
+    const [selectedParent, setSelectedParent] = useState(null);
 
     const handleChildAssetClick = (child) => {
         console.log("Selected child asset details:", child);  // Logging child asset details
@@ -12,6 +13,36 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
 
     const handleCloseChildModal = () => {
         setSelectedChild(null);
+    };
+
+     const handleParentAssetClick = async () => {
+         const parentId = asset.parentAssetId || asset.parentAssetDraftId;
+    //     console.log("Opening parent asset details for ID:", parentId);
+    
+    //     try {
+    //         const response = await fetch("/api/assets/getAsset", {
+    //             method: "GET",
+    //             headers: { 
+    //                 'Content-Type': 'application/json',
+    //                 'assetid': parentId
+    //             }
+    //         });
+    
+    //         if (!response.ok) {
+    //             throw new Error("Failed to fetch asset details");
+    //         }
+    
+    //         const data = await response.json();
+    //         setSelectedParent(data);
+    //     } catch (error) {
+    //         console.error("Error fetching parent asset details:", error);
+    //     }
+     };
+    
+    
+
+    const handleCloseParentModal = () => {
+        setSelectedParent(null);
     };
 
     const formatPhoneNumber = (input) => {
@@ -37,25 +68,32 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
             <div className="asset-overview-content">
                 <button onClick={onRequestClose} className="asset-overview-close">Close</button>
                 <h2>{asset.name}</h2>
-                <p><strong>Description:</strong> {asset.description || 'No description provided'}</p>
-                <p><strong>Categories:</strong> {asset.categoryNames || 'No categories specified'}</p>
-                <p><strong>Address:</strong> {renderAddress(asset.address)}</p>
-                <p><strong>Contact:</strong></p>
+                <p><strong>Description: </strong> {asset.description || 'No description provided'}</p>
+                <p><strong>Categories: </strong> {asset.categoryNames || 'No categories specified'}</p>
+                <p><strong>Address: </strong> {renderAddress(asset.address)}</p>
+                <p><strong>Contact: </strong></p>
                 <div className="overview-contact-info">
                     <p>Email: {asset.contactInfo?.email?.join(', ') || 'No email provided'}</p>
                     <p>Phone Number: {asset.contactInfo?.phoneNumber?.map(phone => formatPhoneNumber(phone)).join(', ') || 'No phone number provided'}</p>
-                    <p>Website: {asset.contactInfo?.website?.length ? asset.contactInfo.website.map((url, index) => (
-                        <a key={index} href={url.trim()} target="_blank" rel="noopener noreferrer">{url.trim()}</a>
-                    )) : 'No website provided'}
+                    <p>Website: {asset.contactInfo?.website?.length ? (
+                        asset.contactInfo.website.map((url, index) => (
+                            <React.Fragment key={index}>
+                                <a href={url.trim()} target="_blank" rel="noopener noreferrer">{url.trim()}</a>
+                                {index < asset.contactInfo.website.length - 1 ? ', ' : ''}
+                            </React.Fragment>
+                        ))
+                    ) : 'No website provided'}
                     </p>
+
                 </div>
                 <p><strong>Volunteer Opportunities:</strong> {asset.isVolunOpp ? asset.volunOppText : 'No volunteer opportunities'}</p>
                 <p><strong>Languages Offered:</strong> {asset.languagesOffered?.join(', ') || 'Not specified'}</p>
-                {asset.hasChildren && (
-                    <p><strong>Programs:</strong>
+
+                {asset.children && asset.children.length > 0 && (
+                    <p><strong>Programs: </strong>
                         {asset.children?.map((child, index) => (
                             <React.Fragment key={index}>
-                                <a onClick={() => handleChildAssetClick(child)} className="child-asset-link" style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}>
+                                <a onClick={() => handleChildAssetClick(child)} className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
                                     {child.name}
                                 </a>
                                 {index < asset.children.length - 1 ? ', ' : ''}
@@ -63,10 +101,16 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
                         )) || 'No child assets'}
                     </p>
                 )}
-
-                {asset.parentName && (
-                    <p><strong>Part of:</strong> {asset.parentName}</p>
+                {(asset.parentAssetName || asset.parentAssetDraftName) && (
+                    <p><strong>Part of: </strong>
+                            <React.Fragment >
+                                <a onClick={handleParentAssetClick} className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
+                                    {asset.parentAssetName} {asset.parentAssetDraftName}
+                                </a>
+                            </React.Fragment>
+                    </p>
                 )}
+
                 {asset.address.longitude && asset.address.latitude && (
                     <div className="overview-map-container">
                         <GoogleMapContainer
@@ -83,6 +127,15 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
                 <AssetOverview
                     asset={selectedChild}
                     onRequestClose={handleCloseChildModal}
+                    isLoaded={isLoaded}
+                    loadError={loadError}
+                />
+            )}
+
+            {selectedParent && (
+                <AssetOverview
+                    asset={selectedParent}
+                    onRequestClose={handleCloseParentModal}
                     isLoaded={isLoaded}
                     loadError={loadError}
                 />

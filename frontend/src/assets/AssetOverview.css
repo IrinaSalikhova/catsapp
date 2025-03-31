@@ -14,6 +14,10 @@
   .asset-overview-modal .asset-overview-modal {
     z-index: 1060; /* Increment z-index for nested modals */
 }
+
+.asset-overview-modal .asset-overview-modal .asset-overview-modal {
+  z-index: 1070; /* Increment z-index for nested modals */
+}
   
   .asset-overview-content {
     max-width: 1000px;
