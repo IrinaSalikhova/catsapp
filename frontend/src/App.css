@@ -1,121 +1,59 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  flex-direction: column;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: sans-serif;
+}
+
 #root {
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.app-content {
+  width: 100%;
+  flex: 1;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-/* Background overlay for modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  color: black;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it's above other content */
-}
-
-/* Modal content box */
-.login-form-modal {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 300px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  position: relative;
-}
-
-/* Close button style */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* Basic form styling */
-.login-form-modal input {
-  width: 100%;
-  padding: 8px;
-  margin: 10px 0;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.login-form-modal button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.login-form-modal button:hover {
-  background-color: #0056b3;
-}
-
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #282c34;
-  color: white;
-  padding: 1rem;
-  position: sticky;
-  top: 0;
   z-index: 1000;
+  overflow: auto;
+  text-align: left;
 }
 
-.header-buttons button {
-  margin-left: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #61dafb;
+
+.btn-primary {
+  display: inline-flex; /* Ensures content stays on one line */
+  align-items: center; /* Vertically centers text */
+  justify-content: center;
+  white-space: nowrap; /* Prevents text from wrapping */
+  width: auto; /* Adapts to content size */
+  min-width: max-content; /* Ensures minimum width matches content */
+  background-color: #09579d;
+  height: 45px;
+  color: #fff;
   border: none;
+  padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.header-buttons button:hover {
-  background-color: #21a1f1;
+.btn-primary:hover {
+  background-color: #009bef;
 }
-
-.app-content {
-  /* padding: 2rem; */
-}
-

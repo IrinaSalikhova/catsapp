@@ -24,6 +24,7 @@ const App = () => {
   const [isNewAssetModalVisible, setNewAssetModalVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState('');
+  const [token, setToken] = useState('');
   const [selectedAsset, setSelectedAsset] = useState(null);
 
   const { isLoaded, loadError } = useLoadScript({
@@ -39,13 +40,39 @@ const App = () => {
     if (token) {
       setIsLoggedIn(true);
       setUserRole(role || '');
+      setToken(token);
     }
   }, []);
 
 
+  useEffect(() => {
+    const inactivityTimeout = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+    let hiddenStartTime;
+
+    const handleVisibilityChange = () => {
+        if (document.hidden) {
+            hiddenStartTime = Date.now();
+        } else {
+            if (hiddenStartTime) {
+                const elapsedTime = Date.now() - hiddenStartTime;
+                if (elapsedTime > inactivityTimeout) {
+                    window.location.reload();
+                }
+                hiddenStartTime = null;
+            }
+        }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+}, []);
+  
 
   const toggleLoginModal = () => {
-    setLoginModalVisible(!isLoginModalVisible);  // Toggle modal visibility
+    setLoginModalVisible(!isLoginModalVisible);  
   };
 
   const toggleNewAssetModal = () => {
@@ -111,6 +138,7 @@ const App = () => {
             userRole={userRole}
             isLoaded={isLoaded}
             loadError={loadError}
+            token={token}
           />
         )}
         {selectedAsset && (

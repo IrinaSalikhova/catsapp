@@ -1,16 +1,4 @@
 /* AddUserForm.css */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #b1b1b160;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure the modal appears above other content */
-}
 
 .add-user-form {
     border: 1px solid #ddd;
@@ -81,11 +69,14 @@
 
 /* Active button styling */
 .role-toggle button.active {
-    background: #007bff;
+    background: #009bef;
     color: white;
 }
 
 /* Hover effect */
 .role-toggle button:hover {
     background: #ddd;
+}
+.role-toggle button.active:hover {
+    background: #4b6791;
 }

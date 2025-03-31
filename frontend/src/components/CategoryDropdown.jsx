@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import '../assets/CategoryDropdown.css';
 
-const CategoryDropdown = ({ onCategorySelect }) => {
+const CategoryDropdown = ({ onCategorySelect, initialSelectedCategoryIds = [] }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -10,18 +10,47 @@ const CategoryDropdown = ({ onCategorySelect }) => {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
+    let categoryTreeFetched;
     const fetchCategories = async () => {
+      const cachedCategories = sessionStorage.getItem("cachedCategories");
+      const expirationTime = 60 * 60 * 24000; // 24 hour
+      if (cachedCategories) {
+        const { categories, timestamp } = JSON.parse(cachedCategories);
+        if (Date.now() - timestamp < expirationTime) {
+          setCategories(categories);
+          categoryTreeFetched = categories;
+          return;
+        }
+      }
       try {
         const response = await fetch('/api/categories/tree');
         if (response.ok) {
           const data = await response.json();
-          setCategories(data.categoryTree);
+          categoryTreeFetched = data.categoryTree;
+          setCategories(categoryTreeFetched);
+          sessionStorage.setItem("cachedCategories", JSON.stringify({
+            categories: categoryTreeFetched,
+            timestamp: Date.now(),
+          }));
         }
       } catch (err) {
         console.error('Error fetching categories', err);
       }
     };
     fetchCategories();
+
+    const flatCategories = [];
+    categoryTreeFetched.forEach(category => {
+      flatCategories.push(category);
+      if (category.subcategories && category.subcategories.length > 0) {
+        category.subcategories.forEach(subcategory => {
+          flatCategories.push(subcategory);
+        });
+      }
+    }); 
+    const preselected = flatCategories.filter(category => initialSelectedCategoryIds.includes(category.id));
+
+    setSelectedCategories(preselected);
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -67,10 +96,16 @@ const CategoryDropdown = ({ onCategorySelect }) => {
 
   return (
     <div className="dropdown-container" ref={dropdownRef}>
-      <button type="button" className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
-        Select a category
 
-      </button>
+      <div className="dropdown-header">
+        <button type="button" className="dropdown-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
+          {selectedCategories.length > 0 ? selectedCategories.map(c => c.name).join(', ') : 'Select a category'}
+        </button>
+        {selectedCategories.length > 0 && (
+          <button className="clear-button" onClick={clearSelection}>X</button>
+        )}
+      </div>
+      
       {dropdownOpen && (
         <div className="dropdown-content">
           {categories.map((category) => (
@@ -104,14 +139,6 @@ const CategoryDropdown = ({ onCategorySelect }) => {
           ))}
         </div>
       )}
-          <div className="selected-categories" style={{ width: '200%', display: 'flex', flexWrap: 'wrap', gap: '5px', padding: '5px' }}>
-          {selectedCategories.map((category) => (
-            <span key={category.id} className="selected-category">{category.name}, </span>
-          ))}
-        </div>
-                {selectedCategories.length > 0 && (
-          <button className="clear-button" onClick={clearSelection}>Clear Selection</button>
-        )}
         </div>
   );
 };

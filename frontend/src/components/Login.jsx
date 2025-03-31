@@ -50,7 +50,6 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
         }
 
         try {
-            console.log('Sending password reset email...');
             const response = await fetch('/api/users/sendpasswordreset', {
                 method: 'POST',
                 headers: {
@@ -72,15 +71,15 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
     };
 
     return (
-        <div className="modal-overlay-login">
+        <div className="modal-overlay">
             <div className="login-form-modal">
-                <button className="close-btn" onClick={onClose}>X</button>
+                <button className="close-button" onClick={onClose}>X</button>
                 <h2>{isForgotPassword ? 'Reset Password' : 'Login'}</h2>
                 <form onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit}>
                     <div>
                         <label className='login-label' htmlFor="email">Email</label>
                         <input className='login-input-email'
-                            type="login"
+                            type="email"
                             id="email"
                             name="email"
                             value={email}
@@ -101,7 +100,7 @@ const Login = ({ onClose, setIsLoggedIn, setUserRole }) => {
                             />
                         </div>
                     )}
-                    <button className='login-button' type="login">
+                    <button className='btn-primary' type="login">
                         {isForgotPassword ? 'Send Reset Link' : 'Submit'}
                     </button>
                 </form>
