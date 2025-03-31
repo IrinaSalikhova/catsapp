@@ -45,9 +45,34 @@ const App = () => {
   }, []);
 
 
+  useEffect(() => {
+    const inactivityTimeout = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+    let hiddenStartTime;
+
+    const handleVisibilityChange = () => {
+        if (document.hidden) {
+            hiddenStartTime = Date.now();
+        } else {
+            if (hiddenStartTime) {
+                const elapsedTime = Date.now() - hiddenStartTime;
+                if (elapsedTime > inactivityTimeout) {
+                    window.location.reload();
+                }
+                hiddenStartTime = null;
+            }
+        }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+}, []);
+  
 
   const toggleLoginModal = () => {
-    setLoginModalVisible(!isLoginModalVisible);  // Toggle modal visibility
+    setLoginModalVisible(!isLoginModalVisible);  
   };
 
   const toggleNewAssetModal = () => {

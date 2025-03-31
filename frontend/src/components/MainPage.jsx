@@ -21,7 +21,6 @@ const MainPage = ({ isLoaded, loadError }) => {
   const handleCategorySelect = (categories) => {
     const categoryIds = categories.map(category => category.id);
     setSelectedCategories(categoryIds);
-    console.log('Selected category IDs:', categoryIds);
   };
 
   useEffect(() => {
@@ -118,6 +117,9 @@ const MainPage = ({ isLoaded, loadError }) => {
                     <div className="listing-title">{asset.name}</div>
                     <div className="listing-details">{asset.categoryNames.join(', ')}</div>
                   </div>
+                  {asset.children && asset.children.length > 0 && (
+          <div className="children-badge">{asset.children.length}</div>
+        )}
                 </div>
               ))
             )}

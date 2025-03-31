@@ -70,7 +70,6 @@ const AddAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
   useEffect(() => {
     if (!isNew) {  
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, assetType, formData }));
-      console.log("Saving to localStorage:", formData); // Debugging log
   }
   }, [step, assetType, formData]);
 
@@ -212,7 +211,7 @@ const AddAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
     e.preventDefault();
 
     if (userRole === 'navigator') {
-      console.log("Navigator Submitted Form Data:", formData);
+
       if (editingMode) {
         try {
           // TODO: add editing of existing asset to draft (asset id should be populated)
@@ -238,7 +237,6 @@ const AddAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
           throw new Error(result.message || "Failed to submit asset data");
         }
     
-        console.log("Success:", result.message);
         setSubmissionStatus({ success: true, message: result.message });
         setStep(4);
     
@@ -254,7 +252,6 @@ const AddAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
 
 
     } else {
-      console.log("Form Data to submit:", formData);
       if (editingMode) {
         try {
           // TODO: add editing of existing asset to draft (asset id should be populated)
@@ -279,7 +276,6 @@ const AddAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
           throw new Error(result.message || "Failed to submit asset data");
         }
     
-        console.log("Success:", result.message);
         setSubmissionStatus({ success: true, message: result.message });
         setStep(4);
     

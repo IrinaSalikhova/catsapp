@@ -127,7 +127,7 @@ router.post('/addNewAsset', authenticateJWT, userRateLimiter, async (req, res) =
             return res.status(403).json({ message: 'Access denied: Navigators only' });
         }
         const { newAssetData } = req.body;
-
+        
         const createdBy = req.userFromToken.id;
 
         const hasChildren = newAssetData.length > 1;
@@ -138,6 +138,9 @@ router.post('/addNewAsset', authenticateJWT, userRateLimiter, async (req, res) =
         }
 
         parentData.hasChildren = hasChildren;
+        delete parentData.id;
+        delete parentData.assetId;
+        delete parentData.createdEmail;
         
         const parentAsset = new Asset({ data: parentData });
         await parentAsset.save(createdBy);
@@ -148,6 +151,9 @@ router.post('/addNewAsset', authenticateJWT, userRateLimiter, async (req, res) =
                 parentAssetId: parentAsset.id, 
                 parentAssetName: parentAsset.name 
             };
+            delete childData.id;
+            delete childData.assetId;
+            delete childData.createdEmail;
             const childAsset = new Asset({ data: childData });
             return childAsset.save(createdBy);
         }));
@@ -566,7 +572,6 @@ router.post('/findAssets', userRateLimiter, async (req, res) => {
         const parsedCategoryIds = Array.isArray(categoryIds) ? categoryIds : [];
         const parsedIsVolunOpp = isVolunOpp === true;
         const parsedSearchPhrase = searchPhrase ? searchPhrase.trim() : "";
-        console.log(parsedCategoryIds, parsedIsVolunOpp, parsedSearchPhrase);
         if (parsedCategoryIds.length === 0 && !parsedIsVolunOpp && parsedSearchPhrase === "") {
             const allAssets = await Asset.getAllEnabledAssets();
             return res.status(200).json({ assets: allAssets });

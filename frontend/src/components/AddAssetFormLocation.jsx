@@ -12,7 +12,7 @@ const center = { lat: 45.383476, lng: -75.735704 };
 
 const cchcPolygonCoords = [
   { lat: 45.379200, lng: -75.750300 }, // Clyde & Carling
-  { lat: 45.390954, lng: -75.723079 }, // Carling & Fisher
+  { lat: 45.389241, lng: -75.726979 }, // Carling & Fisher
   { lat: 45.376876, lng: -75.719600 }, // Fisher & Experimental Farm Pathway
   { lat: 45.376156, lng: -75.721184 },
   { lat: 45.377579, lng: -75.722851 },

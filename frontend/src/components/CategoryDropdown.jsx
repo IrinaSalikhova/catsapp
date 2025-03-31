@@ -49,9 +49,7 @@ const CategoryDropdown = ({ onCategorySelect, initialSelectedCategoryIds = [] })
       }
     }); 
     const preselected = flatCategories.filter(category => initialSelectedCategoryIds.includes(category.id));
-    console.log("categoryTreeFetched", categoryTreeFetched);
-    console.log("initialSelectedCategoryIds", initialSelectedCategoryIds);
-    console.log("preselected", preselected);
+
     setSelectedCategories(preselected);
 
     document.addEventListener('mousedown', handleClickOutside);

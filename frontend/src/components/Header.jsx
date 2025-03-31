@@ -16,19 +16,19 @@ const Header = ({ isLoggedIn, userRole, onLogout, toggleLoginModal, toggleNewAss
     </div>
       <div className="auth-buttons">
         {location.pathname !== '/' && (
-          <button className='main-page-button' onClick={() => navigate('/')}>Go to Main Page</button>
+          <button className='btn-primary' onClick={() => navigate('/')}>Go to Main Page</button>
         )}
-        {!isLoggedIn && <button className='login-button' onClick={toggleLoginModal}>Login</button>}
+        {!isLoggedIn && <button className='btn-primary' onClick={toggleLoginModal}>Login</button>}
         {isLoggedIn && userRole === 'admin' && location.pathname !== '/adminpage' && (
-          <button className='admin-page-button' onClick={() => navigate('/adminpage')}>Admin Page</button>
+          <button className='btn-primary' onClick={() => navigate('/adminpage')}>Admin Page</button>
         )}
-        {isLoggedIn && userRole === 'navigator' && (
-          <button className='navigator-page-button' onClick={() => navigate('/navigatorpage')}>
+        {isLoggedIn && userRole === 'navigator' && location.pathname !== '/navigatorpage' && (
+          <button className='btn-primary' onClick={() => navigate('/navigatorpage')}>
             Navigator Page
           </button>
         )}
-        {isLoggedIn && <button className= 'logout-button' onClick={onLogout}>Logout</button>}
-        <button className='add-asset-button' onClick={toggleNewAssetModal}>Add New Asset</button>
+        {isLoggedIn && <button className= 'btn-primary' onClick={onLogout}>Logout</button>}
+        <button className='btn-primary' onClick={toggleNewAssetModal}>Add New Asset</button>
       </div>
     </header>
   );

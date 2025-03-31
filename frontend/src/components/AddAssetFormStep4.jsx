@@ -24,9 +24,9 @@ const AddAssetFormStep4 = ({onClose, resetForm, isNavigator, submissionStatus, s
       </label>
 
       {submissionStatus.success ? (
-        <button type="button" onClick={handleClose}>Close</button>
+        <button className='btn-primary' type="button" onClick={handleClose}>Close</button>
       ) : (
-        <button type="button" onClick={() => setStep(2)}>Go back to form</button>
+        <button className='btn-primary' type="button" onClick={() => setStep(2)}>Go back to form</button>
       )}
     </div>
   );

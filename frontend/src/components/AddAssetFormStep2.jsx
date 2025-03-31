@@ -170,7 +170,7 @@ const AddAssetFormStep2 = ({
           )}
 
           {assetType.multiple && index === formData.length - 1 && (
-            <button type="button" onClick={handleAddService} disabled={!allFormsValid} className={!allFormsValid ? "disabled-button" : ""}>
+            <button type="button" onClick={handleAddService} disabled={!allFormsValid} className={!allFormsValid ? "disabled-button" : "btn-primary"}>
               + Add another service or program
             </button>
           )}
@@ -184,12 +184,12 @@ const AddAssetFormStep2 = ({
       type="button" 
       onClick={(e) => isNavigator ? handleFormSubmit(e) : setStep(3)}
       disabled={!allFormsValid} 
-      className={!allFormsValid ? "disabled-button" : ""}>
+      className={!allFormsValid ? "disabled-button" : 'btn-primary'}>
         {isNavigator ? "Submit" : "Proceed"}
       </button>
 
       
-      <button type="button" onClick={handleClearForm}>
+      <button className='btn-primary' type="button" onClick={handleClearForm}>
         Clear
       </button>
     </div>
