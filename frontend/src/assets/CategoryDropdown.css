@@ -1,10 +1,22 @@
 /* CategoryDropdown.css */
 .dropdown-container {
-    width: 300px;
+    width: 600px;
     position: relative;
 }
 
+.dropdown-header {
+    display: flex; /* Added to align items horizontally */
+    align-items: center; /* Vertically align items */
+}
+
+.clear-button {
+    background-color: #f44336;
+    color: white;
+    height: 50px;
+  }
+
 .dropdown-button {
+    flex-grow: 1;
     width: 100%;
     padding: 10px;
     background-color: #09579d;
@@ -13,6 +25,7 @@
     cursor: pointer;
     text-align: left;
     border-radius: 5px;
+    height: 50px;
 }
 
 .dropdown-button:hover {
@@ -53,7 +66,11 @@
 }
 
 .selected {
-    background-color:#009BEF;
+    background-color:#09579d;
+}
+
+.category-item.selected:hover {
+    background-color: #4b6791;
 }
 
 .expand-arrow {
@@ -86,3 +103,8 @@
     background-color: #f1f1f1;
     cursor: pointer;
   }
+
+  
+  .subcategory-item.selected:hover {
+    background-color: #4b6791;
+}

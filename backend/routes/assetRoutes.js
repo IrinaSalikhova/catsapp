@@ -126,23 +126,21 @@ router.post('/addNewAsset', authenticateJWT, userRateLimiter, async (req, res) =
         if (req.userFromToken.role !== 'navigator') {
             return res.status(403).json({ message: 'Access denied: Navigators only' });
         }
-        
         const { newAssetData } = req.body;
-
-        if (!parentData.name || !Array.isArray(parentData.categoryIds) || parentData.categoryIds.length === 0) {
-            return res.status(400).json({ message: 'Missing or invalid required fields' });
-        }
-
+        
         const createdBy = req.userFromToken.id;
 
         const hasChildren = newAssetData.length > 1;
         const [parentData, ...children] = newAssetData;
 
-        if (!parentData.name || !parentData.categoryIds) {
-            return res.status(400).json({ message: 'Missing required fields' });
+        if (!parentData.name || !Array.isArray(parentData.categoryIds) || parentData.categoryIds.length === 0) {
+            return res.status(400).json({ message: 'Missing or invalid required fields' });
         }
 
         parentData.hasChildren = hasChildren;
+        delete parentData.id;
+        delete parentData.assetId;
+        delete parentData.createdEmail;
         
         const parentAsset = new Asset({ data: parentData });
         await parentAsset.save(createdBy);
@@ -153,6 +151,9 @@ router.post('/addNewAsset', authenticateJWT, userRateLimiter, async (req, res) =
                 parentAssetId: parentAsset.id, 
                 parentAssetName: parentAsset.name 
             };
+            delete childData.id;
+            delete childData.assetId;
+            delete childData.createdEmail;
             const childAsset = new Asset({ data: childData });
             return childAsset.save(createdBy);
         }));
@@ -245,10 +246,9 @@ router.post('/reviewMultilevelAsset', authenticateJWT, userRateLimiter, async (r
         if (!parentAssetDraftTree) {
             return res.status(404).json({ message: 'Asset draft not found' });
         }
-
+        const parentAssetDraft = await AssetDraft.getById(parentAssetDraftTree.id);
         const hasChildren = parentAssetDraftTree.children.length > 0;
-        const { children, ...parentAssetDraft } = parentAssetDraftTree;
-        
+        const children = parentAssetDraftTree.children;
         let parentAsset;
         
         if (reviewDecision === 'approved') {
@@ -265,7 +265,7 @@ router.post('/reviewMultilevelAsset', authenticateJWT, userRateLimiter, async (r
                 }
             }
             else {
-                parentAsset = new Asset({data: parentAssetDraft});
+                parentAsset = new Asset({data: parentAssetDraft.toPlainData()});
                 parentAsset.hasChildren = hasChildren;
                 await parentAsset.save(createdBy);
             }
@@ -569,10 +569,9 @@ router.post('/findAssets', userRateLimiter, async (req, res) => {
     try {
         const { categoryIds, isVolunOpp, searchPhrase } = req.body;
         
-        const parsedCategoryIds = categoryIds ? categoryIds : [];
+        const parsedCategoryIds = Array.isArray(categoryIds) ? categoryIds : [];
         const parsedIsVolunOpp = isVolunOpp === true;
         const parsedSearchPhrase = searchPhrase ? searchPhrase.trim() : "";
-        console.log(parsedCategoryIds, parsedIsVolunOpp, parsedSearchPhrase);
         if (parsedCategoryIds.length === 0 && !parsedIsVolunOpp && parsedSearchPhrase === "") {
             const allAssets = await Asset.getAllEnabledAssets();
             return res.status(200).json({ assets: allAssets });

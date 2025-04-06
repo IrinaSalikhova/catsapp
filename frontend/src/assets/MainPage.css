@@ -1,7 +1,4 @@
-body {
-    font-family: sans-serif;
 
-}
 .main-selection {
     font-family: sans-serif;
     display: flex;
@@ -54,7 +51,7 @@ body {
   }
   
   .search-button:hover {
-    background-color: #009BEF;
+    background-color: #009bef;
   }
   
   .filter-buttons {
@@ -81,7 +78,7 @@ body {
   }
   
   .filter-button.active {
-    background-color: #007bff ;
+    background-color: #009bef ;
     color: white;
   }
   
@@ -119,7 +116,24 @@ body {
     margin-bottom: 15px;
 }
 
+.children-badge {
+  background-color: #09579d;  
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto; 
+}
+
 .listing {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     border: 0.5px solid #ccc;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);

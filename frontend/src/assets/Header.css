@@ -1,41 +1,32 @@
 .app-header {
-    min-width: 1200px;
+    width: 100%;
+    max-width: 100%;
     color: #09579d;
     font-family: sans-serif;
     position: static;
     display: flex;
     height: 80px;
     justify-content: center;
-    gap: 700px;
-    padding: 5px;
+    justify-content: space-between;
+    padding: 5px 10px;
     align-items: center;
+    padding-right: 40px;
     background-color: #ffffff; /* Light background color */
+    top: 0;
+    z-index: 1000;
 }
 
 .logo img {
     width: 100px; /* Logo size */
     height: auto;
-    margin-left: 10%;
+    margin-left: 10px;
 }
 
 .auth-buttons {
     display: flex;
     gap: 5px; /* Space between buttons */
-}
-
-.main-page-button, .admin-page-button, .navigator-page-button, .add-asset-button, .logout-button, .login-button {
-    width: fit-content;
-    background-color:  #09579d;
-    color: white; /* Text color */
-    border: none; /* Remove border */
-    padding: 10px 20px; /* Padding for button */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
-}
-
-.main-page-button:hover, .admin-page-button:hover, .navigator-page-button:hover, .add-asset-button:hover, .login-button:hover, .logout-button:hover {
-    background-color: #009BEF; /* Darker shade on hover */
+    margin-right: 30px;
+    justify-content: flex-end;
 }
 
 
