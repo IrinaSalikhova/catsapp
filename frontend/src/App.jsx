@@ -92,7 +92,11 @@ const App = () => {
 
           <Route
             path="/navigatorpage"
-            element={<NavigatorPage isLoaded={isLoaded} loadError={loadError} />}
+            element={<NavigatorPage 
+            isLoaded={isLoaded} 
+            loadError={loadError}             
+            isLoggedIn={isLoggedIn}
+            userRole={userRole} />}
           />
         </Routes>
 
