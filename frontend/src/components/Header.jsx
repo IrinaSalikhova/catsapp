@@ -9,11 +9,20 @@ const Header = ({ isLoggedIn, userRole, onLogout, toggleLoginModal, toggleNewAss
   const location = useLocation();
   const navigate = useNavigate();
 
+  const handleLogoClick = () => {
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+  };
+
+console.log("Is logged in:", isLoggedIn);
+console.log("User role:", userRole);
+
   return (
     <header className="app-header">
-      <div className="logo">
-        <img src={cchclogo} alt="CCHC Logo" style={{width: '400px', height:'auto'}}/>
-    </div>
+           <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
+        <img src={cchclogo} alt="CCHC Logo" style={{ width: '400px', height: 'auto' }}/>
+      </div>
       <div className="auth-buttons">
         {location.pathname !== '/' && (
           <button className='btn-primary' onClick={() => navigate('/')}>Go to Main Page</button>
