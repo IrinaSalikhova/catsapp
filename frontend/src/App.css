@@ -119,3 +119,10 @@
   /* padding: 2rem; */
 }
 
+
+body, html {
+  background-color: #ffffff; /* white background */
+  color: #333333; /* darker text for readability */
+  font-family: Arial, sans-serif; /* example font */
+  zoom: 90%;
+}

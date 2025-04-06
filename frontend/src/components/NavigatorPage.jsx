@@ -79,6 +79,16 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
         setSelectedAsset(null);
     };
 
+    const handleApprove = () => {
+    };
+
+    const handleReject = () => {
+    };
+
+    const handleEdit = () => { 
+    }
+
+
     if (error) return <div>Error: {error}</div>;
     if (loading) return <div>Loading...</div>;
 
@@ -97,9 +107,16 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                         <h3>Draft Assets</h3>
                         <div className="nav-list">
                             {assetDrafts.map(asset => (
-                                <div key={asset.id} onClick={() => openModal(asset)} className="nav-asset-item">
+                                <div key={asset.id} className="nav-asset-item">
+                                <div onClick={() => openModal(asset)}>
                                     <strong>{asset.name}</strong> {asset.id}
                                 </div>
+                                <div className="asset-actions">
+                                    <button className='approve-button' onClick={ handleApprove(asset) }>Approve</button>
+                                    <button className='reject-button' onClick={ handleReject(asset) }>Reject</button>
+                                    <button className='edit-button' onClick={ handleEdit(asset) }>Edit</button>
+                                </div>
+                            </div>
                             ))}
                         </div>
                     </div>
@@ -117,7 +134,8 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                     asset={selectedAsset} 
                     onRequestClose={closeModal} 
                     isLoaded={isLoaded}
-                    loadError={loadError} />}
+                    loadError={loadError} 
+                    />}
                 </div>
             </div>
         </div>

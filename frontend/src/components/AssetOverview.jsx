@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../assets/AssetOverview.css';
 import GoogleMapContainer from "./GoogleMapContainer";
 
-const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
+const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, loadError }) => {
     const [selectedChild, setSelectedChild] = useState(null);
     const [selectedParent, setSelectedParent] = useState(null);
 
@@ -15,35 +15,75 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
         setSelectedChild(null);
     };
 
-     const handleParentAssetClick = async () => {
-         const parentId = asset.parentAssetId || asset.parentAssetDraftId;
-    //     console.log("Opening parent asset details for ID:", parentId);
-    
-    //     try {
-    //         const response = await fetch("/api/assets/getAsset", {
-    //             method: "GET",
-    //             headers: { 
-    //                 'Content-Type': 'application/json',
-    //                 'assetid': parentId
-    //             }
-    //         });
-    
-    //         if (!response.ok) {
-    //             throw new Error("Failed to fetch asset details");
-    //         }
-    
-    //         const data = await response.json();
-    //         setSelectedParent(data);
-    //     } catch (error) {
-    //         console.error("Error fetching parent asset details:", error);
-    //     }
-     };
-    
-    
+
+    const handleParentAssetClick = async () => {
+        const parentId = asset.parentAssetId || asset.parentAssetDraftId;
+        console.log("Opening parent asset details for ID:", parentId);
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('User not authenticated');
+            window.location.href = '/login';
+            return;
+        }
+
+        try {
+            let response;
+            if (asset.parentAssetId) {
+                // Fetch the regular asset if parentAssetId is available
+                response = await fetch(`/api/assets/getAsset`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'assetid': parentId
+                    }
+                });
+            } else if (asset.parentAssetDraftId) {
+                // Fetch the draft asset if parentAssetDraftId is available
+                response = await fetch(`/api/assets/getAssetDraft`, {
+                    method: "GET",
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'draftid': parentId
+                    }
+                });
+            }
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch asset details");
+            }
+
+            const parentData = await response.json();
+            console.log("Fetched parent asset details:", parentData);
+
+            // Adjust the condition to check for the existence of specific object keys
+            if (parentData && 'asset' in parentData && parentData.asset) {
+                setSelectedParent(parentData.asset);
+            } else if (parentData && 'assetDraft' in parentData && parentData.assetDraft) {
+                setSelectedParent(parentData.assetDraft);
+            } else {
+                console.error("No valid data found in response:", parentData);
+                // Optionally set some default state or handle the error visually
+            }
+
+        } catch (error) {
+            console.error("Error fetching parent asset details:", error);
+        }
+    };
 
     const handleCloseParentModal = () => {
         setSelectedParent(null);
     };
+
+    const handleEditAsset = () => {
+    };
+
+    const handleDeleteAsset = () => {
+    };
+
+    const handleSuggestEdit = () => { 
+    }
 
     const formatPhoneNumber = (input) => {
         const digits = input.replace(/\D/g, ""); // Remove non-numeric characters
@@ -84,11 +124,14 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
                         ))
                     ) : 'No website provided'}
                     </p>
-
                 </div>
+                <p><strong>Transportation:</strong> {asset.address.transportation || 'No transportation info'}</p>
+                <p><strong>Format:</strong> {asset.format || 'No format info'}</p>
                 <p><strong>Volunteer Opportunities:</strong> {asset.isVolunOpp ? asset.volunOppText : 'No volunteer opportunities'}</p>
                 <p><strong>Languages Offered:</strong> {asset.languagesOffered?.join(', ') || 'Not specified'}</p>
-
+                {isLoggedIn && userRole === 'navigator' && (
+                    <p><strong>Social Worker Only Note:</strong> {asset.socialWorkerOnlyNote || 'No specific notes'}</p>
+                )}
                 {asset.children && asset.children.length > 0 && (
                     <p><strong>Programs: </strong>
                         {asset.children?.map((child, index) => (
@@ -98,16 +141,17 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
                                 </a>
                                 {index < asset.children.length - 1 ? ', ' : ''}
                             </React.Fragment>
-                        )) || 'No child assets'}
+                        ))}
                     </p>
                 )}
                 {(asset.parentAssetName || asset.parentAssetDraftName) && (
                     <p><strong>Part of: </strong>
-                            <React.Fragment >
-                                <a onClick={handleParentAssetClick} className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
-                                    {asset.parentAssetName} {asset.parentAssetDraftName}
-                                </a>
-                            </React.Fragment>
+                        <React.Fragment >
+                            <a onClick={handleParentAssetClick} className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
+                                {asset.parentAssetName} {asset.parentAssetDraftName}
+                            </a>
+
+                        </React.Fragment>
                     </p>
                 )}
 
@@ -121,6 +165,14 @@ const AssetOverview = ({ asset, onRequestClose, isLoaded, loadError }) => {
                         />
                     </div>
                 )}
+
+                {isLoggedIn && userRole === 'navigator' && (
+                    <>
+                        <button className='add-asset-button' onClick={handleEditAsset}>Edit Asset</button>
+                        <button className='add-asset-button' onClick={handleDeleteAsset}>Delete Asset</button>
+                    </>
+                )}
+                <button className='add-asset-button' onClick={handleSuggestEdit}>Suggest Edit</button>
             </div>
             {/* Recursive modal for child asset */}
             {selectedChild && (

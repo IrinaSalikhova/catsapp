@@ -31,11 +31,10 @@ const App = () => {
     libraries,
   });
 
-
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
+    
     if (token) {
       setIsLoggedIn(true);
       setUserRole(role || '');
@@ -119,6 +118,8 @@ const App = () => {
             onRequestClose={closeModal}
             isLoaded={isLoaded}
             loadError={loadError}
+            isLoggedIn={isLoggedIn}
+            userRole={userRole}
           />
         )}
 
