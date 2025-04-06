@@ -74,7 +74,12 @@ const App = () => {
           <Route
             path="/"
             element={
-              <MainPage isLoaded={isLoaded} loadError={loadError} />
+              <MainPage 
+              isLoaded={isLoaded} 
+              loadError={loadError} 
+              isLoggedIn={isLoggedIn}
+              userRole={userRole}
+              />
             }
           >
           </Route>
