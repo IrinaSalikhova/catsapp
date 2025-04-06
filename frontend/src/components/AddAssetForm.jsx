@@ -8,7 +8,7 @@ import AddAssetFormStep4 from "./AddAssetFormStep4";
 
 const STORAGE_KEY = "assetFormData";
 
-const NewAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadError }) => {
+const AddAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadError, token }) => {
   
   const [isNew, setIsNew] = useState(true); 
   const [editingMode, setEditingMode] = useState(false);
@@ -70,7 +70,6 @@ const NewAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
   useEffect(() => {
     if (!isNew) {  
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, assetType, formData }));
-      console.log("Saving to localStorage:", formData); // Debugging log
   }
   }, [step, assetType, formData]);
 
@@ -212,15 +211,47 @@ const NewAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
     e.preventDefault();
 
     if (userRole === 'navigator') {
-      console.log("Navigator Submitted Form Data:", formData);
-      // here will be other routes later (for new and editing)
+
+      if (editingMode) {
+        try {
+          // TODO: add editing of existing asset to draft (asset id should be populated)
+          console.log("edited asset Data to submit:", formData);
+        } catch (error) {
+          console.error("Error submitting asset:", error.message);
+          alert("Error submitting asset: " + error.message);
+        }
+      } else {
+      try {
+        const response = await fetch("/api/assets/addNewAsset", {
+          method: "POST",
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ newAssetData: formData }),
+        });
+    
+        const result = await response.json();
+    
+        if (!response.ok) {
+          throw new Error(result.message || "Failed to submit asset data");
+        }
+    
+        setSubmissionStatus({ success: true, message: result.message });
+        setStep(4);
+    
+      } catch (error) {
+        console.error("Error submitting asset:", error.message);
+        setSubmissionStatus({ success: false, message: error.message });
+        setStep(4);
+       } 
+      }
 
 
 
 
 
     } else {
-      console.log("Form Data to submit:", formData);
       if (editingMode) {
         try {
           // TODO: add editing of existing asset to draft (asset id should be populated)
@@ -245,7 +276,6 @@ const NewAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
           throw new Error(result.message || "Failed to submit asset data");
         }
     
-        console.log("Success:", result.message);
         setSubmissionStatus({ success: true, message: result.message });
         setStep(4);
     
@@ -258,7 +288,7 @@ const NewAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
     }
     
 
-    return true; // add return !
+    return true; 
   };
 
   // TODO: add back onhovers spans!
@@ -328,4 +358,4 @@ const NewAssetForm = ({ onClose, existingAssetData, userRole, isLoaded, loadErro
   );
 };
 
-export default NewAssetForm;
+export default AddAssetForm;

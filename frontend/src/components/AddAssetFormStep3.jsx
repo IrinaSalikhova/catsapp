@@ -38,7 +38,7 @@ const AddAssetFormStep3 = ({ handleEmailEntered, handleSubmit }) => {
                     />
                   </div>
       
-      <button type="button" 
+      <button className='btn-primary' type="button" 
       onClick={(e) => handleFormSubmit(e)}>
         Submit</button>
     </div>

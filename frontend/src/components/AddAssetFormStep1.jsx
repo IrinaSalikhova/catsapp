@@ -48,7 +48,7 @@ const AddAssetFormStep1 = ({ assetType, handleAssetTypeSelection, setStep }) => 
         </div>
       </div>
 
-      <button type="button" onClick={() => setStep(2)}>Proceed</button>
+      <button className='btn-primary' type="button" onClick={() => setStep(2)}>Proceed</button>
     </div>
   );
 };

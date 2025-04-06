@@ -580,7 +580,6 @@ class Asset {
                     GROUP BY asset.id;`;
             }
 
-            console.log("Final SQL Query:", sql);
             const [rows] = await connection.query(sql, params);
 
             const assets = await Promise.all(rows.map(async row => {

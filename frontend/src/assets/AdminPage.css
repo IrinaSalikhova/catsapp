@@ -1,9 +1,5 @@
 /* AdminPage.css */
 
-body {
-    font-family: Arial, sans-serif;
-}
-
 .admin-page {
     padding: 20px;
     text-align: center;
@@ -62,7 +58,7 @@ body {
 .button-container {
     text-align: right;
     white-space: nowrap;
-    align-items: center;;
+    align-items: center;
     justify-content: center;
 }
 

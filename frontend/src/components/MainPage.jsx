@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import CategoryDropdown from './CategoryDropdown';
 import AssetOverview from './AssetOverview';
 import '../assets/MainPage.css';
@@ -6,7 +6,9 @@ import GoogleMapContainer from "./GoogleMapContainer";
 import searchIcon from "/search.png";
 
 
+
 const MainPage = ({ userRole,isLoaded, loadError }) => {
+
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isVolunOpp, setIsVolunOpp] = useState(false);
   const [searchPhrase, setSearchPhrase] = useState("");
@@ -20,7 +22,6 @@ const MainPage = ({ userRole,isLoaded, loadError }) => {
   const handleCategorySelect = (categories) => {
     const categoryIds = categories.map(category => category.id);
     setSelectedCategories(categoryIds);
-    console.log('Selected category IDs:', categoryIds);
   };
 
   useEffect(() => {
@@ -73,11 +74,6 @@ const MainPage = ({ userRole,isLoaded, loadError }) => {
     setSearchPhrase(searchInput);
   };
 
-  const memoizedMap = useMemo(() => (
-    <GoogleMapContainer isLoaded={isLoaded} loadError={loadError} />
-  ), [isLoaded, loadError]);
-
-
   if (error) return <div className="error-message">{error}</div>;
 
   return (
@@ -122,6 +118,9 @@ const MainPage = ({ userRole,isLoaded, loadError }) => {
                     <div className="listing-title">{asset.name}</div>
                     <div className="listing-details">{asset.categoryNames.join(', ')}</div>
                   </div>
+                  {asset.children && asset.children.length > 0 && (
+          <div className="children-badge">{asset.children.length}</div>
+        )}
                 </div>
               ))
             )}
@@ -134,7 +133,7 @@ const MainPage = ({ userRole,isLoaded, loadError }) => {
           </div>
         </div>
         <div className="mapcontainer">
-          {memoizedMap}
+         <GoogleMapContainer isLoaded={isLoaded} loadError={loadError} assets={assets} />
         </div>
       </div>
     </div>
