@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../assets/AssetOverview.css';
 import GoogleMapContainer from "./GoogleMapContainer";
 
-const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, loadError }) => {
+const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError }) => {
     const [selectedChild, setSelectedChild] = useState(null);
     const [selectedParent, setSelectedParent] = useState(null);
 
@@ -129,7 +129,7 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
                 <p><strong>Format:</strong> {asset.format || 'No format info'}</p>
                 <p><strong>Volunteer Opportunities:</strong> {asset.isVolunOpp ? asset.volunOppText : 'No volunteer opportunities'}</p>
                 <p><strong>Languages Offered:</strong> {asset.languagesOffered?.join(', ') || 'Not specified'}</p>
-                {isLoggedIn && userRole === 'navigator' && (
+                {userRole === 'navigator' && (
                     <p><strong>Social Worker Only Note:</strong> {asset.socialWorkerOnlyNote || 'No specific notes'}</p>
                 )}
                 {asset.children && asset.children.length > 0 && (
@@ -166,7 +166,7 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
                     </div>
                 )}
 
-                {isLoggedIn && userRole === 'navigator' && (
+                {userRole === 'navigator' && (
                     <>
                         <button className='add-asset-button' onClick={handleEditAsset}>Edit Asset</button>
                         <button className='add-asset-button' onClick={handleDeleteAsset}>Delete Asset</button>

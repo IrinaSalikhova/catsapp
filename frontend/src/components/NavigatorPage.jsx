@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AssetOverview from './AssetOverview';
 import '../assets/NavigatorPage.css';
 
-const NavigatorPage = ({ isLoaded, loadError }) => {
+const NavigatorPage = ({ userRole, isLoaded, loadError }) => {
     const [activeSection, setActiveSection] = useState('notification');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAsset, setSelectedAsset] = useState(null);
@@ -134,7 +134,8 @@ const NavigatorPage = ({ isLoaded, loadError }) => {
                     asset={selectedAsset} 
                     onRequestClose={closeModal} 
                     isLoaded={isLoaded}
-                    loadError={loadError} 
+                    loadError={loadError}
+                    userRole={userRole} 
                     />}
                 </div>
             </div>
