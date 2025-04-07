@@ -134,18 +134,33 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
                 {isAuthenticated && (
                     <p><strong>Social Worker Only Note:</strong> {asset.socialWorkerOnlyNote || 'No specific notes'}</p>
                 )}
-                {asset.children && asset.children.length > 0 && (
-                    <p><strong>Programs: </strong>
-                        {asset.children?.map((child, index) => (
-                            <React.Fragment key={index}>
-                                <a onClick={() => handleChildAssetClick(child)} className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
-                                    {child.name}
-                                </a>
-                                {index < asset.children.length - 1 ? ', ' : ''}
-                            </React.Fragment>
+                {
+                    asset.children && asset.children.length > 0 ? (
+                        <p><strong>Programs: </strong>
+                            {asset.children.map((child, index) => (
+                                <React.Fragment key={index}>
+                                    <a onClick={() => handleChildAssetClick(child)} className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
+                                        {child.name}
+                                    </a>
+                                    {index < asset.children.length - 1 ? ', ' : ''}
+                                </React.Fragment>
+                            ))}
+                        </p>
+                    ) : (
+                        asset.childrenNames && (
+                            <p><strong>Programs: </strong>
+                                {asset.childrenNames.map((name, index) => (
+                                    <React.Fragment key={index}>
+                                        {/* onClick={() => handleChildAssetClick(name)} */}
+                                        <span className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
+                                            {name}
+                                        </span>
+                                        {index < asset.childrenNames.length - 1 ? ', ' : ''}
+                                    </React.Fragment>
+                                ))}
+                            </p>
                         ))}
-                    </p>
-                )}
+
                 {(asset.parentAssetName || asset.parentAssetDraftName) && (
                     <p><strong>Part of: </strong>
                         <React.Fragment >
