@@ -160,7 +160,6 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
                                 ))}
                             </p>
                         ))}
-
                 {(asset.parentAssetName || asset.parentAssetDraftName) && (
                     <p><strong>Part of: </strong>
                         <React.Fragment >
@@ -182,14 +181,17 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
                         />
                     </div>
                 )}
+                {
+                    isAuthenticated ? (
+                        <>
+                            <button className='add-asset-button' onClick={handleEditAsset}>Edit Asset</button>
+                            <button className='add-asset-button' onClick={handleDeleteAsset}>Delete Asset</button>
+                        </>
+                    ) : (
+                        <button className='add-asset-button' onClick={handleSuggestEdit}>Suggest Edit</button>
+                    )
+                }
 
-                {isAuthenticated && (
-                    <>
-                        <button className='add-asset-button' onClick={handleEditAsset}>Edit Asset</button>
-                        <button className='add-asset-button' onClick={handleDeleteAsset}>Delete Asset</button>
-                    </>
-                )}
-                <button className='add-asset-button' onClick={handleSuggestEdit}>Suggest Edit</button>
             </div>
             {/* Recursive modal for child asset */}
             {selectedChild && (
