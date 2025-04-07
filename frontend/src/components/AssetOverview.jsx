@@ -15,17 +15,9 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
         setSelectedChild(null);
     };
 
-
     const handleParentAssetClick = async () => {
         const parentId = asset.parentAssetId || asset.parentAssetDraftId;
         console.log("Opening parent asset details for ID:", parentId);
-
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('User not authenticated');
-            window.location.href = '/login';
-            return;
-        }
 
         try {
             let response;
@@ -39,6 +31,12 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
                     }
                 });
             } else if (asset.parentAssetDraftId) {
+
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error('User not authenticated');
+                    return;
+                }
                 // Fetch the draft asset if parentAssetDraftId is available
                 response = await fetch(`/api/assets/getAssetDraft`, {
                     method: "GET",
@@ -82,7 +80,7 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
     const handleDeleteAsset = () => {
     };
 
-    const handleSuggestEdit = () => { 
+    const handleSuggestEdit = () => {
     }
 
     const formatPhoneNumber = (input) => {
@@ -102,6 +100,10 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
         }
         return `${address.cityName || ''}, ${address.address || ''}, ${address.postCode || ''}`.trim();
     };
+
+
+    // Check if the user is authenticated and has a role
+    const isAuthenticated = userRole === 'navigator';
 
     return (
         <div className="asset-overview-modal">
@@ -129,7 +131,7 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
                 <p><strong>Format:</strong> {asset.format || 'No format info'}</p>
                 <p><strong>Volunteer Opportunities:</strong> {asset.isVolunOpp ? asset.volunOppText : 'No volunteer opportunities'}</p>
                 <p><strong>Languages Offered:</strong> {asset.languagesOffered?.join(', ') || 'Not specified'}</p>
-                {userRole === 'navigator' && (
+                {isAuthenticated && (
                     <p><strong>Social Worker Only Note:</strong> {asset.socialWorkerOnlyNote || 'No specific notes'}</p>
                 )}
                 {asset.children && asset.children.length > 0 && (
@@ -166,7 +168,7 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
                     </div>
                 )}
 
-                {userRole === 'navigator' && (
+                {isAuthenticated && (
                     <>
                         <button className='add-asset-button' onClick={handleEditAsset}>Edit Asset</button>
                         <button className='add-asset-button' onClick={handleDeleteAsset}>Delete Asset</button>
@@ -181,6 +183,7 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
                     onRequestClose={handleCloseChildModal}
                     isLoaded={isLoaded}
                     loadError={loadError}
+                    userRole={userRole}
                 />
             )}
 
@@ -190,6 +193,7 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
                     onRequestClose={handleCloseParentModal}
                     isLoaded={isLoaded}
                     loadError={loadError}
+                    userRole={userRole}
                 />
             )}
         </div>
