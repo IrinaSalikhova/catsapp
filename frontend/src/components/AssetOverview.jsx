@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../assets/AssetOverview.css';
 import GoogleMapContainer from "./GoogleMapContainer";
 
-const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, loadError }) => {
+const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError }) => {
     const [selectedChild, setSelectedChild] = useState(null);
     const [selectedParent, setSelectedParent] = useState(null);
 
@@ -15,17 +15,9 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
         setSelectedChild(null);
     };
 
-
     const handleParentAssetClick = async () => {
         const parentId = asset.parentAssetId || asset.parentAssetDraftId;
         console.log("Opening parent asset details for ID:", parentId);
-
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('User not authenticated');
-            window.location.href = '/login';
-            return;
-        }
 
         try {
             let response;
@@ -39,6 +31,12 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
                     }
                 });
             } else if (asset.parentAssetDraftId) {
+
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error('User not authenticated');
+                    return;
+                }
                 // Fetch the draft asset if parentAssetDraftId is available
                 response = await fetch(`/api/assets/getAssetDraft`, {
                     method: "GET",
@@ -82,7 +80,7 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
     const handleDeleteAsset = () => {
     };
 
-    const handleSuggestEdit = () => { 
+    const handleSuggestEdit = () => {
     }
 
     const formatPhoneNumber = (input) => {
@@ -102,6 +100,10 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
         }
         return `${address.cityName || ''}, ${address.address || ''}, ${address.postCode || ''}`.trim();
     };
+
+
+    // Check if the user is authenticated and has a role
+    const isAuthenticated = userRole === 'navigator';
 
     return (
         <div className="asset-overview-modal">
@@ -129,21 +131,35 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
                 <p><strong>Format:</strong> {asset.format || 'No format info'}</p>
                 <p><strong>Volunteer Opportunities:</strong> {asset.isVolunOpp ? asset.volunOppText : 'No volunteer opportunities'}</p>
                 <p><strong>Languages Offered:</strong> {asset.languagesOffered?.join(', ') || 'Not specified'}</p>
-                {isLoggedIn && userRole === 'navigator' && (
+                {isAuthenticated && (
                     <p><strong>Social Worker Only Note:</strong> {asset.socialWorkerOnlyNote || 'No specific notes'}</p>
                 )}
-                {asset.children && asset.children.length > 0 && (
-                    <p><strong>Programs: </strong>
-                        {asset.children?.map((child, index) => (
-                            <React.Fragment key={index}>
-                                <a onClick={() => handleChildAssetClick(child)} className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
-                                    {child.name}
-                                </a>
-                                {index < asset.children.length - 1 ? ', ' : ''}
-                            </React.Fragment>
+                {
+                    asset.children && asset.children.length > 0 ? (
+                        <p><strong>Programs: </strong>
+                            {asset.children.map((child, index) => (
+                                <React.Fragment key={index}>
+                                    <a onClick={() => handleChildAssetClick(child)} className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
+                                        {child.name}
+                                    </a>
+                                    {index < asset.children.length - 1 ? ', ' : ''}
+                                </React.Fragment>
+                            ))}
+                        </p>
+                    ) : (
+                        asset.childrenNames && (
+                            <p><strong>Programs: </strong>
+                                {asset.childrenNames.map((name, index) => (
+                                    <React.Fragment key={index}>
+                                        {/* onClick={() => handleChildAssetClick(name)} */}
+                                        <span className="child-asset-link" style={{ cursor: 'pointer', color: 'blue' }}>
+                                            {name}
+                                        </span>
+                                        {index < asset.childrenNames.length - 1 ? ', ' : ''}
+                                    </React.Fragment>
+                                ))}
+                            </p>
                         ))}
-                    </p>
-                )}
                 {(asset.parentAssetName || asset.parentAssetDraftName) && (
                     <p><strong>Part of: </strong>
                         <React.Fragment >
@@ -165,14 +181,17 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
                         />
                     </div>
                 )}
+                {
+                    isAuthenticated ? (
+                        <>
+                            <button className='add-asset-button' onClick={handleEditAsset}>Edit Asset</button>
+                            <button className='add-asset-button' onClick={handleDeleteAsset}>Delete Asset</button>
+                        </>
+                    ) : (
+                        <button className='add-asset-button' onClick={handleSuggestEdit}>Suggest Edit</button>
+                    )
+                }
 
-                {isLoggedIn && userRole === 'navigator' && (
-                    <>
-                        <button className='add-asset-button' onClick={handleEditAsset}>Edit Asset</button>
-                        <button className='add-asset-button' onClick={handleDeleteAsset}>Delete Asset</button>
-                    </>
-                )}
-                <button className='add-asset-button' onClick={handleSuggestEdit}>Suggest Edit</button>
             </div>
             {/* Recursive modal for child asset */}
             {selectedChild && (
@@ -181,6 +200,7 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
                     onRequestClose={handleCloseChildModal}
                     isLoaded={isLoaded}
                     loadError={loadError}
+                    userRole={userRole}
                 />
             )}
 
@@ -190,6 +210,7 @@ const AssetOverview = ({ isLoggedIn, userRole, asset, onRequestClose, isLoaded, 
                     onRequestClose={handleCloseParentModal}
                     isLoaded={isLoaded}
                     loadError={loadError}
+                    userRole={userRole}
                 />
             )}
         </div>

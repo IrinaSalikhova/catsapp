@@ -101,7 +101,12 @@ const App = () => {
           <Route
             path="/"
             element={
-              <MainPage isLoaded={isLoaded} loadError={loadError} />
+              <MainPage 
+              isLoaded={isLoaded} 
+              loadError={loadError} 
+              isLoggedIn={isLoggedIn}
+              userRole={userRole}
+              />
             }
           >
           </Route>
@@ -119,7 +124,11 @@ const App = () => {
 
           <Route
             path="/navigatorpage"
-            element={<NavigatorPage isLoaded={isLoaded} loadError={loadError} />}
+            element={<NavigatorPage 
+            isLoaded={isLoaded} 
+            loadError={loadError}             
+            isLoggedIn={isLoggedIn}
+            userRole={userRole} />}
           />
         </Routes>
 

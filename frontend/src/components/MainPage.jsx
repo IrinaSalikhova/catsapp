@@ -7,7 +7,8 @@ import searchIcon from "/search.png";
 
 
 
-const MainPage = ({ isLoaded, loadError }) => {
+const MainPage = ({ userRole,isLoaded, loadError }) => {
+
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isVolunOpp, setIsVolunOpp] = useState(false);
   const [searchPhrase, setSearchPhrase] = useState("");
@@ -127,7 +128,8 @@ const MainPage = ({ isLoaded, loadError }) => {
               asset={selectedAsset}
               onRequestClose={closeModal}
               isLoaded={isLoaded}
-              loadError={loadError} />}
+              loadError={loadError} 
+              userRole={userRole} />}
           </div>
         </div>
         <div className="mapcontainer">
