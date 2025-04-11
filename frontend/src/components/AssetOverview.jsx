@@ -118,14 +118,21 @@ const AssetOverview = ({ userRole, asset, onRequestClose, isLoaded, loadError })
                     <p>Email: {asset.contactInfo?.email?.join(', ') || 'No email provided'}</p>
                     <p>Phone Number: {asset.contactInfo?.phoneNumber?.map(phone => formatPhoneNumber(phone)).join(', ') || 'No phone number provided'}</p>
                     <p>Website: {asset.contactInfo?.website?.length ? (
-                        asset.contactInfo.website.map((url, index) => (
-                            <React.Fragment key={index}>
-                                <a href={url.trim()} target="_blank" rel="noopener noreferrer">{url.trim()}</a>
-                                {index < asset.contactInfo.website.length - 1 ? ', ' : ''}
-                            </React.Fragment>
-                        ))
+                        asset.contactInfo.website.map((url, index) => {
+                            const trimmedUrl = url.trim();
+                            const fullUrl = trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')
+                                ? trimmedUrl
+                                : `https://${trimmedUrl}`;
+                            return (
+                                <React.Fragment key={index}>
+                                    <a href={fullUrl} target="_blank" rel="noopener noreferrer">{trimmedUrl}</a>
+                                    {index < asset.contactInfo.website.length - 1 ? ', ' : ''}
+                                </React.Fragment>
+                            );
+                        })
                     ) : 'No website provided'}
                     </p>
+
                 </div>
                 <p><strong>Transportation:</strong> {asset.address.transportation || 'No transportation info'}</p>
                 <p><strong>Format:</strong> {asset.format || 'No format info'}</p>
