@@ -1,1 +1,1 @@
-https://cats-for-map1.uc.r.appspot.com
+https://catsformap.uc.r.appspot.com
